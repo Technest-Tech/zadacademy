@@ -5,7 +5,7 @@ import Image from 'next/image'
 import { buildMetadata } from '@/lib/seo'
 import { personSchema, breadcrumbSchema } from '@/lib/schema'
 import { whatsappLink } from '@/config/site'
-import { teachers, getTeacher, similarTeachers } from '@/content/teachers'
+import { fetchTeachers, fetchTeacher } from '@/content/teachersApi'
 import { TeacherCard } from '@/components/teachers/TeacherCard'
 import { ReviewForm } from '@/components/teachers/ReviewForm'
 import {
@@ -26,13 +26,14 @@ import {
 
 type Props = { params: Promise<{ id: string }> }
 
-export function generateStaticParams() {
+export async function generateStaticParams() {
+  const teachers = await fetchTeachers()
   return teachers.map((t) => ({ id: t.id }))
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { id } = await params
-  const t = getTeacher(id)
+  const t = await fetchTeacher(id)
   if (!t) return {}
   return buildMetadata({
     title: `${t.name} — ${t.role} | Zad Academy`,
@@ -78,10 +79,10 @@ function Stars({ rating, className = 'size-4' }: { rating: number; className?: s
 
 export default async function TeacherPage({ params }: Props) {
   const { id } = await params
-  const t = getTeacher(id)
+  const t = await fetchTeacher(id)
   if (!t) notFound()
 
-  const similar = similarTeachers(id)
+  const similar = (await fetchTeachers()).filter((x) => x.id !== id).slice(0, 6)
   const bookMsg = `Assalamu alaikum, I would like to book a class with ${t.name}.`
 
   const whyChooseMe = [

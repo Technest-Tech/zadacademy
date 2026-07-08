@@ -1,113 +1,111 @@
 # Deployment Guide
 
-## Frontend → Vercel
+Zad Academy runs as a **single DigitalOcean droplet** that hosts everything:
+the Next.js app (marketing + admin console), the Laravel API, MySQL, and Nginx.
 
-### First deploy
-1. Push monorepo to GitHub.
-2. Vercel → New Project → import repo.
-3. Set **Root Directory** = `frontend`.
-4. Add env vars from [SERVER-SETUP.md](SERVER-SETUP.md#environment-variables-vercel-dashboard).
-5. Deploy.
-6. Add custom domain `zadacademiq.com` and `www.zadacademiq.com`. Vercel auto-issues SSL.
+| Thing | Value |
+|---|---|
+| Droplet IP | `137.184.71.164` (Ubuntu 24.04, 2 GB RAM + 2 GB swap) |
+| Repo | `git@github.com:Technest-Tech/zadacademy.git` |
+| Code path | `/var/www/zadacademy` |
+| Marketing site | `https://zadacademiq.com` → Next.js |
+| Admin console | `https://system.zadacademiq.com` → Next.js (host-split in `frontend/src/middleware.ts`) |
+| Laravel API | `https://system.zadacademiq.com/api` (same origin as the admin console) |
 
-### Subsequent deploys
-- Push to `main` → Vercel deploys to production.
-- Push to any other branch → Vercel creates a preview URL (great for sharing with the owner).
-- PR comments include the preview URL automatically.
+The two hosts are served by **one** Next.js process; `middleware.ts` decides
+marketing vs. admin from the `Host` header (`NEXT_PUBLIC_APP_HOST` =
+`system.zadacademiq.com`, `NEXT_PUBLIC_SITE_HOST` = `zadacademiq.com`).
 
-### Rollback
-- Vercel dashboard → **Deployments** → click any prior successful deploy → **Promote to Production**. ~10 seconds.
+First-time provisioning is documented in [SERVER-SETUP.md](SERVER-SETUP.md).
+This page covers **routine deploys**.
 
 ---
 
-## Backend → VPS (manual deploy script)
+## Routine deploy
 
-After initial provisioning ([SERVER-SETUP.md](SERVER-SETUP.md)), use this script to deploy updates.
-
-### `/var/www/alrayan/deploy.sh`
+Everything is wrapped in `/var/www/zadacademy/deploy.sh` (also tracked in the
+repo root). SSH in and run it:
 
 ```bash
-#!/usr/bin/env bash
-set -euo pipefail
+ssh root@137.184.71.164
+bash /var/www/zadacademy/deploy.sh
+```
 
-cd /var/www/alrayan
-git fetch --all
-git reset --hard origin/main
+It does, in order:
 
+```bash
+cd /var/www/zadacademy
+git fetch --all && git reset --hard origin/main     # pull latest main
+
+# Backend
 cd backend
-composer install --no-dev --optimize-autoloader
+composer install --no-dev --optimize-autoloader --no-interaction
 php artisan down --retry=15
 php artisan migrate --force
-php artisan config:cache
-php artisan route:cache
-php artisan view:cache
-php artisan event:cache
-sudo systemctl restart alrayan-queue
+php artisan config:cache route:cache view:cache event:cache   # (run separately)
+chown -R www-data:www-data storage bootstrap/cache
+systemctl restart zad-queue
 php artisan up
+
+# Frontend
+cd ../frontend
+pnpm install --frozen-lockfile || true          # pnpm 11 exits non-zero on the ignored-builds warning
+node node_modules/next/dist/bin/next build       # NOT `pnpm build` — see note
+pm2 restart zad-web --update-env
 ```
 
-### Trigger from GitHub Actions (Sprint 7)
+> **Why not `pnpm build`?** This pnpm version runs a deps-status pre-check
+> before any script that errors on the (harmless) "ignored build scripts"
+> warning, so `pnpm build` never reaches `next build`. Calling the Next binary
+> directly sidesteps it. `deploy.sh` already does this.
 
-`.github/workflows/backend-deploy.yml`:
+> The droplet pulls from GitHub using the deploy key at `/root/.ssh/zad_deploy`.
+> Its **public** key must be added to the repo's **Settings → Deploy keys**
+> (read-only is fine). See [SERVER-SETUP.md](SERVER-SETUP.md#deploy-key).
 
-```yaml
-name: Backend Deploy
-on:
-  push:
-    branches: [main]
-    paths: ['backend/**']
-jobs:
-  deploy:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: appleboy/ssh-action@v1
-        with:
-          host: ${{ secrets.VPS_HOST }}
-          username: deploy
-          key: ${{ secrets.VPS_SSH_KEY }}
-          script: bash /var/www/alrayan/deploy.sh
-```
+### Deploying only one side
 
-### Rollback
+- **Backend only:** run the backend block above.
+- **Frontend only:** `cd frontend && pnpm install --frozen-lockfile || true; node node_modules/next/dist/bin/next build && pm2 restart zad-web`.
+
+---
+
+## Rollback
+
 ```bash
-cd /var/www/alrayan
-git log --oneline -10           # find the SHA before the bad deploy
+cd /var/www/zadacademy
+git log --oneline -10            # find the SHA before the bad deploy
 git reset --hard <good-sha>
-cd backend && composer install --no-dev && php artisan migrate:rollback   # only if migration was the issue
-php artisan config:cache
-sudo systemctl restart alrayan-queue
+bash deploy.sh                   # rebuilds both apps at that SHA
+# If a migration was the problem:
+cd backend && php artisan migrate:rollback
 ```
 
 ---
 
 ## Pre-deploy checklist
 
-- [ ] All tests pass (`pnpm test` and `php artisan test`)
-- [ ] Lighthouse score ≥ 90 (perf/SEO/access/best-practices) on home + 1 course page + 1 country page
-- [ ] No `console.log` or `dd()` left in code
-- [ ] Env vars set in Vercel and on VPS
-- [ ] DNS records propagated (`dig +short zadacademiq.com`)
-- [ ] SSL certs valid (Vercel auto, VPS via certbot)
-- [ ] WhatsApp number, email, prices verified in `frontend/src/config/site.ts`
-- [ ] Sitemap reachable: `curl https://zadacademiq.com/sitemap.xml`
-- [ ] Robots.txt reachable: `curl https://zadacademiq.com/robots.txt`
-- [ ] Trial booking form submits successfully end-to-end (form → email received)
-- [ ] Mobile QA on iPhone Safari + Android Chrome
-- [ ] Search Console + GA4 + Plausible verified
+- [ ] Tests pass (`pnpm test` in `frontend`, `php artisan test` in `backend`)
+- [ ] No `console.log` / `dd()` left in code
+- [ ] Env vars set on the droplet (`backend/.env`, `frontend/.env.production`)
+- [ ] `dig +short zadacademiq.com` and `dig +short system.zadacademiq.com` both → `137.184.71.164`
+- [ ] WhatsApp number / prices verified in the frontend config
 
 ---
 
 ## Post-deploy smoke test
 
 ```bash
-# Frontend
-curl -I https://zadacademiq.com/ | head -1                 # 200
-curl -I https://zadacademiq.com/pricing | head -1          # 200
-curl -I https://zadacademiq.com/courses/tajweed-course     # 200
+# Marketing (Next.js)
+curl -I https://zadacademiq.com/            | head -1     # 200
+curl -I https://zadacademiq.com/pricing     | head -1     # 200
 
-# Backend
-curl https://api.zadacademiq.com/up                        # {"status":"ok"}
-curl -X POST https://api.zadacademiq.com/api/v1/contacts \
+# Admin console (Next.js on the system host)
+curl -I https://system.zadacademiq.com/login | head -1    # 200
+
+# Laravel API
+curl https://system.zadacademiq.com/up                    # 200 health page
+curl -X POST https://system.zadacademiq.com/api/v1/contacts \
   -H "Content-Type: application/json" \
   -d '{"name":"Test","email":"test@test.com","message":"smoke test"}'
 # 201 + reference
@@ -115,23 +113,21 @@ curl -X POST https://api.zadacademiq.com/api/v1/contacts \
 
 ---
 
-## Hostinger-specific notes
+## Services on the box
 
-If the owner is on **Hostinger Shared Hosting** (not VPS), Laravel can still run — but:
-- No SSH for systemd queue worker → use `database` queue with a cron job hitting `php artisan queue:work --once` every minute
-- No certbot needed — Hostinger provides AutoSSL
-- Upload via `git pull` from Hostinger's hPanel terminal (or SFTP if no terminal)
-- File permissions: `storage` and `bootstrap/cache` need `755`/`775`
-
-This setup works but is fragile. **Strongly recommend** the KVM 2 VPS upgrade once ad budget begins.
+| Concern | Managed by | Command |
+|---|---|---|
+| Next.js app | PM2 (`zad-web`) | `pm2 status`, `pm2 logs zad-web`, `pm2 restart zad-web` |
+| Laravel queue | systemd (`zad-queue`) | `systemctl status zad-queue`, `journalctl -u zad-queue -f` |
+| Laravel scheduler | cron (`/etc/cron.d/zad-scheduler`) | runs `schedule:run` every minute |
+| Web server | systemd (`nginx`) | `nginx -t && systemctl reload nginx` |
+| PHP | systemd (`php8.3-fpm`) | `systemctl restart php8.3-fpm` |
+| Database | systemd (`mysql`) | `systemctl status mysql` |
+| TLS certs | certbot timer (auto-renew) | `certbot renew --dry-run` |
 
 ---
 
-## Netlify alternative (frontend only)
+## Monitoring (recommended)
 
-If Vercel is not preferred, Netlify works the same way:
-- Build command: `pnpm build`
-- Publish directory: `.next` (Netlify auto-detects Next.js)
-- Use the official `@netlify/plugin-nextjs` (auto-installed)
-
-Vercel is recommended because Next.js is a Vercel product → first-class support, fewer edge cases.
+- **UptimeRobot:** `https://zadacademiq.com/` and `https://system.zadacademiq.com/up`, 5-min interval.
+- **Server health:** `htop`, `df -h`, `free -h` (watch memory — 2 GB box).

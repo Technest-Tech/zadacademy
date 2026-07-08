@@ -1,9 +1,12 @@
 import { Award } from 'lucide-react'
 import { TeacherCard } from '@/components/teachers/TeacherCard'
 import { SectionDivider } from '@/components/layout/SectionDivider'
-import { teachers } from '@/content/teachers'
+import { fetchTeachers } from '@/content/teachersApi'
 
-export function TeachersSection() {
+export async function TeachersSection() {
+  const teachers = await fetchTeachers()
+  if (teachers.length === 0) return null
+
   return (
     <section id="teachers" className="relative overflow-hidden bg-navy-deep py-20 md:py-24 scroll-mt-24">
       {/* Subtle grid backdrop */}

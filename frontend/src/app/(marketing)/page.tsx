@@ -58,53 +58,53 @@ export default function HomePage() {
 
 
       {/* ── Trust Strip ── */}
-      <section
-        className="relative z-10 pb-16 md:pb-20"
-        style={{
-          marginTop: '-68px',
-          background: 'linear-gradient(to bottom, transparent 68px, #F8F4ED 68px)',
-        }}
-        aria-label="Why choose Zad Academy"
-      >
+      <section className="bg-cream py-10 md:py-12" aria-label="Why choose Zad Academy">
         <Container>
-          {/* Single unified panel — gap-px on #E8E2D9 creates hairline cell dividers */}
-          <div className="rounded-2xl overflow-hidden shadow-[0_4px_24px_rgba(0,0,0,0.10)]" style={{ background: '#E8E2D9' }}>
-            <ul className="grid grid-cols-2 lg:grid-cols-5 gap-px" role="list">
-              {homeContent.trustBadges.map(({ icon, label }, idx) => {
-                const Icon = iconMap[icon] ?? BookOpen
-                const subtext: Record<string, string> = {
-                  'Users':         'Every student, one teacher',
-                  'ShieldCheck':   'No credit card needed',
-                  'Heart':         'Sister teachers on request',
-                  'Globe':         'Egyptian & Levantine accents',
-                  'GraduationCap': 'Al-Azhar graduates',
-                }
-                const iconStyle: Record<string, { wrap: string; icon: string }> = {
-                  'Users':         { wrap: 'bg-secondary/12', icon: 'text-secondary' },
-                  'ShieldCheck':   { wrap: 'bg-accent/12',    icon: 'text-accent'    },
-                  'Heart':         { wrap: 'bg-secondary/12', icon: 'text-secondary' },
-                  'Globe':         { wrap: 'bg-accent/12',    icon: 'text-accent'    },
-                  'GraduationCap': { wrap: 'bg-secondary/12', icon: 'text-secondary' },
-                }
-                const { wrap, icon: iconCls } = iconStyle[icon] ?? { wrap: 'bg-secondary/12', icon: 'text-secondary' }
-                const isLastOdd = idx === homeContent.trustBadges.length - 1 && homeContent.trustBadges.length % 2 !== 0
-                return (
-                  <li
-                    key={label}
-                    className={`bg-white flex items-center gap-4 px-5 py-5 ${isLastOdd ? 'col-span-2 lg:col-span-1' : ''}`}
-                  >
-                    <div className={`shrink-0 size-11 rounded-xl flex items-center justify-center ${wrap}`}>
-                      <Icon className={`size-5 ${iconCls}`} aria-hidden="true" />
-                    </div>
-                    <div>
-                      <p className="font-semibold text-primary text-sm leading-snug">{label}</p>
-                      <p className="text-muted-text text-xs mt-0.5 leading-snug">{subtext[icon] ?? ''}</p>
-                    </div>
-                  </li>
-                )
-              })}
-            </ul>
+          <div className="flex items-center justify-center gap-3 sm:gap-4 mb-7">
+            <span className="h-px w-10 sm:w-16 bg-gradient-to-r from-transparent to-accent/60" aria-hidden="true" />
+            <span className="size-1.5 rotate-45 rounded-[1px] bg-accent" aria-hidden="true" />
+            <p className="text-secondary text-sm font-semibold uppercase tracking-[0.2em] text-center">
+              Why Zad Academy
+            </p>
+            <span className="size-1.5 rotate-45 rounded-[1px] bg-accent" aria-hidden="true" />
+            <span className="h-px w-10 sm:w-16 bg-gradient-to-l from-transparent to-accent/60" aria-hidden="true" />
           </div>
+          <ul className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4" role="list">
+            {homeContent.trustBadges.map(({ icon, label }, idx) => {
+              const Icon = iconMap[icon] ?? BookOpen
+              const subtext: Record<string, string> = {
+                'Users':         'Every student, one teacher',
+                'ShieldCheck':   'No credit card needed',
+                'Heart':         'Sister teachers on request',
+                'Globe':         'Egyptian & Levantine accents',
+                'GraduationCap': 'Al-Azhar graduates',
+              }
+              const iconStyle: Record<string, { wrap: string; icon: string }> = {
+                'Users':         { wrap: 'bg-secondary/12', icon: 'text-secondary' },
+                'ShieldCheck':   { wrap: 'bg-accent/12',    icon: 'text-accent'    },
+                'Heart':         { wrap: 'bg-secondary/12', icon: 'text-secondary' },
+                'Globe':         { wrap: 'bg-accent/12',    icon: 'text-accent'    },
+                'GraduationCap': { wrap: 'bg-secondary/12', icon: 'text-secondary' },
+              }
+              const { wrap, icon: iconCls } = iconStyle[icon] ?? { wrap: 'bg-secondary/12', icon: 'text-secondary' }
+              const isLastOrphan =
+                idx === homeContent.trustBadges.length - 1 && homeContent.trustBadges.length % 2 !== 0
+              return (
+                <li
+                  key={label}
+                  className={`group flex flex-col items-center text-center gap-3.5 rounded-2xl border border-border-soft bg-white px-4 py-7 shadow-[0_2px_12px_rgba(11,31,58,0.05)] transition-all duration-200 hover:-translate-y-1 hover:border-accent/40 hover:shadow-[0_14px_32px_rgba(11,31,58,0.10)] ${isLastOrphan ? 'col-span-2 sm:col-span-1' : ''}`}
+                >
+                  <div className={`shrink-0 size-12 rounded-xl flex items-center justify-center transition-transform duration-200 group-hover:scale-110 ${wrap}`}>
+                    <Icon className={`size-6 ${iconCls}`} aria-hidden="true" />
+                  </div>
+                  <div>
+                    <p className="font-semibold text-primary text-sm leading-snug">{label}</p>
+                    <p className="text-muted-text text-xs mt-1 leading-snug">{subtext[icon] ?? ''}</p>
+                  </div>
+                </li>
+              )
+            })}
+          </ul>
         </Container>
       </section>
 
@@ -115,17 +115,40 @@ export default function HomePage() {
       <TestimonialsMarquee items={testimonials} />
 
       {/* ── How It Works ── */}
-      <section className="section bg-cream-warm" aria-labelledby="how-heading">
-        <Container>
-          <SectionDivider tone="light" className="mb-10 -mt-2" />
-          <div className="text-center mb-10">
-            <p className="text-secondary text-sm font-semibold uppercase tracking-wider mb-3">Simple Process</p>
-            <h2 id="how-heading" className="heading-xl font-heading text-primary mb-4">
+      <section className="relative overflow-hidden bg-navy-soft py-12 sm:py-14" aria-labelledby="how-heading">
+        {/* Islamic geometric star pattern */}
+        <div className="absolute inset-0 opacity-[0.06]" aria-hidden="true">
+          <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <pattern id="how-stars" x="0" y="0" width="90" height="90" patternUnits="userSpaceOnUse">
+                {/* Eight-pointed star (two overlapping squares) */}
+                <rect x="21" y="21" width="48" height="48" fill="none" stroke="#C9A24B" strokeWidth="1" />
+                <path d="M45 12 78 45 45 78 12 45 Z" fill="none" stroke="#C9A24B" strokeWidth="1" />
+                <circle cx="45" cy="45" r="6" fill="none" stroke="#C9A24B" strokeWidth="1" />
+                {/* Corner nodes for interlace feel */}
+                <circle cx="0"  cy="0"  r="2.5" fill="#C9A24B" opacity="0.6" />
+                <circle cx="90" cy="0"  r="2.5" fill="#C9A24B" opacity="0.6" />
+                <circle cx="0"  cy="90" r="2.5" fill="#C9A24B" opacity="0.6" />
+                <circle cx="90" cy="90" r="2.5" fill="#C9A24B" opacity="0.6" />
+              </pattern>
+            </defs>
+            <rect width="100%" height="100%" fill="url(#how-stars)" />
+          </svg>
+        </div>
+        {/* Warm radial glow for depth */}
+        <div
+          className="absolute inset-0"
+          aria-hidden="true"
+          style={{ background: 'radial-gradient(ellipse 60% 55% at 50% 0%, rgba(201,162,75,0.12), transparent 70%)' }}
+        />
+
+        <Container className="relative">
+          <SectionDivider tone="dark" className="mb-6 -mt-2" />
+          <div className="text-center mb-6">
+            <p className="text-accent text-sm font-semibold uppercase tracking-wider mb-3">Simple Process</p>
+            <h2 id="how-heading" className="heading-xl font-heading text-white">
               Start in 3 Easy Steps
             </h2>
-            <p className="text-muted-text text-lg max-w-md mx-auto">
-              From sign-up to your first lesson in minutes — no commitment until you love it.
-            </p>
           </div>
           <div className="flex justify-center">
             <Image

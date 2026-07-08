@@ -5,6 +5,7 @@ import { X, Globe, Users, Camera, Play, MessageCircle, Music, CircleHelp, Phone,
 import { useLead } from '@/hooks/system/useLeads'
 import type { LeadStatus, LeadPriority, LeadActivity } from '@/types/system/lead'
 import { useI18n } from '@/lib/system/i18n'
+import type { IconComponent } from '@/types/icon'
 
 const STATUS_LABEL_KEYS: Record<string, string> = {
   new_lead:            'leads.statusNewLead',
@@ -89,7 +90,7 @@ const PRIORITY_COLORS: Record<LeadPriority, { bg: string; color: string }> = {
   low:    { bg: 'rgb(90 100 112 / 0.1)', color: 'rgb(90 100 112)' },
 }
 
-const PLATFORM_ICONS: Record<string, React.ElementType> = {
+const PLATFORM_ICONS: Record<string, IconComponent> = {
   website:   Globe,
   facebook:  Users,
   instagram: Camera,
@@ -112,7 +113,7 @@ function initials(name: string) { return name.split(' ').map(w => w[0]).slice(0,
 
 /* ── Detail row ─────────────────────────────────── */
 function DetailRow({ icon: Icon, label, value, accent }: {
-  icon: React.ElementType; label: string; value: React.ReactNode; accent?: string
+  icon: IconComponent; label: string; value: React.ReactNode; accent?: string
 }) {
   if (!value) return null
   return (

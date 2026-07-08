@@ -1,0 +1,2 @@
+# Laravel task scheduler for Zad Academy
+* * * * * www-data cd /var/www/zadacademy/backend && /usr/bin/php artisan schedule:run >> /dev/null 2>&1

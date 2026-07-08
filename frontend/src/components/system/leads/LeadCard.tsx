@@ -3,6 +3,7 @@ import type { Lead } from '@/types/system/lead'
 import { formatDistanceToNow } from 'date-fns'
 import { Globe, Users, Camera, Play, MessageCircle, Music, CircleHelp, Phone, Pencil, Trash2 } from 'lucide-react'
 import { useI18n } from '@/lib/system/i18n'
+import type { IconComponent } from '@/types/icon'
 
 /* ── Islamic 8-point star ───────────────────────── */
 const STAR = 'M50,5 L57.65,31.52 L81.82,18.18 L68.48,42.35 L95,50 L68.48,57.65 L81.82,81.82 L57.65,68.48 L50,95 L42.35,68.48 L18.18,81.82 L31.52,57.65 L5,50 L31.52,42.35 L18.18,18.18 L42.35,31.52 Z'
@@ -38,7 +39,7 @@ const SOURCE_COLORS: Record<string, { bg: string; color: string }> = {
   manual_entry:     { bg: 'rgba(90,100,112,0.10)',  color: 'rgb(90 100 112)' },
 }
 
-const PLATFORM_ICONS: Record<string, React.ElementType> = {
+const PLATFORM_ICONS: Record<string, IconComponent> = {
   website:   Globe,
   facebook:  Users,
   instagram: Camera,

@@ -39,22 +39,27 @@ export function Navbar() {
     setMobileOpen(false)
   }, [pathname])
 
-  const scrolledOrInner = scrolled || !hasDarkHero
+  // Light bar only on inner pages sitting at the very top; everywhere else
+  // (home hero at top, or ANY page once scrolled) uses light text.
+  const lightBar = !hasDarkHero && !scrolled
+  const useLightText = !lightBar
   // Announcement bar only at the top of the home page.
   const showAnnouncement = pathname === '/' && !scrolled
 
   const navClass = cn(
     'fixed top-0 left-0 right-0 z-50 transition-all duration-300',
-    scrolledOrInner
-      ? 'bg-white/92 backdrop-blur-md shadow-soft border-b border-border-soft'
-      : 'bg-transparent',
+    scrolled
+      ? 'bg-[#0B1F3A]/95 backdrop-blur-md shadow-[0_8px_30px_rgba(0,0,0,0.35)] border-b border-white/10'
+      : hasDarkHero
+        ? 'bg-transparent'
+        : 'bg-white/92 backdrop-blur-md shadow-soft border-b border-border-soft',
   )
   const linkClass = (active: boolean) =>
     cn(
       'flex items-center px-3 py-2 rounded-lg text-sm font-medium transition-all duration-150 relative',
-      scrolledOrInner ? 'text-primary hover:bg-cream' : 'text-white/90 hover:bg-white/10',
-      active && scrolledOrInner && 'text-secondary bg-secondary/8 font-semibold',
-      active && !scrolledOrInner && 'text-accent',
+      useLightText ? 'text-white/90 hover:bg-white/10' : 'text-primary hover:bg-cream',
+      active && !useLightText && 'text-secondary bg-secondary/8 font-semibold',
+      active && useLightText && 'text-accent',
     )
 
   return (
@@ -99,12 +104,12 @@ export function Navbar() {
             className="flex items-center leading-none group"
           >
             <Image
-              src="/logo/zad-logo.png"
+              src="/logo/zad-logo-gold.png"
               alt="Zad Academy"
               width={512}
               height={512}
               priority
-              className="h-12 w-auto rounded-lg sm:h-14 md:h-16"
+              className="h-14 w-auto rounded-lg sm:h-16 md:h-20 lg:h-24"
             />
           </Link>
 
@@ -179,7 +184,7 @@ export function Navbar() {
               rel="noopener noreferrer"
               className={cn(
                 'flex items-center gap-1.5 text-sm font-medium transition-colors',
-                scrolledOrInner ? 'text-primary hover:text-secondary' : 'text-white/80 hover:text-white',
+                useLightText ? 'text-white/80 hover:text-white' : 'text-primary hover:text-secondary',
               )}
               aria-label="Chat with us on WhatsApp"
             >
@@ -187,7 +192,7 @@ export function Navbar() {
               <span className="hidden xl:inline">WhatsApp</span>
             </a>
             <span
-              className={cn('w-px h-5 opacity-20', scrolledOrInner ? 'bg-primary' : 'bg-white')}
+              className={cn('w-px h-5 opacity-20', useLightText ? 'bg-white' : 'bg-primary')}
               aria-hidden="true"
             />
             <LinkButton
@@ -195,7 +200,7 @@ export function Navbar() {
               size="sm"
               variant="gold"
               className={cn(
-                !scrolledOrInner && 'shadow-[0_0_20px_rgba(201,162,75,0.35)]',
+                useLightText && 'shadow-[0_0_20px_rgba(201,162,75,0.35)]',
               )}
             >
               Free Trial Class
@@ -207,7 +212,7 @@ export function Navbar() {
             <SheetTrigger
               className={cn(
                 'lg:hidden p-2 rounded-lg transition-colors',
-                scrolledOrInner ? 'text-primary hover:bg-cream' : 'text-white hover:bg-white/10',
+                useLightText ? 'text-white hover:bg-white/10' : 'text-primary hover:bg-cream',
               )}
               aria-label="Open navigation menu"
             >
@@ -220,11 +225,11 @@ export function Navbar() {
                 <div className="flex items-center justify-between p-5 border-b border-border-soft">
                   <Link href="/" aria-label="Zad Academy" onClick={() => setMobileOpen(false)} className="flex items-center leading-none">
                     <Image
-                      src="/logo/zad-logo.png"
+                      src="/logo/zad-logo-gold.png"
                       alt="Zad Academy"
                       width={512}
                       height={512}
-                      className="h-12 w-auto rounded-lg"
+                      className="h-16 w-auto rounded-lg"
                     />
                   </Link>
                   <button

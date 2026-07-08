@@ -62,11 +62,11 @@ export function Footer() {
                 className="inline-block"
               >
                 <Image
-                  src="/logo/zad-logo.png"
+                  src="/logo/zad-logo-gold.png"
                   alt="Zad Academy"
                   width={512}
                   height={512}
-                  className="h-20 w-auto rounded-xl"
+                  className="h-28 w-auto rounded-xl"
                 />
               </Link>
 

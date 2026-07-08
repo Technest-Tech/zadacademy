@@ -20,6 +20,7 @@
   --color-cream-deep: #F2ECDF; /* deeper cream */
   --color-navy-deep:  #081627; /* deeper navy */
   --color-navy-soft:  #0C2547; /* lighter, bluer navy */
+  --color-mint-soft:  #EAF3EE; /* soft green-tinted background */
 
   /* Shadcn semantic aliases (maps to our brand) */
   --color-background:        var(--background);

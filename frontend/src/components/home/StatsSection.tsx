@@ -25,19 +25,19 @@ function StatItem({ value, label, description }: Stat) {
   return (
     <div
       ref={elementRef as React.RefObject<HTMLDivElement>}
-      className="text-center px-8 py-12"
+      className="text-center px-6 py-6"
     >
       <dt
-        className="font-display font-semibold text-accent mb-2"
-        style={{ fontSize: 'clamp(2.4rem, 3.8vw, 3.4rem)', lineHeight: 1.05 }}
+        className="font-display font-semibold text-accent mb-1"
+        style={{ fontSize: 'clamp(1.9rem, 2.8vw, 2.5rem)', lineHeight: 1.05 }}
         aria-label={value}
       >
         <span aria-hidden="true">{display}{suffix}</span>
       </dt>
       <dd>
-        <p className="text-white font-semibold text-sm mb-1">{label}</p>
+        <p className="text-white font-semibold text-xs sm:text-sm mb-0.5">{label}</p>
         {description && (
-          <p className="text-white/45 text-xs leading-snug">{description}</p>
+          <p className="text-white/45 text-[11px] leading-snug">{description}</p>
         )}
       </dd>
     </div>
@@ -63,8 +63,8 @@ export function StatsSection({ stats }: { stats: Stat[] }) {
         </svg>
       </div>
 
-      <Container className="relative pt-4">
-        <SectionDivider tone="dark" className="mb-4" />
+      <Container className="relative pt-2">
+        <SectionDivider tone="dark" className="mb-2" />
         <dl className="flex flex-col sm:flex-row divide-y sm:divide-y-0 sm:divide-x divide-white/10">
           {stats.map((stat) => (
             <div key={stat.label} className="flex-1">

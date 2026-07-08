@@ -7,6 +7,9 @@ const config: NextConfig = {
     remotePatterns: [
       { protocol: 'https', hostname: 'loremflickr.com' },
       { protocol: 'https', hostname: 'picsum.photos' },
+      // Uploaded teacher photos served from the backend's public storage.
+      { protocol: 'http', hostname: 'localhost' },
+      { protocol: 'http', hostname: '127.0.0.1' },
     ],
   },
 }

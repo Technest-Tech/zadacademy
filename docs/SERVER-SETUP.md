@@ -1,241 +1,234 @@
 # Server Setup
 
-Two production environments to provision:
+First-time provisioning of the **single droplet** that runs all of Zad Academy.
+For routine deploys see [DEPLOYMENT-GUIDE.md](DEPLOYMENT-GUIDE.md).
 
-1. **Frontend** — Vercel (managed; minimal setup)
-2. **Backend** — Hostinger VPS or DigitalOcean Droplet (Linux, manual)
+| | |
+|---|---|
+| Host | `137.184.71.164` — Ubuntu 24.04 LTS, 2 GB RAM |
+| Stack | Nginx · PHP 8.3-FPM · MySQL 8 · Node 22 · PM2 · Composer · Certbot |
+| Code | `/var/www/zadacademy` (cloned from `git@github.com:Technest-Tech/zadacademy.git`) |
 
----
+### DNS (already configured)
 
-## 1. Frontend on Vercel
+| Type | Host | Value |
+|---|---|---|
+| A | `zadacademiq.com` | `137.184.71.164` |
+| A | `system.zadacademiq.com` | `137.184.71.164` |
 
-### Initial setup
-1. Push `site/frontend` to GitHub (or use the monorepo and set Vercel root directory)
-2. Vercel → **New Project** → import the GitHub repo
-3. Set **Root Directory** to `frontend`
-4. Framework Preset: **Next.js** (auto-detected)
-5. Build command: `pnpm build` · Install command: `pnpm install` · Output: `.next`
-
-### Domains
-- Production: `zadacademiq.com` and `www.zadacademiq.com` (CNAME to `cname.vercel-dns.com`)
-- Staging: `staging.zadacademiq.com`
-
-### Environment variables (Vercel dashboard)
-
-| Var | Production | Staging | Notes |
-|---|---|---|---|
-| `NEXT_PUBLIC_SITE_URL` | `https://zadacademiq.com` | `https://staging.zadacademiq.com` | Used in canonicals + sitemap |
-| `NEXT_PUBLIC_API_URL` | `https://api.zadacademiq.com` | `https://api-staging.zadacademiq.com` | Laravel backend |
-| `NEXT_PUBLIC_WHATSAPP` | `+201000000000` | same | Owner replaces with real number |
-| `REVALIDATE_SECRET` | (32-char random) | (different) | Shared with Laravel for ISR webhook |
-| `NEXT_PUBLIC_PLAUSIBLE_DOMAIN` | `zadacademiq.com` | — | Optional |
-
-### Build-time checks
-- `pnpm typecheck` and `pnpm lint` run as part of `pnpm build` (configured in Sprint 1)
-- A failed typecheck blocks deploy — this is the desired behavior
+Both hosts resolve to the same box; Nginx + the Next.js middleware route them.
 
 ---
 
-## 2. Backend on a VPS (Hostinger / DigitalOcean)
-
-### Recommended spec
-- 2 vCPU, 4 GB RAM, 80 GB SSD (Hostinger KVM 2 ≈ $6/mo, DO basic ≈ $24/mo)
-- Ubuntu **22.04 LTS** or **24.04 LTS**
-- Region: closest to primary audience (US-East for USA market)
-
-### Server provisioning steps
+## 1. Base box
 
 ```bash
-# 1. SSH in as root, then create a non-root user
-adduser deploy
-usermod -aG sudo deploy
-rsync --archive --chown=deploy:deploy ~/.ssh /home/deploy
+# Swap — the Next.js build needs more than 2 GB
+fallocate -l 2G /swapfile && chmod 600 /swapfile && mkswap /swapfile && swapon /swapfile
+echo '/swapfile none swap sw 0 0' >> /etc/fstab
+sysctl -w vm.swappiness=10
 
-# 2. Install LEMP stack
-apt update && apt upgrade -y
-apt install -y nginx mysql-server php8.3-fpm php8.3-cli php8.3-mysql \
-  php8.3-mbstring php8.3-xml php8.3-curl php8.3-zip php8.3-gd \
-  php8.3-bcmath php8.3-intl unzip git certbot python3-certbot-nginx
+# Packages
+apt-get update && apt-get install -y --no-install-recommends \
+  nginx mysql-server unzip git curl ca-certificates \
+  php8.3-fpm php8.3-cli php8.3-mysql php8.3-mbstring php8.3-xml \
+  php8.3-curl php8.3-zip php8.3-gd php8.3-bcmath php8.3-intl \
+  certbot python3-certbot-nginx
 
-# 3. Install Composer
+# Composer
 curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
-# 4. Secure MySQL
-mysql_secure_installation
+# Node 22 + pnpm + pm2
+curl -fsSL https://deb.nodesource.com/setup_22.x | bash - && apt-get install -y nodejs
+npm install -g pnpm pm2
 
-# 5. Create database and user
-mysql -u root -p
-> CREATE DATABASE alrayan_prod CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-> CREATE USER 'alrayan'@'localhost' IDENTIFIED BY '<strong-password>';
-> GRANT ALL ON alrayan_prod.* TO 'alrayan'@'localhost';
-> FLUSH PRIVILEGES;
-
-# 6. Firewall
-ufw allow OpenSSH
-ufw allow 'Nginx Full'
-ufw enable
+# Firewall
+ufw allow OpenSSH && ufw allow 'Nginx Full' && ufw --force enable
 ```
 
-### Deploy Laravel app
+---
+
+## 2. Database
 
 ```bash
-# As deploy user
-cd /var/www
-sudo git clone git@github.com:<owner>/alrayan-academy.git alrayan
-sudo chown -R deploy:www-data alrayan
-cd alrayan/backend
-composer install --no-dev --optimize-autoloader
-cp .env.example .env
-# Edit .env (see template below)
-php artisan key:generate
+mysql -uroot <<'SQL'
+CREATE DATABASE zad_prod CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+CREATE USER 'zad'@'localhost' IDENTIFIED BY '<db-password>';
+GRANT ALL PRIVILEGES ON zad_prod.* TO 'zad'@'localhost';
+FLUSH PRIVILEGES;
+SQL
+```
+
+---
+
+## 3. Deploy key
+
+The droplet pulls from GitHub with a dedicated read-only deploy key.
+
+```bash
+ssh-keygen -t ed25519 -N "" -C "zad-droplet-deploy" -f /root/.ssh/zad_deploy
+ssh-keyscan -t ed25519 github.com >> /root/.ssh/known_hosts
+cat /root/.ssh/zad_deploy.pub     # → add to GitHub repo → Settings → Deploy keys
+```
+
+Then get the code and pin the key to this repo:
+
+```bash
+git clone git@github.com:Technest-Tech/zadacademy.git /var/www/zadacademy
+cd /var/www/zadacademy
+git config core.sshCommand "ssh -i /root/.ssh/zad_deploy -o IdentitiesOnly=yes"
+```
+
+> For the very first clone (before the deploy key is added to GitHub) you can
+> forward your own agent: `ssh -A root@137.184.71.164` then clone.
+
+---
+
+## 4. Backend (Laravel)
+
+```bash
+cd /var/www/zadacademy/backend
+# Put the .env in place (template below), then:
+composer install --optimize-autoloader     # WITH dev deps if you want to run demo seeders
+php artisan key:generate --force
 php artisan migrate --force
+php artisan db:seed --force                 # optional demo data — see note
+composer install --no-dev --optimize-autoloader   # slim for production
 php artisan storage:link
-php artisan config:cache && php artisan route:cache && php artisan view:cache
+php artisan config:cache route:cache view:cache event:cache
 
-# Permissions
-sudo chown -R deploy:www-data storage bootstrap/cache
-sudo chmod -R 775 storage bootstrap/cache
+chown www-data:www-data .env && chmod 640 .env
+chown -R www-data:www-data storage bootstrap/cache && chmod -R 775 storage bootstrap/cache
 ```
 
-### Nginx config (`/etc/nginx/sites-available/api.zadacademiq.com`)
+> **Demo seeder note:** `RolePermissionSeeder`, the admin user, and the
+> marketing content (blog / courses / teachers) seed cleanly. The operational
+> demo seeders (`SystemDemoSeeder` and friends) currently fail — they reference
+> a `phone` column that the `update_sys_students_for_guardians` migration
+> removed. They are safe to skip; fix the seeder to the guardian model before
+> re-enabling.
 
-```nginx
-server {
-    listen 80;
-    server_name api.zadacademiq.com;
-    root /var/www/alrayan/backend/public;
-    index index.php;
-
-    add_header X-Frame-Options "SAMEORIGIN";
-    add_header X-Content-Type-Options "nosniff";
-    add_header Referrer-Policy "strict-origin-when-cross-origin";
-
-    client_max_body_size 20M;
-
-    location / {
-        try_files $uri $uri/ /index.php?$query_string;
-    }
-
-    location ~ \.php$ {
-        fastcgi_pass unix:/var/run/php/php8.3-fpm.sock;
-        fastcgi_param SCRIPT_FILENAME $realpath_root$fastcgi_script_name;
-        include fastcgi_params;
-    }
-
-    location ~ /\.(?!well-known).* {
-        deny all;
-    }
-}
-```
-
-```bash
-sudo ln -s /etc/nginx/sites-available/api.zadacademiq.com /etc/nginx/sites-enabled/
-sudo nginx -t && sudo systemctl reload nginx
-sudo certbot --nginx -d api.zadacademiq.com
-```
-
-### Backend `.env` template
+### `backend/.env` (production essentials)
 
 ```env
 APP_NAME="Zad Academy API"
 APP_ENV=production
-APP_KEY=                      # php artisan key:generate sets this
 APP_DEBUG=false
-APP_URL=https://api.zadacademiq.com
-
-LOG_CHANNEL=daily
-LOG_LEVEL=warning
+APP_URL=https://system.zadacademiq.com
 
 DB_CONNECTION=mysql
 DB_HOST=127.0.0.1
-DB_PORT=3306
-DB_DATABASE=alrayan_prod
-DB_USERNAME=alrayan
-DB_PASSWORD=
+DB_DATABASE=zad_prod
+DB_USERNAME=zad
+DB_PASSWORD=<db-password>
 
-CACHE_STORE=file
 SESSION_DRIVER=cookie
-SESSION_LIFETIME=120
 SESSION_DOMAIN=.zadacademiq.com
-SANCTUM_STATEFUL_DOMAINS=zadacademiq.com,www.zadacademiq.com,staging.zadacademiq.com
+QUEUE_CONNECTION=database
+CACHE_STORE=file
 
-MAIL_MAILER=resend
+SYSTEM_FRONTEND_URL=https://system.zadacademiq.com
+CORS_ALLOWED_ORIGINS=https://zadacademiq.com,https://www.zadacademiq.com,https://system.zadacademiq.com
+SANCTUM_STATEFUL_DOMAINS=zadacademiq.com,www.zadacademiq.com,system.zadacademiq.com
+
+# Email is OFF until a Resend key is added — mail is written to the log.
+MAIL_MAILER=log            # switch to "resend" once RESEND_API_KEY is set
 RESEND_API_KEY=
 MAIL_FROM_ADDRESS="info@zadacademiq.com"
-MAIL_FROM_NAME="Zad Academy"
-ADMIN_NOTIFICATION_EMAIL=info@zadacademiq.com
-
-CORS_ALLOWED_ORIGINS=https://zadacademiq.com,https://www.zadacademiq.com,https://staging.zadacademiq.com
 
 NEXT_REVALIDATE_URL=https://zadacademiq.com/api/revalidate
-NEXT_REVALIDATE_SECRET=       # same as Vercel's REVALIDATE_SECRET
-
-HCAPTCHA_SECRET=
-SENTRY_LARAVEL_DSN=
+NEXT_REVALIDATE_SECRET=<shared-with-frontend>
 ```
 
-### Queue worker (Sprint 4+)
+Integrations (Zoom, Wassender/WhatsApp, Paymob) are feature-flagged **off** by
+default and don't block boot — set `*_ENABLED=true` + their keys to turn on.
 
-Email is queued to keep form submission snappy.
+---
+
+## 5. Frontend (Next.js)
 
 ```bash
-# /etc/systemd/system/alrayan-queue.service
+cd /var/www/zadacademy/frontend
+# Put .env.production in place (below), then:
+NODE_OPTIONS=--max_old_space_size=1536 pnpm install --frozen-lockfile || true
+# Build via the Next binary directly (pnpm 11's script pre-check trips on the
+# harmless ignored-builds warning and never reaches `next build`):
+NODE_OPTIONS=--max_old_space_size=1536 node node_modules/next/dist/bin/next build
+pm2 start /var/www/zadacademy/ecosystem.config.js   # runs `next start -H 127.0.0.1 -p 3000`
+pm2 save
+pm2 startup systemd -u root --hp /root
+```
+
+### `frontend/.env.production`
+
+```env
+NEXT_PUBLIC_API_URL=https://system.zadacademiq.com
+NEXT_PUBLIC_SYSTEM_API_PREFIX=/api/system
+NEXT_PUBLIC_APP_HOST=system.zadacademiq.com
+NEXT_PUBLIC_SITE_HOST=zadacademiq.com
+NEXT_PUBLIC_SITE_URL=https://zadacademiq.com
+NEXT_PUBLIC_WHATSAPP=+201000000000        # replace with the real number
+REVALIDATE_SECRET=<shared-with-backend>
+```
+
+---
+
+## 6. Queue worker + scheduler
+
+`/etc/systemd/system/zad-queue.service`:
+
+```ini
 [Unit]
 Description=Zad Academy Queue Worker
-After=network.target
-
+After=network.target mysql.service
 [Service]
-User=deploy
+User=www-data
 Group=www-data
 Restart=always
-ExecStart=/usr/bin/php /var/www/alrayan/backend/artisan queue:work --sleep=3 --tries=3 --max-time=3600
-
+RestartSec=3
+ExecStart=/usr/bin/php /var/www/zadacademy/backend/artisan queue:work --sleep=3 --tries=3 --max-time=3600
 [Install]
 WantedBy=multi-user.target
 ```
 
 ```bash
-sudo systemctl enable alrayan-queue && sudo systemctl start alrayan-queue
+systemctl daemon-reload && systemctl enable --now zad-queue
 ```
 
-### Scheduler
+`/etc/cron.d/zad-scheduler`:
 
 ```cron
-# crontab -e (as deploy user)
-* * * * * cd /var/www/alrayan/backend && php artisan schedule:run >> /dev/null 2>&1
+* * * * * www-data cd /var/www/zadacademy/backend && /usr/bin/php artisan schedule:run >> /dev/null 2>&1
 ```
 
 ---
 
-## 3. DNS (Cloudflare)
+## 7. Nginx + TLS
 
-| Record | Name | Value | Proxy |
-|---|---|---|---|
-| A or CNAME | `@` | Vercel IP / `cname.vercel-dns.com` | DNS only (Vercel handles SSL) |
-| CNAME | `www` | `cname.vercel-dns.com` | DNS only |
-| CNAME | `staging` | `cname.vercel-dns.com` | DNS only |
-| A | `api` | VPS IP | Proxied (orange cloud) |
-| A | `api-staging` | VPS IP | Proxied |
-| MX | `@` | (provided by mail host) | DNS only |
-| TXT | `@` | SPF + DKIM + DMARC (Resend dashboard provides) | DNS only |
+The site config lives in `/etc/nginx/sites-available/zadacademy` (tracked in the
+repo at `deploy/nginx/zadacademy`). Two server blocks:
 
----
+- `zadacademiq.com` → everything proxied to Next.js (`127.0.0.1:3000`).
+- `system.zadacademiq.com` → `/api`, `/up`, `/sanctum`, `/storage` to
+  PHP-FPM (Laravel `backend/public`); everything else to Next.js.
 
-## 4. Backups
+```bash
+ln -sf /etc/nginx/sites-available/zadacademy /etc/nginx/sites-enabled/zadacademy
+rm -f /etc/nginx/sites-enabled/default
+nginx -t && systemctl reload nginx
+certbot --nginx -d zadacademiq.com -d system.zadacademiq.com --redirect \
+  --agree-tos -m <admin-email> --no-eff-email
+```
 
-| What | How | Frequency | Retention |
-|---|---|---|---|
-| MySQL DB | `mysqldump` to `/var/backups/`, then rsync to off-site (Backblaze B2 ≈ $1/mo) | Daily 03:00 UTC | 30 days |
-| Uploaded files | `rsync` `storage/app/public` to B2 | Daily | 30 days |
-| Code | GitHub (already off-site) | Per push | Indefinite |
-
-Backup script lives at `/usr/local/bin/alrayan-backup.sh` — written in Sprint 7.
+`www.zadacademiq.com` is **not** configured (no DNS record). Add an A record and
+re-run certbot with `-d www.zadacademiq.com` if you want it.
 
 ---
 
-## 5. Monitoring
+## 8. Backups (recommended, not yet automated)
 
-- **UptimeRobot:** monitor `https://zadacademiq.com/` and `https://api.zadacademiq.com/up` (Laravel built-in health endpoint), 5-min interval, alert email + Telegram
-- **Sentry:** wired into both Next.js and Laravel from Sprint 1
-- **Vercel Analytics:** enabled by default
-- **Server health:** `htop`, `df -h`, log rotation already on by default (`logrotate`)
+| What | How | Frequency |
+|---|---|---|
+| MySQL | `mysqldump zad_prod` → off-site (Backblaze B2) | daily |
+| Uploads | `rsync backend/storage/app/public` → B2 | daily |
+| Code | GitHub | per push |
