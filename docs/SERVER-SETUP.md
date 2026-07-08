@@ -143,6 +143,12 @@ NEXT_REVALIDATE_SECRET=<shared-with-frontend>
 Integrations (Zoom, Wassender/WhatsApp, Paymob) are feature-flagged **off** by
 default and don't block boot — set `*_ENABLED=true` + their keys to turn on.
 
+**Captcha:** the contact / trial-booking forms use Cloudflare Turnstile, but it
+is **optional** — with no `TURNSTILE_SECRET_KEY` (and no frontend
+`NEXT_PUBLIC_TURNSTILE_SITE_KEY`) the forms work without a captcha. Set both
+keys (free Turnstile widget in the Cloudflare dashboard) to enable bot
+protection; verification then applies automatically.
+
 ---
 
 ## 5. Frontend (Next.js)

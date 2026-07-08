@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Support\System\Setting;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Arr;
 
 class SiteSettingsController extends Controller
 {
@@ -35,9 +36,12 @@ class SiteSettingsController extends Controller
 
     public function update(Request $request): JsonResponse
     {
-        $incoming = array_intersect_key($request->all(), array_flip($this->keys));
+        // Flat dotted keys → treat empty strings as null → nest for Laravel validation.
+        $flat = array_intersect_key($request->json()->all(), array_flip($this->keys));
+        $flat = array_map(fn ($v) => $v === '' ? null : $v, $flat);
+        $nested = Arr::undot($flat);
 
-        $validated = validator($incoming, [
+        $validated = validator($nested, [
             'site.contact_email'    => ['sometimes', 'nullable', 'email', 'max:255'],
             'site.contact_phone'    => ['sometimes', 'nullable', 'string', 'max:40'],
             'site.contact_whatsapp' => ['sometimes', 'nullable', 'string', 'max:40'],
@@ -50,7 +54,7 @@ class SiteSettingsController extends Controller
             'site.social_telegram'  => ['sometimes', 'nullable', 'url', 'max:255'],
         ])->validate();
 
-        foreach ($validated as $key => $value) {
+        foreach (Arr::dot($validated) as $key => $value) {
             Setting::set($key, $value ?? '');
         }
 
