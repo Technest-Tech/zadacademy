@@ -10,20 +10,34 @@ import { FormField } from './FormField'
 import { SuccessState } from './SuccessState'
 import { TurnstileWidget } from './TurnstileWidget'
 
-const schema = z.object({
-  name: z.string().min(2, 'Full name required'),
-  email: z.string().email('Valid email required'),
-  subject: z.string().min(3, 'Subject required'),
-  message: z.string().min(10, 'Please write at least 10 characters'),
-  turnstileToken: z.string().min(1, 'Please complete the security check'),
-})
+// Cloudflare Turnstile is optional: the captcha only appears (and is required)
+// when a site key is configured. Without one, the form submits without it and
+// the backend skips verification too.
+const SITE_KEY = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY
+const CAPTCHA_ENABLED = Boolean(SITE_KEY)
+const API_URL = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:8000'
+
+const schema = z
+  .object({
+    name: z.string().min(2, 'Full name required'),
+    email: z.string().email('Valid email required'),
+    subject: z.string().min(3, 'Subject required'),
+    message: z.string().min(10, 'Please write at least 10 characters'),
+    turnstileToken: z.string().optional(),
+  })
+  .superRefine((val, ctx) => {
+    if (CAPTCHA_ENABLED && !val.turnstileToken) {
+      ctx.addIssue({
+        code: 'custom',
+        message: 'Please complete the security check',
+        path: ['turnstileToken'],
+      })
+    }
+  })
 
 type FormValues = z.infer<typeof schema>
 
 type Status = 'idle' | 'loading' | 'success' | 'error'
-
-const SITE_KEY = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY ?? '1x00000000000000000000AA'
-const API_URL = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:8000'
 
 export function ContactForm() {
   const [status, setStatus] = useState<Status>('idle')
@@ -118,14 +132,16 @@ export function ContactForm() {
         {...register('message')}
       />
 
-      <div>
-        <TurnstileWidget siteKey={SITE_KEY} onSuccess={handleTurnstileSuccess} />
-        {errors.turnstileToken && (
-          <p role="alert" aria-live="polite" className="text-destructive text-sm mt-1">
-            {errors.turnstileToken.message}
-          </p>
-        )}
-      </div>
+      {CAPTCHA_ENABLED && (
+        <div>
+          <TurnstileWidget siteKey={SITE_KEY!} onSuccess={handleTurnstileSuccess} />
+          {errors.turnstileToken && (
+            <p role="alert" aria-live="polite" className="text-destructive text-sm mt-1">
+              {errors.turnstileToken.message}
+            </p>
+          )}
+        </div>
+      )}
 
       {status === 'error' && (
         <div

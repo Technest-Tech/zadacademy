@@ -1,5 +1,4 @@
 import { Suspense } from 'react'
-import Image from 'next/image'
 import { LoginForm } from '@/components/system/auth/LoginForm'
 
 export const metadata = { title: 'Sign in — Zad Academy' }
@@ -54,12 +53,12 @@ export default function LoginPage() {
           {/* Logo — on a white chip so the brand mark reads on the dark panel */}
           <div>
             <div className="inline-flex items-center justify-center rounded-2xl bg-white p-3 shadow-lg">
-              <Image
-                src="/logo/zad.png"
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src="/logo/zad-mark.svg"
                 alt="Zad Academy"
-                width={72}
-                height={72}
-                priority
+                width={56}
+                height={56}
               />
             </div>
           </div>
@@ -128,12 +127,12 @@ export default function LoginPage() {
           >
             {/* Logo — full colour, centered */}
             <div className="flex justify-center mb-8">
-              <Image
-                src="/logo/zad.png"
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src="/logo/zad-full.svg"
                 alt="Zad Academy"
-                width={120}
-                height={120}
-                priority
+                width={210}
+                height={55}
               />
             </div>
 

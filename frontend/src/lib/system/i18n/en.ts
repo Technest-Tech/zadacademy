@@ -11,6 +11,7 @@ export const en = {
     dashboard:     'Dashboard',
     myStudents:    'My Students',
     siteTeachers:  'Site Teachers',
+    siteSettings:  'Site Settings',
     users:         'Users',
     leads:         'Leads',
     tasks:         'Tasks',

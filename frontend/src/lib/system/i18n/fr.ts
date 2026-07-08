@@ -13,6 +13,7 @@ export const fr: Messages = {
     dashboard:     'Tableau de bord',
     myStudents:    'Mes élèves',
     siteTeachers:  'Professeurs du site',
+    siteSettings:  'Paramètres du site',
     users:         'Utilisateurs',
     leads:         'Prospects',
     tasks:         'Tâches',

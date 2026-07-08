@@ -23,6 +23,7 @@ Route::prefix('v1')->group(function () {
     Route::get('/courses/{slug}', [CourseApiController::class, 'show']);
     Route::get('/teachers',        [TeacherController::class, 'index']);
     Route::get('/teachers/{slug}', [TeacherController::class, 'show']);
+    Route::get('/site-settings',   [\App\Http\Controllers\Api\V1\SiteSettingsController::class, 'show']);
     Route::get('/pricing',        [\App\Http\Controllers\Api\PublicPricingController::class, 'show'])->name('api.pricing');
 });
 

@@ -91,6 +91,10 @@ Route::prefix('system')->name('system.')->group(function () {
             Route::post('/site/teachers/{teacher}/reviews', [\App\Http\Controllers\System\SiteTeacherController::class, 'storeReview'])->name('site.teachers.reviews.store');
             Route::patch('/site/reviews/{review}',          [\App\Http\Controllers\System\SiteTeacherController::class, 'updateReview'])->name('site.reviews.update');
             Route::delete('/site/reviews/{review}',         [\App\Http\Controllers\System\SiteTeacherController::class, 'destroyReview'])->name('site.reviews.destroy');
+
+            // Site settings: public contact details + social links
+            Route::get('/site/settings',  [\App\Http\Controllers\System\SiteSettingsController::class, 'show'])->name('site.settings.show');
+            Route::put('/site/settings',  [\App\Http\Controllers\System\SiteSettingsController::class, 'update'])->name('site.settings.update');
         });
 
         // Unified user directory (students, teachers, parents, staff in one place).

@@ -48,7 +48,8 @@ export const SYSTEM_NAV: readonly NavSection[] = [
   {
     label: 'nav.sections.site',
     items: [
-      { label: 'nav.siteTeachers', href: '/site/teachers', icon: Globe, perm: 'site.manage' },
+      { label: 'nav.siteTeachers', href: '/site/teachers', icon: Globe,    perm: 'site.manage' },
+      { label: 'nav.siteSettings', href: '/site/settings', icon: Settings, perm: 'site.manage' },
     ],
   },
   {
