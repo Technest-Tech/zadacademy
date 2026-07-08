@@ -10,7 +10,7 @@
                                │ HTTPS
                 ┌──────────────▼──────────────┐
                 │   Vercel Edge (CDN + ISR)   │
-                │  alrayan-academy.com        │
+                │  zadacademiq.com        │
                 └──────────────┬──────────────┘
                                │
                 ┌──────────────▼──────────────┐
@@ -26,7 +26,7 @@
                        │              │
                 ┌──────▼──────────────▼───┐
                 │  Laravel 11 REST API    │
-                │  api.alrayan-academy.com│
+                │  api.zadacademiq.com│
                 │  - Auth (Sanctum)       │
                 │  - Trial bookings       │
                 │  - Contact submissions  │
@@ -86,8 +86,8 @@
 | Env | Frontend URL | Backend URL | Database |
 |---|---|---|---|
 | Local | http://localhost:3000 | http://localhost:8000 | MySQL local |
-| Staging | staging.alrayan-academy.com | api-staging.alrayan-academy.com | MySQL staging |
-| Production | alrayan-academy.com | api.alrayan-academy.com | MySQL prod |
+| Staging | staging.zadacademiq.com | api-staging.zadacademiq.com | MySQL staging |
+| Production | zadacademiq.com | api.zadacademiq.com | MySQL prod |
 
 ---
 
@@ -95,7 +95,7 @@
 
 - **Public API endpoints** (`POST /trial-bookings`, `POST /contacts`): rate-limited (Laravel `throttle` middleware: 5/min per IP), CSRF-exempt, hCaptcha on form
 - **Admin endpoints** (`/admin/*`): Sanctum cookie auth, IP allowlist optional, 2FA in Sprint 7
-- **CORS:** Laravel allows only `alrayan-academy.com` and `staging.alrayan-academy.com`
+- **CORS:** Laravel allows only `zadacademiq.com` and `staging.zadacademiq.com`
 - **Secrets:** never committed; `.env` files git-ignored; Vercel + server use platform-native secret managers
 
 ---
@@ -103,7 +103,7 @@
 ## Phase 2 (post-launch)
 
 - Arabic RTL version (Next.js `[locale]` segment, Laravel translatable models via `spatie/laravel-translatable`)
-- Student/teacher portal (separate Next.js subdomain `app.alrayan-academy.com`)
+- Student/teacher portal (separate Next.js subdomain `app.zadacademiq.com`)
 - Stripe integration for subscriptions
 - LMS lite (class scheduling, recordings)
 

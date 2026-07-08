@@ -111,7 +111,7 @@ export type CountryData = {
     {
       icon: 'Users',
       title: 'Serving 10,000+ US Families',
-      body: 'From Dearborn to Houston to New York, thousands of American Muslim families trust Alrayan Academy for their children\'s Quran education.',
+      body: 'From Dearborn to Houston to New York, thousands of American Muslim families trust Zad Academy for their children\'s Quran education.',
     },
   ],
   timezone: {
@@ -147,7 +147,7 @@ export type CountryData = {
     },
   ],
   seo: {
-    title: 'Online Quran Classes USA | Certified Teachers | Alrayan Academy',
+    title: 'Online Quran Classes USA | Certified Teachers | Zad Academy',
     description: 'Learn Quran online in the USA with certified Al-Azhar teachers. All US time zones, 1-on-1 classes, free first lesson. Join 10,000+ American Muslim families.',
   },
   schema: { addressLocality: 'Washington D.C.', addressCountry: 'US' },
@@ -212,12 +212,12 @@ export type CountryData = {
       a: 'Yes. A large portion of our UK students are adults who learned Quran as children but want to correct their Tajweed or complete the full Quran with proper pronunciation. We offer dedicated Tajweed courses for adults.',
     },
     {
-      q: 'Can I get an Ijazah certificate through Alrayan Academy?',
+      q: 'Can I get an Ijazah certificate through Zad Academy?',
       a: 'Yes. Our Ijazah program is available for students who have memorized the Quran (Huffaz) and want to receive a certified chain of transmission. The process typically takes 6–12 months of dedicated sessions. UK students have completed their Ijazah with us.',
     },
   ],
   seo: {
-    title: 'Online Quran Classes UK | Certified Teachers | Alrayan Academy',
+    title: 'Online Quran Classes UK | Certified Teachers | Zad Academy',
     description: 'Online Quran classes in the UK with Al-Azhar certified teachers. GMT & BST scheduling, female teachers available, free trial class. Serving England, Scotland, Wales & NI.',
   },
   schema: { addressLocality: 'London', addressCountry: 'GB' },
@@ -287,7 +287,7 @@ export type CountryData = {
     },
   ],
   seo: {
-    title: 'Online Quran Classes Canada | Certified Teachers | Alrayan Academy',
+    title: 'Online Quran Classes Canada | Certified Teachers | Zad Academy',
     description: 'Online Quran classes in Canada with Al-Azhar certified teachers. All Canadian time zones, 1-on-1 sessions, free first class. Serving Ontario, BC, Alberta & all provinces.',
   },
   schema: { addressLocality: 'Toronto', addressCountry: 'CA' },
@@ -320,7 +320,7 @@ export type CountryData = {
     {
       icon: 'Heart',
       title: 'School Holiday Availability',
-      body: 'Unlike local Islamic schools and weekend classes that close for holidays, Alrayan Academy runs year-round. We are fully available during Australian school holidays and public holidays.',
+      body: 'Unlike local Islamic schools and weekend classes that close for holidays, Zad Academy runs year-round. We are fully available during Australian school holidays and public holidays.',
     },
     {
       icon: 'BookOpen',
@@ -357,7 +357,7 @@ export type CountryData = {
     },
   ],
   seo: {
-    title: 'Online Quran Classes Australia | Certified Teachers | Alrayan Academy',
+    title: 'Online Quran Classes Australia | Certified Teachers | Zad Academy',
     description: 'Online Quran classes in Australia with certified Al-Azhar teachers. AEST, ACST & AWST scheduling, free first class. Serving Sydney, Melbourne, Brisbane, Perth & more.',
   },
   schema: { addressLocality: 'Sydney', addressCountry: 'AU' },
@@ -512,8 +512,8 @@ CtaBanner           ← bg-primary
 - Trust line: "✓ Free first class · ✓ No credit card · ✓ Cancel anytime"
 
 **WhyUs section:**
-- Eyebrow: `Why Families in [Country] Choose Alrayan`
-- H2: `The Alrayan Difference`
+- Eyebrow: `Why Families in [Country] Choose Zad Academy`
+- H2: `The Zad Academy Difference`
 - 4 cards in `grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6`
 - Card: icon box (secondary/10 bg, text-secondary icon) + title + body
 
@@ -616,7 +616,7 @@ Add 8 new testimonials (2 per country) so each country page can show 3:
   name: 'Zaynab H.',
   location: 'Manchester, UK',
   country: 'uk',
-  quote: 'My daughter was struggling with Tajweed at madrassa. Within two months of 1-on-1 sessions with Alrayan, her teacher at madrassa commented on the improvement. Highly recommend.',
+  quote: 'My daughter was struggling with Tajweed at madrassa. Within two months of 1-on-1 sessions with Zad Academy, her teacher at madrassa commented on the improvement. Highly recommend.',
   course: 'Tajweed Course',
   rating: 5,
 },
@@ -626,7 +626,7 @@ Add 8 new testimonials (2 per country) so each country page can show 3:
   name: 'Ibrahim F.',
   location: 'Calgary, AB',
   country: 'canada',
-  quote: 'Calgary is not well served by local Islamic schools. Alrayan filled that gap perfectly. My children now have consistent, high-quality Quran instruction from home.',
+  quote: 'Calgary is not well served by local Islamic schools. Zad Academy filled that gap perfectly. My children now have consistent, high-quality Quran instruction from home.',
   course: 'Quran for Kids',
   rating: 5,
 },
@@ -645,7 +645,7 @@ Add 8 new testimonials (2 per country) so each country page can show 3:
   name: 'Aisha N.',
   location: 'Sydney, NSW',
   country: 'australia',
-  quote: 'We tried local tutors but found it hard to be consistent. Alrayan\'s fixed weekly schedule and WhatsApp reminders kept us on track. My son completed his first Juz in six months.',
+  quote: 'We tried local tutors but found it hard to be consistent. Zad Academy\'s fixed weekly schedule and WhatsApp reminders kept us on track. My son completed his first Juz in six months.',
   course: 'Hifz / Memorization',
   rating: 5,
 },

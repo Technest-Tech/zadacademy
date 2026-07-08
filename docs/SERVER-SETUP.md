@@ -17,18 +17,18 @@ Two production environments to provision:
 5. Build command: `pnpm build` · Install command: `pnpm install` · Output: `.next`
 
 ### Domains
-- Production: `alrayan-academy.com` and `www.alrayan-academy.com` (CNAME to `cname.vercel-dns.com`)
-- Staging: `staging.alrayan-academy.com`
+- Production: `zadacademiq.com` and `www.zadacademiq.com` (CNAME to `cname.vercel-dns.com`)
+- Staging: `staging.zadacademiq.com`
 
 ### Environment variables (Vercel dashboard)
 
 | Var | Production | Staging | Notes |
 |---|---|---|---|
-| `NEXT_PUBLIC_SITE_URL` | `https://alrayan-academy.com` | `https://staging.alrayan-academy.com` | Used in canonicals + sitemap |
-| `NEXT_PUBLIC_API_URL` | `https://api.alrayan-academy.com` | `https://api-staging.alrayan-academy.com` | Laravel backend |
+| `NEXT_PUBLIC_SITE_URL` | `https://zadacademiq.com` | `https://staging.zadacademiq.com` | Used in canonicals + sitemap |
+| `NEXT_PUBLIC_API_URL` | `https://api.zadacademiq.com` | `https://api-staging.zadacademiq.com` | Laravel backend |
 | `NEXT_PUBLIC_WHATSAPP` | `+201000000000` | same | Owner replaces with real number |
 | `REVALIDATE_SECRET` | (32-char random) | (different) | Shared with Laravel for ISR webhook |
-| `NEXT_PUBLIC_PLAUSIBLE_DOMAIN` | `alrayan-academy.com` | — | Optional |
+| `NEXT_PUBLIC_PLAUSIBLE_DOMAIN` | `zadacademiq.com` | — | Optional |
 
 ### Build-time checks
 - `pnpm typecheck` and `pnpm lint` run as part of `pnpm build` (configured in Sprint 1)
@@ -97,12 +97,12 @@ sudo chown -R deploy:www-data storage bootstrap/cache
 sudo chmod -R 775 storage bootstrap/cache
 ```
 
-### Nginx config (`/etc/nginx/sites-available/api.alrayan-academy.com`)
+### Nginx config (`/etc/nginx/sites-available/api.zadacademiq.com`)
 
 ```nginx
 server {
     listen 80;
-    server_name api.alrayan-academy.com;
+    server_name api.zadacademiq.com;
     root /var/www/alrayan/backend/public;
     index index.php;
 
@@ -129,19 +129,19 @@ server {
 ```
 
 ```bash
-sudo ln -s /etc/nginx/sites-available/api.alrayan-academy.com /etc/nginx/sites-enabled/
+sudo ln -s /etc/nginx/sites-available/api.zadacademiq.com /etc/nginx/sites-enabled/
 sudo nginx -t && sudo systemctl reload nginx
-sudo certbot --nginx -d api.alrayan-academy.com
+sudo certbot --nginx -d api.zadacademiq.com
 ```
 
 ### Backend `.env` template
 
 ```env
-APP_NAME="Alrayan Academy API"
+APP_NAME="Zad Academy API"
 APP_ENV=production
 APP_KEY=                      # php artisan key:generate sets this
 APP_DEBUG=false
-APP_URL=https://api.alrayan-academy.com
+APP_URL=https://api.zadacademiq.com
 
 LOG_CHANNEL=daily
 LOG_LEVEL=warning
@@ -156,18 +156,18 @@ DB_PASSWORD=
 CACHE_STORE=file
 SESSION_DRIVER=cookie
 SESSION_LIFETIME=120
-SESSION_DOMAIN=.alrayan-academy.com
-SANCTUM_STATEFUL_DOMAINS=alrayan-academy.com,www.alrayan-academy.com,staging.alrayan-academy.com
+SESSION_DOMAIN=.zadacademiq.com
+SANCTUM_STATEFUL_DOMAINS=zadacademiq.com,www.zadacademiq.com,staging.zadacademiq.com
 
 MAIL_MAILER=resend
 RESEND_API_KEY=
-MAIL_FROM_ADDRESS="info@alrayan-academy.com"
-MAIL_FROM_NAME="Alrayan Academy"
-ADMIN_NOTIFICATION_EMAIL=info@alrayan-academy.com
+MAIL_FROM_ADDRESS="info@zadacademiq.com"
+MAIL_FROM_NAME="Zad Academy"
+ADMIN_NOTIFICATION_EMAIL=info@zadacademiq.com
 
-CORS_ALLOWED_ORIGINS=https://alrayan-academy.com,https://www.alrayan-academy.com,https://staging.alrayan-academy.com
+CORS_ALLOWED_ORIGINS=https://zadacademiq.com,https://www.zadacademiq.com,https://staging.zadacademiq.com
 
-NEXT_REVALIDATE_URL=https://alrayan-academy.com/api/revalidate
+NEXT_REVALIDATE_URL=https://zadacademiq.com/api/revalidate
 NEXT_REVALIDATE_SECRET=       # same as Vercel's REVALIDATE_SECRET
 
 HCAPTCHA_SECRET=
@@ -181,7 +181,7 @@ Email is queued to keep form submission snappy.
 ```bash
 # /etc/systemd/system/alrayan-queue.service
 [Unit]
-Description=Alrayan Queue Worker
+Description=Zad Academy Queue Worker
 After=network.target
 
 [Service]
@@ -235,7 +235,7 @@ Backup script lives at `/usr/local/bin/alrayan-backup.sh` — written in Sprint 
 
 ## 5. Monitoring
 
-- **UptimeRobot:** monitor `https://alrayan-academy.com/` and `https://api.alrayan-academy.com/up` (Laravel built-in health endpoint), 5-min interval, alert email + Telegram
+- **UptimeRobot:** monitor `https://zadacademiq.com/` and `https://api.zadacademiq.com/up` (Laravel built-in health endpoint), 5-min interval, alert email + Telegram
 - **Sentry:** wired into both Next.js and Laravel from Sprint 1
 - **Vercel Analytics:** enabled by default
 - **Server health:** `htop`, `df -h`, log rotation already on by default (`logrotate`)

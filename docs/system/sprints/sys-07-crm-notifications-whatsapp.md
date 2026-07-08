@@ -406,7 +406,7 @@ Loads the log, marks `sending`, calls the client, marks `sent` or `failed`, retr
 
 #### Settings panel
 
-`/settings/integrations/wassender/page.tsx` — same shape as the Paymob panel in SYS-05: API key, instance id, webhook URL, test-connection button (sends a "Test ✓ Alrayan Academy" message to a chosen group).
+`/settings/integrations/wassender/page.tsx` — same shape as the Paymob panel in SYS-05: API key, instance id, webhook URL, test-connection button (sends a "Test ✓ Zad Academy" message to a chosen group).
 
 ---
 
@@ -918,7 +918,7 @@ public function handle(StudentStatusChanged $event): void
         $event->student->whatsappGroup,
         [
             'student_name'        => $event->student->name,
-            'academy_name'        => Setting::get('academy.name', 'Alrayan Academy'),
+            'academy_name'        => Setting::get('academy.name', 'Zad Academy'),
             'assigned_teacher'    => $event->student->assignedTeacher?->user->name ?? '',
             'first_session_time'  => optional($event->student->sessions()->upcoming()->first())
                                         ?->scheduled_start->setTimezone($event->student->timezone)
@@ -1349,7 +1349,7 @@ docs/system/sprints/sys-07-crm-notifications-whatsapp.md   (THIS FILE)
 9. Toggle a notification preference off → re-fire the same event → confirm no notification for that user.
 10. Open `/leads/analytics` → show funnel + per-source + per-supervisor breakdown.
 11. Open `/whatsapp-groups` → see all groups, link a missing one for a student, confirm the "active without group" alert count drops.
-12. Public site at `alrayan-academy.com` unchanged; admin login unchanged.
+12. Public site at `zadacademiq.com` unchanged; admin login unchanged.
 
 ---
 

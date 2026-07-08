@@ -1,6 +1,6 @@
 import { ResetPasswordForm } from '@/components/system/auth/ResetPasswordForm'
 
-export const metadata = { title: 'Reset password — Azhary' }
+export const metadata = { title: 'Reset password — Zad Academy' }
 
 interface Props {
   params:      Promise<{ token: string }>

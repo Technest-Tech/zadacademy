@@ -1,7 +1,7 @@
 import { NextResponse, type NextRequest } from 'next/server'
 
-const APP_HOST = process.env.NEXT_PUBLIC_APP_HOST!   // app.alrayanquran.com OR app.localhost:3000
-const SITE_HOST = process.env.NEXT_PUBLIC_SITE_HOST! // alrayanquran.com OR localhost:3000
+const APP_HOST = process.env.NEXT_PUBLIC_APP_HOST!   // app.zadacademiq.com OR app.localhost:3000
+const SITE_HOST = process.env.NEXT_PUBLIC_SITE_HOST! // zadacademiq.com OR localhost:3000
 
 function isAppHost(host: string) {
   return (
@@ -12,7 +12,7 @@ function isAppHost(host: string) {
 }
 
 const MARKETING_PATHS = [
-  '/about', '/courses', '/pricing', '/faq', '/contact', '/blog', '/countries',
+  '/courses', '/pricing', '/faq', '/contact', '/blog', '/countries',
 ]
 
 const SYSTEM_PATHS = [
@@ -35,7 +35,7 @@ export function middleware(req: NextRequest) {
     list.some(p => pathname === p || pathname.startsWith(p + '/'))
 
   if (isAppHost(host)) {
-    // The app host is the Azhary admin console — it has no public marketing
+    // The app host is the Zad Academy admin console — it has no public marketing
     // site. Send the root and any stray marketing path to the admin entry
     // point; the login page forwards already-authenticated users to /dashboard.
     if (pathname === '/' || matchesPath(MARKETING_PATHS)) {

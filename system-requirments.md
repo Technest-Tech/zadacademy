@@ -1,7 +1,7 @@
-# Alrayan Academy — Admin Management System
+# Zad Academy — Admin Management System
 ## Complete Feature Specification (Final v3)
 
-**Project:** Alrayan Academy (Online Quran & Arabic Academy)
+**Project:** Zad Academy (Online Quran & Arabic Academy)
 **Tech Stack:** Next.js (Frontend) + Laravel (Backend)
 **UI Language:** English
 **Architecture:** Single project — Public Website + Admin Management System
@@ -698,5 +698,5 @@
 
 *Document created: May 10, 2026*
 *Last updated: May 10, 2026*
-*Academy: Alrayan Academy — Online Quran & Arabic Education*
+*Academy: Zad Academy — Online Quran & Arabic Education*
 *Total Modules: 21 | Integrations: 3 | Business Rules: 17*

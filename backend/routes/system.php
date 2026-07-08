@@ -81,6 +81,18 @@ Route::prefix('system')->name('system.')->group(function () {
         // Generic file upload (photos / documents) for forms.
         Route::post('/uploads', [\App\Http\Controllers\System\UploadController::class, 'store'])->name('uploads.store');
 
+        // ── Site management: public marketing teachers + their reviews ──
+        Route::middleware('system.can:site.manage')->group(function () {
+            Route::get('/site/teachers',                    [\App\Http\Controllers\System\SiteTeacherController::class, 'index'])->name('site.teachers.index');
+            Route::post('/site/teachers',                   [\App\Http\Controllers\System\SiteTeacherController::class, 'store'])->name('site.teachers.store');
+            Route::get('/site/teachers/{teacher}',          [\App\Http\Controllers\System\SiteTeacherController::class, 'show'])->name('site.teachers.show');
+            Route::patch('/site/teachers/{teacher}',        [\App\Http\Controllers\System\SiteTeacherController::class, 'update'])->name('site.teachers.update');
+            Route::delete('/site/teachers/{teacher}',       [\App\Http\Controllers\System\SiteTeacherController::class, 'destroy'])->name('site.teachers.destroy');
+            Route::post('/site/teachers/{teacher}/reviews', [\App\Http\Controllers\System\SiteTeacherController::class, 'storeReview'])->name('site.teachers.reviews.store');
+            Route::patch('/site/reviews/{review}',          [\App\Http\Controllers\System\SiteTeacherController::class, 'updateReview'])->name('site.reviews.update');
+            Route::delete('/site/reviews/{review}',         [\App\Http\Controllers\System\SiteTeacherController::class, 'destroyReview'])->name('site.reviews.destroy');
+        });
+
         // Unified user directory (students, teachers, parents, staff in one place).
         // Defined before the /users/{id} routes so /users/directory/* matches first.
         Route::middleware('system.can:users.view_directory')->group(function () {

@@ -16,7 +16,7 @@ How the management system is wired into the existing monorepo, why it's safe to 
                                │ HTTPS                │ HTTPS (auth-cookie)
                                │                      │
                 ┌──────────────▼──────┐   ┌───────────▼─────────────┐
-                │  alrayan-academy.com│   │  app.alrayan-academy.com│
+                │  zadacademiq.com│   │  app.zadacademiq.com│
                 │  Vercel Edge / ISR  │   │  Vercel (no ISR, SSR)   │
                 │  Marketing routes   │   │  System routes          │
                 │  group (marketing)  │   │  group (system)         │
@@ -59,7 +59,7 @@ The system shares the same Next.js app and Laravel app as the public site. The s
 
 | Level | Public site | System |
 |---|---|---|
-| **Hostname** | `alrayan-academy.com` | `app.alrayan-academy.com` |
+| **Hostname** | `zadacademiq.com` | `app.zadacademiq.com` |
 | **Next.js route group** | `src/app/(marketing)` | `src/app/(system)` |
 | **Next.js middleware** | Allows `(marketing)` paths | Rewrites `app.*` host to `(system)`, blocks `(system)` access from public host |
 | **Laravel route file** | `routes/api.php` (`/api/v1/*`) | `routes/system.php` (`/api/system/*`) |
@@ -112,7 +112,7 @@ Detailed permission catalog: SYS-02 sprint plan ([sprints/sys-02-auth-rbac-dashb
 ## Authentication flow
 
 ```
-Browser                  app.alrayan-academy.com (Next.js)         api.alrayan-academy.com (Laravel)
+Browser                  app.zadacademiq.com (Next.js)         api.zadacademiq.com (Laravel)
    │                                  │                                          │
    │ 1. GET /login                    │                                          │
    ├─────────────────────────────────►│                                          │
@@ -142,7 +142,7 @@ Browser                  app.alrayan-academy.com (Next.js)         api.alrayan-a
 Key decisions:
 
 - **Cookie-based, not bearer token.** Sanctum SPA mode. Cookies are HttpOnly + Secure + SameSite=Lax. No JWT in localStorage.
-- **Cross-subdomain cookies.** `SESSION_DOMAIN=.alrayan-academy.com` so cookies set by `api.*` are read by `app.*`. Frontend → backend always over HTTPS.
+- **Cross-subdomain cookies.** `SESSION_DOMAIN=.zadacademiq.com` so cookies set by `api.*` are read by `app.*`. Frontend → backend always over HTTPS.
 - **CSRF on every state-changing request.** Next.js fetches `/sanctum/csrf-cookie` on first navigation; the `XSRF-TOKEN` cookie is then echoed in the `X-XSRF-TOKEN` header on POST/PUT/PATCH/DELETE.
 - **Public API and System API have separate guards.** Public endpoints stay unauthenticated. The Sanctum middleware is only attached to `routes/system.php`.
 
@@ -178,8 +178,8 @@ Key decisions:
 | Env | Public site | System | Backend | Database |
 |---|---|---|---|---|
 | **Local** | http://localhost:3000 | http://app.localhost:3000 | http://localhost:8000 | MySQL local (single DB, prefixed tables) |
-| **Staging** | staging.alrayan-academy.com | app-staging.alrayan-academy.com | api-staging.alrayan-academy.com | staging DB |
-| **Production** | alrayan-academy.com | app.alrayan-academy.com | api.alrayan-academy.com | prod DB |
+| **Staging** | staging.zadacademiq.com | app-staging.zadacademiq.com | api-staging.zadacademiq.com | staging DB |
+| **Production** | zadacademiq.com | app.zadacademiq.com | api.zadacademiq.com | prod DB |
 
 Same MySQL instance for public + system in every environment. Tables are partitioned by prefix (see [DATABASE.md](DATABASE.md)).
 
@@ -235,7 +235,7 @@ Workers run as systemd services on the VPS (`alrayan-queue.service`, `alrayan-sc
 
 ## Phase 2 / future (not in 8-sprint scope)
 
-- Student portal at `student.alrayan-academy.com` (separate route group `(student)`).
+- Student portal at `student.zadacademiq.com` (separate route group `(student)`).
 - Native mobile apps (React Native, reads same `/api/system` with bearer tokens via Sanctum personal access tokens).
 - Multi-currency at the academy level (currently each student has one currency; financial reports convert to a base currency).
 - Stripe / PayPal recurring as alternatives to Paymob.

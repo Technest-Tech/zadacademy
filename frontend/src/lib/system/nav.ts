@@ -2,7 +2,7 @@ import {
   LayoutDashboard, UsersRound, CalendarDays,
   Award, DollarSign, Wallet, BarChart3,
   Bell, Settings, ScrollText, UserCheck, CreditCard, ListChecks,
-  GraduationCap,
+  GraduationCap, Globe,
 } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
 
@@ -43,6 +43,12 @@ export const SYSTEM_NAV: readonly NavSection[] = [
     label: 'nav.sections.communications',
     items: [
       { label: 'nav.notifications', href: '/notifications', icon: Bell, perm: 'notifications.view' },
+    ],
+  },
+  {
+    label: 'nav.sections.site',
+    items: [
+      { label: 'nav.siteTeachers', href: '/site/teachers', icon: Globe, perm: 'site.manage' },
     ],
   },
   {

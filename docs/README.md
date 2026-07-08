@@ -1,6 +1,6 @@
-# Alrayan Academy — Project Documentation
+# Zad Academy — Project Documentation
 
-Premium production website for Alrayan Academy (الريان), an online Quran, Arabic, and Islamic studies academy targeting English-speaking Muslim families in the USA, UK, Canada, Australia, and Europe.
+Premium production website for Zad Academy (الريان), an online Quran, Arabic, and Islamic studies academy targeting English-speaking Muslim families in the USA, UK, Canada, Australia, and Europe.
 
 ---
 

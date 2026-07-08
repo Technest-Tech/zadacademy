@@ -1289,7 +1289,7 @@ docs/system/sprints/sys-04-scheduling-sessions-attendance-reports.md  (THIS FILE
 9. As admin, approve a teacher leave covering tomorrow. Switch to `/schedule` → tomorrow's sessions for that teacher are orange (`pending_substitute`). Click one → drawer offers reassignment.
 10. Request a makeup for an absent session → approve → confirm new session row created with `original_session_id` linked.
 11. Lighthouse on `/schedule` and `/teacher/today` → ≥ 90 perf, ≥ 95 a11y.
-12. Public site at `alrayan-academy.com` still works, marketing pages unchanged.
+12. Public site at `zadacademiq.com` still works, marketing pages unchanged.
 
 ---
 

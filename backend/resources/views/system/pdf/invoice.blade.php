@@ -34,8 +34,8 @@
 <div class="page">
   <div class="header">
     <div class="logo-area">
-      <h1>Azhary</h1>
-      <p>Online Quran Learning · alrayan-academy.com</p>
+      <h1>Zad Academy</h1>
+      <p>Online Quran Learning · zadacademiq.com</p>
     </div>
     <div class="invoice-meta">
       <div class="inv-number">{{ $invoice->invoice_number }}</div>
@@ -113,8 +113,8 @@
   @endif
 
   <div class="footer">
-    <p>Azhary · Thank you for learning with us!</p>
-    <p>For payment queries, please contact us at info@alrayan-academy.com</p>
+    <p>Zad Academy · Thank you for learning with us!</p>
+    <p>For payment queries, please contact us at info@zadacademiq.com</p>
   </div>
 </div>
 </body>

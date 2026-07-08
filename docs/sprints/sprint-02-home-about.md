@@ -153,9 +153,9 @@ export const homeContent = {
     { icon: 'GraduationCap', label: 'Ijazah-Certified' },
   ],
   whyUs: {
-    eyebrow: 'Why Alrayan Academy',
+    eyebrow: 'Why Zad Academy',
     heading: 'Scholars, Not Just Teachers',
-    body: "Every teacher at Alrayan holds an authenticated Ijazah — a chain of transmission going back to the Prophet ﷺ. We don't hire tutors; we partner with certified scholars.",
+    body: "Every teacher at Zad Academy holds an authenticated Ijazah — a chain of transmission going back to the Prophet ﷺ. We don't hire tutors; we partner with certified scholars.",
     items: [
       { icon: 'BookOpen',    title: 'Qualified Teachers',  desc: 'All teachers hold Ijazah and are graduates of Al-Azhar or equivalent Islamic universities.' },
       { icon: 'Clock',       title: 'Flexible Scheduling', desc: 'Classes 7 days a week across all timezones — mornings, afternoons, or evenings.' },
@@ -184,7 +184,7 @@ export const aboutContent = {
   hero: {
     eyebrow: 'Our Story',
     heading: 'Born From a Mission to Connect the World to the Quran',
-    subheading: 'Alrayan Academy was founded with one conviction: every Muslim, wherever they live, deserves access to the same quality of Quran education that was once only available in Makkah and Cairo.',
+    subheading: 'Zad Academy was founded with one conviction: every Muslim, wherever they live, deserves access to the same quality of Quran education that was once only available in Makkah and Cairo.',
     quickStats: [
       { value: '2015',     label: 'Founded' },
       { value: '10,000+', label: 'Students' },
@@ -215,7 +215,7 @@ export const aboutContent = {
   },
 
   story: {
-    heading: 'The Story of Alrayan',
+    heading: 'The Story of Zad Academy',
     // Array of paragraph strings — kept in content not JSX so it can later be CMS-driven
     paragraphs: [
       '...paragraph 1...',
@@ -236,7 +236,7 @@ export const aboutContent = {
       {
         icon: 'Link',
         title: 'Authenticated Ijazah Chain',
-        body: "Every teacher at Alrayan holds an Ijazah — a certified license with an unbroken chain of transmission going back through the centuries to the Prophet ﷺ. We verify every teacher's chain before they join.",
+        body: "Every teacher at Zad Academy holds an Ijazah — a certified license with an unbroken chain of transmission going back through the centuries to the Prophet ﷺ. We verify every teacher's chain before they join.",
         stat: '100% of teachers',
       },
       {
@@ -394,7 +394,7 @@ The stat value strings like `'10,000+'` contain a suffix. Strip trailing non-num
 
 ---
 
-### S2-05 — Home: Why Alrayan *(0.5 day)*
+### S2-05 — Home: Why Zad Academy *(0.5 day)*
 
 Two-column layout (`lg:grid-cols-2 gap-16 items-center`):
 
@@ -487,7 +487,7 @@ Note the alternating white / cream / white / cream pattern. This is intentional 
 
 ```ts
 export const metadata: Metadata = buildMetadata({
-  title: 'Online Quran Academy | 1-on-1 Classes | Alrayan Academy',
+  title: 'Online Quran Academy | 1-on-1 Classes | Zad Academy',
   description: 'Learn Quran online with certified teachers from Al-Azhar. 1-on-1 Tajweed, Hifz, Arabic, and Islamic studies classes. Free trial available worldwide.',
   path: '/',
 })
@@ -497,7 +497,7 @@ JSON-LD: `organizationSchema()` from Sprint 1 — already wired, no changes need
 
 **Acceptance:**
 - [ ] Background alternation is exactly: primary / cream / white / cream / white / cream / white / primary
-- [ ] Canonical URL is `https://alrayan-academy.com/` (no trailing path)
+- [ ] Canonical URL is `https://zadacademiq.com/` (no trailing path)
 - [ ] OG image defaults to `/og-default.jpg`
 
 ---
@@ -554,12 +554,12 @@ JSON-LD: `organizationSchema()` from Sprint 1 — already wired, no changes need
 
 ---
 
-### S2-12 — About: Story of Alrayan *(0.5 day)*
+### S2-12 — About: Story of Zad Academy *(0.5 day)*
 
 - `<Section bg="cream">`
 - Content column `max-w-3xl mx-auto` — comfortable reading measure
 - Eyebrow "Our History" in secondary green
-- `<h2>` — "The Story of Alrayan"
+- `<h2>` — "The Story of Zad Academy"
 - Paragraphs: `space-y-6`, each `text-primary/80 text-lg leading-relaxed`
 - Block quote below paragraphs: `border-l-4 border-accent pl-6`, Arabic text + footer citation
 
@@ -567,7 +567,7 @@ The story should cover:
 1. Founding context — why it was created, the gap that existed
 2. Early growth — first years, the non-negotiable Ijazah standard
 3. Scale milestones — 1,000 → 5,000 → 10,000 students
-4. Name meaning — Alrayan (gate of Paradise for those who fast) as a reminder that this is worship
+4. Name meaning — Zad Academy (gate of Paradise for those who fast) as a reminder that this is worship
 
 **Acceptance:**
 - [ ] Line length is comfortable (max ~75 chars on desktop via `max-w-3xl`)
@@ -662,8 +662,8 @@ Assembly order:
 
 ```ts
 export const metadata: Metadata = buildMetadata({
-  title: 'About Alrayan Academy | Our Story, Mission & Teachers',
-  description: 'Learn how Alrayan Academy connects Muslims worldwide with Al-Azhar certified Quran teachers. Our story, mission, teaching approach, and full teacher team.',
+  title: 'About Zad Academy | Our Story, Mission & Teachers',
+  description: 'Learn how Zad Academy connects Muslims worldwide with Al-Azhar certified Quran teachers. Our story, mission, teaching approach, and full teacher team.',
   path: '/about',
 })
 ```
@@ -677,7 +677,7 @@ export function aboutPageSchema() {
     '@type': 'AboutPage',
     name: `About ${siteConfig.name}`,
     url: `${siteConfig.url}/about`,
-    description: 'Learn about Alrayan Academy — our mission, story, teaching approach, and certified teachers.',
+    description: 'Learn about Zad Academy — our mission, story, teaching approach, and certified teachers.',
     publisher: {
       '@type': 'EducationalOrganization',
       name: siteConfig.name,

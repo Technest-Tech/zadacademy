@@ -6,7 +6,7 @@ export type NavItem = {
 
 export const mainNav: NavItem[] = [
   { label: 'Home', href: '/' },
-  { label: 'About', href: '/about' },
+  { label: 'Teachers', href: '/#teachers' },
   {
     label: 'Courses',
     href: '/courses',
@@ -44,17 +44,10 @@ export const footerNav = {
     { label: 'Female Teachers', href: '/courses/female-quran-teachers' },
   ],
   Company: [
-    { label: 'About Us', href: '/about' },
     { label: 'Pricing', href: '/pricing' },
     { label: 'FAQ', href: '/faq' },
     { label: 'Blog', href: '/blog' },
     { label: 'Contact', href: '/contact' },
-  ],
-  Regions: [
-    { label: 'USA', href: '/countries/usa' },
-    { label: 'United Kingdom', href: '/countries/uk' },
-    { label: 'Canada', href: '/countries/canada' },
-    { label: 'Australia', href: '/countries/australia' },
   ],
   Legal: [
     { label: 'Privacy Policy', href: '/privacy' },

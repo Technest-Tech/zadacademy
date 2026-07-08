@@ -5,8 +5,8 @@ import { I18nProvider } from '@/lib/system/i18n'
 // Browser tab title for the operations console — overrides the marketing root template
 export const metadata = {
   title: {
-    default: 'Azhary',
-    template: '%s · Azhary',
+    default: 'Zad Academy',
+    template: '%s · Zad Academy',
   },
 }
 

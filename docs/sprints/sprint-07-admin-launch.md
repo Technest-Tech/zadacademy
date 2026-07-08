@@ -14,7 +14,7 @@ Owner can self-serve everything (bookings, courses, blog, teachers). Site is lau
 ## Backend deliverables
 
 ### Filament 3 admin panel
-Install at `https://api.alrayan-academy.com/admin`. Resources:
+Install at `https://api.zadacademiq.com/admin`. Resources:
 - **Trial Bookings** — list (filter by status, country, course), view detail, change status, internal notes
 - **Contact Messages** — list, view, mark read, reply via mailto link
 - **Courses** — full CRUD with rich text editor (TipTap)
@@ -60,7 +60,7 @@ Install at `https://api.alrayan-academy.com/admin`. Resources:
 - `/error.tsx` — branded 500 with retry + contact options
 
 ### Legal pages
-- `/privacy` — privacy policy (template + Alrayan-specific data handling: form submissions, GA4, hCaptcha)
+- `/privacy` — privacy policy (template + Zad Academy-specific data handling: form submissions, GA4, hCaptcha)
 - `/terms` — terms of service
 - Cookie consent banner — only if GA4/Meta Pixel used; uses `react-cookie-consent`
 

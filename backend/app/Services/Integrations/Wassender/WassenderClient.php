@@ -53,6 +53,6 @@ class WassenderClient
 
     public function testConnection(WhatsAppGroup $group): WassenderSendResult
     {
-        return $this->sendToGroup($group, 'Test ✓ Azhary');
+        return $this->sendToGroup($group, 'Test ✓ Zad Academy');
     }
 }

@@ -8,8 +8,8 @@ Living document. As decisions get made, items move from "Open" → "Resolved" wi
 
 ### Brand & content
 - [ ] **WhatsApp number** — is `+20 100 000 0000` (Egypt) the real support number, or should it be different (UK/US for those markets)?
-- [ ] **Support email** — is `info@alrayan-academy.com` the right address? Need it to actually exist before Sprint 4 (forms email it).
-- [ ] **Domain** — is `alrayan-academy.com` registered + accessible? Who is the registrar?
+- [ ] **Support email** — is `info@zadacademiq.com` the right address? Need it to actually exist before Sprint 4 (forms email it).
+- [ ] **Domain** — is `zadacademiq.com` registered + accessible? Who is the registrar?
 - [ ] **Logo** — Sprint 1 ships a placeholder geometric+wordmark. Is there an existing logo to use instead, or should we commission one before launch?
 - [ ] **Real teacher names + photos** — currently planned as SVG-initial placeholders. When (which sprint) will real bios + photos be ready?
 - [ ] **Real testimonials** — placeholders ship in Sprint 2. When can we replace with real student quotes (with permission)?
@@ -31,7 +31,7 @@ Living document. As decisions get made, items move from "Open" → "Resolved" wi
 ### Phase 2 / future
 - [ ] **Arabic version** — confirmed deferred to Phase 2. Anything that would force an architecture change now?
 - [ ] **Stripe / payments** — when in the roadmap? Affects Sprint 6/7 design if soon.
-- [ ] **Student portal** — when? Will live at `app.alrayan-academy.com`.
+- [ ] **Student portal** — when? Will live at `app.zadacademiq.com`.
 
 ---
 

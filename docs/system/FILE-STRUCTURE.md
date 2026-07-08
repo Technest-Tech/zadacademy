@@ -302,7 +302,7 @@ frontend/src/
 ### Key conventions
 
 1. **`(system)` is a Next.js route group** — the parentheses mean the URL doesn't include `/system`, but the layout, error boundary, and not-found are all isolated.
-2. **`middleware.ts` rewrites** `host = app.alrayan-academy.com` to `/(system)/...` and rewrites everything else to `/(marketing)/...`. A request for `app.*/students` becomes `app/(system)/students/page.tsx`.
+2. **`middleware.ts` rewrites** `host = app.zadacademiq.com` to `/(system)/...` and rewrites everything else to `/(marketing)/...`. A request for `app.*/students` becomes `app/(system)/students/page.tsx`.
 3. **Shared = small primitives only.** A heuristic: if the component renders chrome, copy, or branding for one surface, it goes in that surface's folder. If it's a Button, Card, Input, Dialog, etc., it's `components/ui` and shared.
 4. **No barrel `index.ts` from `(system)` root.** Direct imports keep the bundler from accidentally pulling system code into marketing pages.
 

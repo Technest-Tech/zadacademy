@@ -50,13 +50,13 @@
 - [ ] `scripts/check-system-isolation.sh` still passes
 
 ### Launch readiness
-- [ ] DNS cutover: `app.alrayan-academy.com` → Vercel prod project; `app-staging.*` already in place
+- [ ] DNS cutover: `app.zadacademiq.com` → Vercel prod project; `app-staging.*` already in place
 - [ ] Production environment variables checked: all integration keys filled (Paymob, Zoom, wassender), Sentry DSN, Resend, B2 bucket
 - [ ] Queue workers running as systemd services on the VPS: `default`, `notifications`, `reports`
-- [ ] Horizon dashboard accessible at `api.alrayan-academy.com/horizon` (admin-only)
+- [ ] Horizon dashboard accessible at `api.zadacademiq.com/horizon` (admin-only)
 - [ ] Scheduled tasks visible via `php artisan schedule:list`; cron runs `schedule:run` every minute
 - [ ] Backups: daily mysqldump to Backblaze B2 verified; restore-drill on a sandbox DB
-- [ ] UptimeRobot pings on `app.*`, `api.*`, `alrayan-academy.com` every 5 min; webhook to email + WhatsApp on outage
+- [ ] UptimeRobot pings on `app.*`, `api.*`, `zadacademiq.com` every 5 min; webhook to email + WhatsApp on outage
 - [ ] Sentry receiving errors from frontend + backend in production
 - [ ] Owner training: 45-min recorded walkthrough covering daily / weekly / monthly admin tasks
 - [ ] Day-1 smoke: every flow exercised end-to-end on production with real owner credentials
@@ -162,14 +162,14 @@ Schema::create('sys_monthly_reports', function (Blueprint $t) {
 #### `sys_settings` keys added
 
 ```php
-'academy.name'              => 'Alrayan Academy',
+'academy.name'              => 'Zad Academy',
 'academy.logo_path'         => null,                      // media-library
 'academy.support_email'     => '',
 'academy.support_phone'     => '',
 'academy.support_whatsapp'  => '',
 'academy.address'           => '',
 'academy.default_timezone'  => 'Africa/Cairo',
-'academy.footer_text'       => 'Thank you for choosing Alrayan Academy.',
+'academy.footer_text'       => 'Thank you for choosing Zad Academy.',
 'certificate.prefix'        => 'CRT',
 'reports.base_currency'     => 'EGP',                     // for cross-currency aggregation
 'sentry.dsn'                => '',
@@ -701,9 +701,9 @@ Three settings pages, all small but visible.
 │ Academy info                                                     │
 │ Used on certificates, invoices, and emails.                      │
 ├──────────────────────────────────────────────────────────────────┤
-│ Name:               [ Alrayan Academy                       ]    │
+│ Name:               [ Zad Academy                       ]    │
 │ Logo:               [Upload]  (current: alrayan-logo.svg)        │
-│ Support email:      [ info@alrayan-academy.com              ]    │
+│ Support email:      [ info@zadacademiq.com              ]    │
 │ Support phone:      [ +20 100 000 0000                      ]    │
 │ Support WhatsApp:   [ +20 100 000 0000                      ]    │
 │ Address:            [                                       ]    │
@@ -864,7 +864,7 @@ Sentry project → alert rules:
 
 A separate `docs/system/LAUNCH-CHECKLIST.md` (new file, mirrors site's existing `DEPLOYMENT-GUIDE.md`). Items:
 
-- [ ] Confirm DNS for `app.alrayan-academy.com`, `app-staging.alrayan-academy.com` — both green on UptimeRobot
+- [ ] Confirm DNS for `app.zadacademiq.com`, `app-staging.zadacademiq.com` — both green on UptimeRobot
 - [ ] Verify all production env vars set
 - [ ] Run final `php artisan migrate --force` on production
 - [ ] Seed default expense categories + message templates (idempotent — re-run safe)
@@ -937,7 +937,7 @@ Order of operations on launch day:
 1. Final code merge to `main` — all SYS-08 changes.
 2. CI runs full system test suite — including the isolation script.
 3. Deploy backend to prod VPS (rolling): migrations + asset compile + queue restart + horizon restart.
-4. Deploy frontend to Vercel (auto on merge); confirm `app.alrayan-academy.com` reachable.
+4. Deploy frontend to Vercel (auto on merge); confirm `app.zadacademiq.com` reachable.
 5. Configure final production secrets (Paymob LIVE, Zoom LIVE, wassender LIVE, Sentry DSN, B2 bucket).
 6. Run baseline seeders (expense categories, message templates, RBAC roles — all idempotent from earlier sprints).
 7. Create academy admin user.

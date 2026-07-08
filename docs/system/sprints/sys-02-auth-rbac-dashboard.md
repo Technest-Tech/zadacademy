@@ -10,8 +10,8 @@
 
 ## Definition of Done
 
-- [ ] An admin user (seeded from `.env`) can log in at `app.alrayan-academy.com/login`
-- [ ] Successful login sets a Sanctum session cookie scoped to `.alrayan-academy.com`; the user is redirected to `/dashboard`
+- [ ] An admin user (seeded from `.env`) can log in at `app.zadacademiq.com/login`
+- [ ] Successful login sets a Sanctum session cookie scoped to `.zadacademiq.com`; the user is redirected to `/dashboard`
 - [ ] Logout clears the session cookie and redirects to `/login`
 - [ ] "Forgot password" sends a Resend-delivered email with a tokenized reset link; clicking it lets the user set a new password
 - [ ] Session inactivity expires after 8 hours (configurable in `config/system.php`)
@@ -399,7 +399,7 @@ public function resetPassword(ResetPasswordRequest $request)
 }
 ```
 
-`SystemPasswordResetNotification` extends `Notification`, uses Resend, branded with academy logo. Subject: "Reset your Alrayan Academy account password". 60-minute expiry (Laravel default).
+`SystemPasswordResetNotification` extends `Notification`, uses Resend, branded with academy logo. Subject: "Reset your Zad Academy account password". 60-minute expiry (Laravel default).
 
 #### Frontend
 
@@ -824,7 +824,7 @@ docs/system/sprints/sys-02-auth-rbac-dashboard.md               (THIS FILE)
 
 (~12 minutes)
 
-1. Open `app.alrayan-academy.com/login`, sign in with admin creds.
+1. Open `app.zadacademiq.com/login`, sign in with admin creds.
 2. Land on dashboard — show KPI cards (zeros), alerts (empty state), quick actions.
 3. Open Settings → Users. Show the user table with just admin.
 4. Click "+ Invite user". Pick "Supervisor", uncheck several permissions (e.g. uncheck `payroll.view`, `accounting.view`), enter name + email, send invite.

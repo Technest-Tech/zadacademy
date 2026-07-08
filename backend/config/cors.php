@@ -6,10 +6,10 @@ return [
     'allowed_methods' => ['*'],
 
     'allowed_origins' => array_filter([
-        env('FRONTEND_URL'),                  // alrayan-academy.com
-        env('FRONTEND_URL_STAGING'),          // staging.alrayan-academy.com
-        env('SYSTEM_FRONTEND_URL'),           // app.alrayan-academy.com
-        env('SYSTEM_FRONTEND_URL_STAGING'),   // app-staging.alrayan-academy.com
+        env('FRONTEND_URL'),                  // zadacademiq.com
+        env('FRONTEND_URL_STAGING'),          // staging.zadacademiq.com
+        env('SYSTEM_FRONTEND_URL'),           // app.zadacademiq.com
+        env('SYSTEM_FRONTEND_URL_STAGING'),   // app-staging.zadacademiq.com
         'http://localhost:3000',
         'http://app.localhost:3000',
     ]),

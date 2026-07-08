@@ -1,11 +1,11 @@
-# Alrayan Academy — Management System Documentation
+# Zad Academy — Management System Documentation
 
-The internal **operations system** for Alrayan Academy: students, teachers, scheduling, billing, payroll, CRM, accounting, and reporting.
+The internal **operations system** for Zad Academy: students, teachers, scheduling, billing, payroll, CRM, accounting, and reporting.
 
 It lives **inside the same monorepo** as the public website (`site/frontend/` and `site/backend/`) but is fully isolated by route group, route namespace, and database table prefix so the two never collide.
 
-> **Public site** → `alrayan-academy.com` (marketing, course pages, blog) — see [`../README.md`](../README.md)
-> **Management system** → `app.alrayan-academy.com` (admin/supervisor/teacher dashboards) — this folder
+> **Public site** → `zadacademiq.com` (marketing, course pages, blog) — see [`../README.md`](../README.md)
+> **Management system** → `app.zadacademiq.com` (admin/supervisor/teacher dashboards) — this folder
 
 ---
 
@@ -28,7 +28,7 @@ It lives **inside the same monorepo** as the public website (`site/frontend/` an
 - **Stack:** Next.js 15 (App Router) + TypeScript + Tailwind + shadcn/ui — same project as the site, separate route group.
 - **Backend:** Same Laravel 11 app — separate route file, controller namespace, model namespace, and DB prefix.
 - **Auth:** Laravel Sanctum SPA (cookie-based) with three roles — Admin, Supervisor, Teacher.
-- **Hosting:** Frontend on Vercel (subdomain `app.alrayan-academy.com`); Backend reuses `api.alrayan-academy.com` with `/api/system/*` namespace.
+- **Hosting:** Frontend on Vercel (subdomain `app.zadacademiq.com`); Backend reuses `api.zadacademiq.com` with `/api/system/*` namespace.
 - **Sprints:** 8 × 2 weeks ≈ **16 weeks** to v1.
 - **Starts after:** Site Sprint 4 (forms backend) ships — system reuses the Laravel scaffolding.
 

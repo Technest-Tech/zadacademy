@@ -18,9 +18,9 @@ class DatabaseSeeder extends Seeder
         $this->call([RolePermissionSeeder::class]);
 
         $admin = User::firstOrCreate(
-            ['email' => 'admin@alrayan-academy.com'],
+            ['email' => 'admin@zadacademiq.com'],
             [
-                'name'      => 'Azhary Admin',
+                'name'      => 'Zad Academy Admin',
                 'password'  => bcrypt('password'),
                 'role'      => 'admin',
                 'is_active' => true,

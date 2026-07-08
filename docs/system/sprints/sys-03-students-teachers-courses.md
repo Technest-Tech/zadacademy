@@ -1070,7 +1070,7 @@ docs/system/sprints/sys-03-students-teachers-courses.md   (THIS FILE)
 9. Open `/courses` — toggle "Islamic Studies / Ijazah" inactive → open `/students/new` → confirm the course no longer appears in the dropdown.
 10. Show `sys_student_timeline`, `sys_audit_logs`, `sys_activity_log` rows in Tinker — every action recorded.
 11. Lighthouse on `/students` (logged-in screenshot via authenticated test) — show ≥ 90 perf, ≥ 95 a11y.
-12. Confirm public site at `alrayan-academy.com` is unchanged.
+12. Confirm public site at `zadacademiq.com` is unchanged.
 
 ---
 

@@ -842,7 +842,7 @@ Template at `resources/views/system/pdf/salary-slip.blade.php`. Same DOMPDF stac
   8. Confirm "underperforming" notification appeared for Sh. Mohammed.
   9. Export July payroll to Excel; verify file content.
   10. Lighthouse on `/payroll` and `/teacher/salary` ≥ 90 perf, ≥ 95 a11y.
-  11. Public site at `alrayan-academy.com` unchanged.
+  11. Public site at `zadacademiq.com` unchanged.
 
 ---
 

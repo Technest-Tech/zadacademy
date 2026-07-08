@@ -2,6 +2,7 @@
 
 import { useCountUp } from '@/hooks/useCountUp'
 import { Container } from '@/components/layout/Container'
+import { SectionDivider } from '@/components/layout/SectionDivider'
 import type { Stat } from '@/content/stats'
 
 function parseStat(value: string): { num: number; suffix: string; decimals: number } {
@@ -62,7 +63,8 @@ export function StatsSection({ stats }: { stats: Stat[] }) {
         </svg>
       </div>
 
-      <Container className="relative">
+      <Container className="relative pt-4">
+        <SectionDivider tone="dark" className="mb-4" />
         <dl className="flex flex-col sm:flex-row divide-y sm:divide-y-0 sm:divide-x divide-white/10">
           {stats.map((stat) => (
             <div key={stat.label} className="flex-1">

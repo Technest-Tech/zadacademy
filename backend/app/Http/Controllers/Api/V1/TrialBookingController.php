@@ -6,10 +6,12 @@ use App\Events\TrialBookingCreated;
 use App\Http\Controllers\Controller;
 use App\Mail\TrialBookingAdminNotification;
 use App\Mail\TrialBookingConfirmation;
+use App\Models\System\Lead;
 use App\Models\TrialBooking;
 use App\Services\BookingReferenceGenerator;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 
 class TrialBookingController extends Controller
@@ -41,9 +43,38 @@ class TrialBookingController extends Controller
             'message'         => $validated['message'] ?? null,
         ]);
 
+        // A trial booking is a hot inquiry — surface it in the CRM as a new lead.
+        try {
+            Lead::create([
+                'name'             => $booking->name,
+                'email'            => $booking->email,
+                'phone'            => $booking->phone,
+                'country'          => $booking->country,
+                'source'           => 'website_form',
+                'source_detail'    => 'Free trial booking · ' . $booking->reference,
+                'platform'         => 'website',
+                'status'           => 'new_lead',
+                'notes'            => trim(
+                    ($booking->message ? $booking->message . "\n\n" : '') .
+                    "Course: {$booking->course_interest} · Age: {$booking->age_group} · " .
+                    "Preferred: {$booking->preferred_time} ({$booking->timezone})"
+                ),
+                'trial_booking_id' => $booking->id,
+                'payload'          => [
+                    'age_group'       => $booking->age_group,
+                    'course_interest' => $booking->course_interest,
+                    'preferred_time'  => $booking->preferred_time,
+                    'timezone'        => $booking->timezone,
+                    'reference'       => $booking->reference,
+                ],
+            ]);
+        } catch (\Throwable $e) {
+            Log::warning('Failed to create lead from trial booking', ['booking' => $booking->id, 'error' => $e->getMessage()]);
+        }
+
         TrialBookingCreated::dispatch($booking);
 
-        Mail::to(config('mail.admin_address', 'info@alrayan-academy.com'))
+        Mail::to(config('mail.admin_address', 'info@zadacademiq.com'))
             ->queue(new TrialBookingAdminNotification($booking));
         Mail::to($booking->email)
             ->queue(new TrialBookingConfirmation($booking));

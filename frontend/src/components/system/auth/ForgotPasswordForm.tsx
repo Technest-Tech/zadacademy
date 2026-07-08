@@ -58,7 +58,7 @@ export function ForgotPasswordForm() {
           id="email"
           type="email"
           autoComplete="email"
-          placeholder="admin@alrayan-academy.com"
+          placeholder="admin@zadacademiq.com"
           className={inputCls}
           style={inputStyle}
           {...register('email')}

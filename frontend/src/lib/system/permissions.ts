@@ -18,6 +18,7 @@ export type Permission =
   | 'whatsapp.view' | 'whatsapp.edit'
   | 'certificates.view' | 'certificates.issue'
   | 'settings.view' | 'settings.edit'
+  | 'site.manage'
   | 'users.view' | 'users.view_directory' | 'users.invite' | 'users.create' | 'users.edit' | 'users.deactivate' | 'users.suspend' | 'users.archive'
   | 'audit.view'
 

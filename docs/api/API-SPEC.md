@@ -1,6 +1,6 @@
 # API Specification — v1
 
-**Base URL:** `https://api.alrayan-academy.com/api/v1`
+**Base URL:** `https://api.zadacademiq.com/api/v1`
 
 **Auth:** Public endpoints (forms) require no auth, just rate-limiting + hCaptcha. Admin endpoints (`/admin/*`) use Sanctum cookie auth (Sprint 7).
 
@@ -55,7 +55,7 @@ Create a free trial class booking.
 
 **Side effects:**
 - Stored in `trial_bookings` table
-- Mail to admin (`info@alrayan-academy.com`) — queued
+- Mail to admin (`info@zadacademiq.com`) — queued
 - Confirmation mail to visitor — queued
 - Optional: Slack/Telegram webhook fired (admin chooses in env)
 
@@ -126,7 +126,7 @@ List published courses. Cached, public.
       "durationWeeks": 24,
       "ageGroup": "all",
       "highlighted": true,
-      "iconUrl": "https://api.alrayan-academy.com/storage/courses/tajweed.svg",
+      "iconUrl": "https://api.zadacademiq.com/storage/courses/tajweed.svg",
       "updatedAt": "2026-05-01T12:00:00Z"
     }
   ],
@@ -226,7 +226,7 @@ All require Sanctum cookie auth. Lives under `/admin/*` in Filament — REST end
 Fired by Laravel when content changes. Targets the Next.js endpoint:
 
 ```
-POST https://alrayan-academy.com/api/revalidate
+POST https://zadacademiq.com/api/revalidate
 Headers:
   X-Revalidate-Secret: <REVALIDATE_SECRET>
 Body:

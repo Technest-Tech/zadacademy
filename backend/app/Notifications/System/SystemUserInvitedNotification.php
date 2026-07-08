@@ -23,12 +23,12 @@ class SystemUserInvitedNotification extends Notification
 
     public function toMail(object $notifiable): MailMessage
     {
-        $inviterName = $this->invitedBy?->name ?? 'Azhary';
+        $inviterName = $this->invitedBy?->name ?? 'Zad Academy';
 
         return (new MailMessage)
-            ->subject('You have been invited to Azhary')
+            ->subject('You have been invited to Zad Academy')
             ->greeting('Hello, ' . $notifiable->name)
-            ->line("{$inviterName} has invited you to join the Azhary operations console.")
+            ->line("{$inviterName} has invited you to join the Zad Academy operations console.")
             ->action('Set Up Your Account', $this->url)
             ->line('This invitation link will expire in 7 days.')
             ->line('If you were not expecting an invitation, you can ignore this email.');

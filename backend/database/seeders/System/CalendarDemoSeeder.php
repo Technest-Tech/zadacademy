@@ -61,8 +61,8 @@ class CalendarDemoSeeder extends Seeder
         $this->clearExisting();
         $this->seedCatalog();
 
-        $ahmed = $this->makeTeacher('Ahmed Abdo', 'ahmed.abdo@alrayan.test');
-        $sara  = $this->makeTeacher('Sara Othman', 'sara.othman@alrayan.test');
+        $ahmed = $this->makeTeacher('Ahmed Abdo', 'ahmed.abdo@zad.test');
+        $sara  = $this->makeTeacher('Sara Othman', 'sara.othman@zad.test');
 
         $this->seedLayla($ahmed);   // many packages, a split, paid + pending-awaiting-payment + current
         $this->seedYusuf($ahmed);   // one full paid package + a partially-filled one
@@ -212,7 +212,7 @@ class CalendarDemoSeeder extends Seeder
 
     private function seedLayla(Teacher $t): void
     {
-        $s = $this->makeStudent('Layla Krasniqi', 'layla.k@alrayan.test', $t, 8, 1200);
+        $s = $this->makeStudent('Layla Krasniqi', 'layla.k@zad.test', $t, 8, 1200);
         $start = Carbon::now()->subWeeks(20)->startOfWeek()->addDays(2)->setTime(16, 0); // Tue 16:00
 
         // First lesson is a free trial (non-consuming → shows 0.0).
@@ -235,7 +235,7 @@ class CalendarDemoSeeder extends Seeder
 
     private function seedYusuf(Teacher $t): void
     {
-        $s = $this->makeStudent('Yusuf Rahman', 'yusuf.r@alrayan.test', $t, 10, 1500);
+        $s = $this->makeStudent('Yusuf Rahman', 'yusuf.r@zad.test', $t, 10, 1500);
         $start = Carbon::now()->subWeeks(14)->startOfWeek()->addDays(4)->setTime(18, 30); // Thu 18:30
 
         for ($i = 0; $i < 11; $i++) {
@@ -252,7 +252,7 @@ class CalendarDemoSeeder extends Seeder
     private function seedMariam(Teacher $t): void
     {
         $guardian = Guardian::factory()->withUser()->create(['name' => 'Khalid Saleh']);
-        $s = $this->makeStudent('Mariam Saleh', 'mariam.s@alrayan.test', $t, 4, 1000, $guardian);
+        $s = $this->makeStudent('Mariam Saleh', 'mariam.s@zad.test', $t, 4, 1000, $guardian);
         $start = Carbon::now()->subWeeks(16)->startOfWeek()->addDays(1)->setTime(15, 0); // Mon 15:00
 
         $this->makeLesson($s, $t, $start->copy(), 60, 'trial', 'Quran', 'Trial lesson — getting to know the student');
@@ -272,7 +272,7 @@ class CalendarDemoSeeder extends Seeder
 
     private function seedOmar(Teacher $t): void
     {
-        $s = $this->makeStudent('Omar Haddad', 'omar.h@alrayan.test', $t, 12, 2000);
+        $s = $this->makeStudent('Omar Haddad', 'omar.h@zad.test', $t, 12, 2000);
         $start = Carbon::now()->subWeeks(8)->startOfWeek()->addDays(3)->setTime(19, 0); // Wed 19:00
 
         for ($i = 0; $i < 6; $i++) {

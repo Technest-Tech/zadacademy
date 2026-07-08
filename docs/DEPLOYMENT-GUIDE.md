@@ -8,7 +8,7 @@
 3. Set **Root Directory** = `frontend`.
 4. Add env vars from [SERVER-SETUP.md](SERVER-SETUP.md#environment-variables-vercel-dashboard).
 5. Deploy.
-6. Add custom domain `alrayan-academy.com` and `www.alrayan-academy.com`. Vercel auto-issues SSL.
+6. Add custom domain `zadacademiq.com` and `www.zadacademiq.com`. Vercel auto-issues SSL.
 
 ### Subsequent deploys
 - Push to `main` → Vercel deploys to production.
@@ -86,11 +86,11 @@ sudo systemctl restart alrayan-queue
 - [ ] Lighthouse score ≥ 90 (perf/SEO/access/best-practices) on home + 1 course page + 1 country page
 - [ ] No `console.log` or `dd()` left in code
 - [ ] Env vars set in Vercel and on VPS
-- [ ] DNS records propagated (`dig +short alrayan-academy.com`)
+- [ ] DNS records propagated (`dig +short zadacademiq.com`)
 - [ ] SSL certs valid (Vercel auto, VPS via certbot)
 - [ ] WhatsApp number, email, prices verified in `frontend/src/config/site.ts`
-- [ ] Sitemap reachable: `curl https://alrayan-academy.com/sitemap.xml`
-- [ ] Robots.txt reachable: `curl https://alrayan-academy.com/robots.txt`
+- [ ] Sitemap reachable: `curl https://zadacademiq.com/sitemap.xml`
+- [ ] Robots.txt reachable: `curl https://zadacademiq.com/robots.txt`
 - [ ] Trial booking form submits successfully end-to-end (form → email received)
 - [ ] Mobile QA on iPhone Safari + Android Chrome
 - [ ] Search Console + GA4 + Plausible verified
@@ -101,13 +101,13 @@ sudo systemctl restart alrayan-queue
 
 ```bash
 # Frontend
-curl -I https://alrayan-academy.com/ | head -1                 # 200
-curl -I https://alrayan-academy.com/pricing | head -1          # 200
-curl -I https://alrayan-academy.com/courses/tajweed-course     # 200
+curl -I https://zadacademiq.com/ | head -1                 # 200
+curl -I https://zadacademiq.com/pricing | head -1          # 200
+curl -I https://zadacademiq.com/courses/tajweed-course     # 200
 
 # Backend
-curl https://api.alrayan-academy.com/up                        # {"status":"ok"}
-curl -X POST https://api.alrayan-academy.com/api/v1/contacts \
+curl https://api.zadacademiq.com/up                        # {"status":"ok"}
+curl -X POST https://api.zadacademiq.com/api/v1/contacts \
   -H "Content-Type: application/json" \
   -d '{"name":"Test","email":"test@test.com","message":"smoke test"}'
 # 201 + reference

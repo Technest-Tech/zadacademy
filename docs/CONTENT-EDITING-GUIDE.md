@@ -149,7 +149,7 @@ export const testimonials = [
 
 ## Adding a blog post (after Sprint 6)
 
-1. Log into `https://api.alrayan-academy.com/admin` with your admin credentials
+1. Log into `https://api.zadacademiq.com/admin` with your admin credentials
 2. **Blog Posts** → **New**
 3. Fill: title, slug (auto-generated), excerpt, body (rich text), cover image, SEO title, SEO description
 4. **Publish** → site updates within 5 seconds

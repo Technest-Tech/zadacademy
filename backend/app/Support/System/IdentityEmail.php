@@ -28,11 +28,11 @@ class IdentityEmail
 
     public static function forStudent(string $name): string
     {
-        return self::unique($name, config('app.student_email_domain', 'students.alrayanquran.com'));
+        return self::unique($name, config('app.student_email_domain', 'students.zadacademiq.com'));
     }
 
     public static function forGuardian(string $name): string
     {
-        return self::unique($name, config('app.guardian_email_domain', 'guardians.alrayanquran.com'));
+        return self::unique($name, config('app.guardian_email_domain', 'guardians.zadacademiq.com'));
     }
 }

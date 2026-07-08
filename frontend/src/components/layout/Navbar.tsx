@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import Image from 'next/image'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { Menu, X, ChevronDown, Phone } from 'lucide-react'
@@ -15,7 +16,11 @@ export function Navbar() {
   const [openDropdown, setOpenDropdown] = useState<string | null>(null)
   const [mobileOpen, setMobileOpen] = useState(false)
   const pathname = usePathname()
-  const isHome = pathname === '/'
+  // Pages that open with a dark hero get the transparent-at-top navbar treatment.
+  const hasDarkHero =
+    pathname === '/' ||
+    pathname.startsWith('/our-teachers/') ||
+    pathname.startsWith('/courses/')
 
   useEffect(() => {
     let raf: number
@@ -34,7 +39,9 @@ export function Navbar() {
     setMobileOpen(false)
   }, [pathname])
 
-  const scrolledOrInner = scrolled || !isHome
+  const scrolledOrInner = scrolled || !hasDarkHero
+  // Announcement bar only at the top of the home page.
+  const showAnnouncement = pathname === '/' && !scrolled
 
   const navClass = cn(
     'fixed top-0 left-0 right-0 z-50 transition-all duration-300',
@@ -64,7 +71,7 @@ export function Navbar() {
         <div
           className={cn(
             'overflow-hidden transition-all duration-500',
-            !scrolledOrInner ? 'max-h-10 opacity-100' : 'max-h-0 opacity-0',
+            showAnnouncement ? 'max-h-10 opacity-100' : 'max-h-0 opacity-0',
           )}
         >
           <div
@@ -85,28 +92,20 @@ export function Navbar() {
           className="container-site flex items-center justify-between h-16 sm:h-20 md:h-24 lg:h-28"
           aria-label="Main navigation"
         >
-          {/* Wordmark */}
+          {/* Logo */}
           <Link
             href="/"
-            aria-label="Azhary — Home"
-            className="flex flex-col leading-none group"
+            aria-label="Zad Academy — Home"
+            className="flex items-center leading-none group"
           >
-            <span
-              className={cn(
-                'font-display font-semibold tracking-tight transition-colors duration-300',
-                'text-[1.5rem] sm:text-[1.8rem] md:text-[2.4rem]',
-                scrolledOrInner ? 'text-primary' : 'text-white',
-              )}
-            >
-              Azhary
-            </span>
-            <span
-              className={cn(
-                'text-accent text-[0.6rem] md:text-[0.65rem] font-sans font-semibold uppercase tracking-[0.22em] mt-0.5',
-              )}
-            >
-              Quran Academy
-            </span>
+            <Image
+              src="/logo/zad-logo.png"
+              alt="Zad Academy"
+              width={512}
+              height={512}
+              priority
+              className="h-12 w-auto rounded-lg sm:h-14 md:h-16"
+            />
           </Link>
 
           {/* Desktop nav */}
@@ -219,9 +218,14 @@ export function Navbar() {
               <div className="flex flex-col h-full">
                 {/* Mobile header */}
                 <div className="flex items-center justify-between p-5 border-b border-border-soft">
-                  <Link href="/" aria-label="Azhary" onClick={() => setMobileOpen(false)} className="flex flex-col leading-none">
-                    <span className="font-display font-semibold text-[1.6rem] tracking-tight text-primary">Azhary</span>
-                    <span className="text-accent text-[0.6rem] font-sans font-semibold uppercase tracking-[0.22em] mt-0.5">Quran Academy</span>
+                  <Link href="/" aria-label="Zad Academy" onClick={() => setMobileOpen(false)} className="flex items-center leading-none">
+                    <Image
+                      src="/logo/zad-logo.png"
+                      alt="Zad Academy"
+                      width={512}
+                      height={512}
+                      className="h-12 w-auto rounded-lg"
+                    />
                   </Link>
                   <button
                     className="p-2 rounded-lg text-muted-text hover:bg-cream transition-colors"

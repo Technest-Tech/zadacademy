@@ -31,7 +31,7 @@ class SystemDemoSeeder extends Seeder
 
         foreach ($teacherNames as $i => $name) {
             $user = User::firstOrCreate(
-                ['email' => 'teacher' . ($i + 1) . '@alrayan-academy.com'],
+                ['email' => 'teacher' . ($i + 1) . '@zadacademiq.com'],
                 [
                     'name'      => $name,
                     'password'  => bcrypt('password'),

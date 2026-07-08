@@ -9,7 +9,7 @@ import { TrialBookingForm } from '@/components/conversion/TrialBookingForm'
 import { ContactSidebar } from '@/components/conversion/ContactSidebar'
 
 export const metadata: Metadata = buildMetadata({
-  title: 'Book a Free Trial Quran Class | Contact Azhary',
+  title: 'Book a Free Trial Quran Class | Contact Zad Academy',
   description:
     'Book your free first Quran class. Fill out the form and we will match you with a certified teacher within 24 hours. No credit card required.',
   path: '/contact',
@@ -58,30 +58,15 @@ export default function ContactPage() {
         </Container>
       </section>
 
-      {/* ── Form + Sidebar ── */}
-      <Section bg="cream">
+      {/* ── Trial booking card ── */}
+      <section className="bg-primary py-16 sm:py-20">
         <Container>
-          <div className="grid lg:grid-cols-5 gap-12 items-start">
-            {/* Form — left 3/5 */}
-            <div className="lg:col-span-3">
-              <div className="bg-white rounded-2xl border border-border-soft shadow-soft p-8">
-                <h2 className="text-xl font-display font-semibold text-primary mb-1">
-                  Book a Free Trial Class
-                </h2>
-                <p className="text-muted-foreground text-sm mb-8">
-                  No credit card. No commitment. Your first class is completely free.
-                </p>
-                <TrialBookingForm />
-              </div>
-            </div>
-
-            {/* Sidebar — right 2/5 */}
-            <div className="lg:col-span-2">
-              <ContactSidebar />
-            </div>
+          <TrialBookingForm />
+          <div className="mx-auto mt-12 max-w-3xl">
+            <ContactSidebar />
           </div>
         </Container>
-      </Section>
+      </section>
 
       {/* ── CTA Banner ── */}
       <Section bg="primary">

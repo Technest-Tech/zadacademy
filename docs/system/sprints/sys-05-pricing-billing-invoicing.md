@@ -777,7 +777,7 @@ The HMAC concatenation order is Paymob's specific spec — documented as a comme
 │ Integration ID         [____1234567]                             │
 │ Iframe ID              [____123456]                              │
 │ Webhook HMAC secret    [••••••••••••]              [Reveal][Update]│
-│ Webhook URL            https://api.alrayan-academy.com/api/system│
+│ Webhook URL            https://api.zadacademiq.com/api/system│
 │                        /webhooks/paymob          [Copy]          │
 │ Last successful link   2 hours ago (INV-2026-00042)              │
 │ Last error             —                                         │
@@ -1178,7 +1178,7 @@ Returns a job-id; the export runs on the `reports` queue; on completion the user
 - Configure Paymob (sandbox credentials) in Settings → Integrations → Paymob.
 - Configure FX rates in Settings → Pricing for USD/EUR/EGP.
 - Owner walks through the 9 acceptance flows live.
-- Confirm public site at `alrayan-academy.com/pricing` reads from the new live endpoint and reflects changes within ~60s of saving.
+- Confirm public site at `zadacademiq.com/pricing` reads from the new live endpoint and reflects changes within ~60s of saving.
 - Confirm cron entries appear in `/horizon` (or via `php artisan schedule:list`).
 - Lighthouse on `/billing/invoices` → ≥ 90 perf, ≥ 95 a11y.
 

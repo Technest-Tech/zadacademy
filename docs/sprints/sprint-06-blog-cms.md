@@ -765,8 +765,8 @@ export const revalidate = 3600  // ISR — 1 hour
 
 export async function generateMetadata(): Promise<Metadata> {
   return buildMetadata({
-    title: 'Blog — Quran Learning Tips & Guides | Alrayan Academy',
-    description: 'Articles on Tajweed, Hifz, online Quran learning, and Islamic education from certified teachers at Alrayan Academy.',
+    title: 'Blog — Quran Learning Tips & Guides | Zad Academy',
+    description: 'Articles on Tajweed, Hifz, online Quran learning, and Islamic education from certified teachers at Zad Academy.',
     path: '/blog',
   })
 }
@@ -775,7 +775,7 @@ export async function generateMetadata(): Promise<Metadata> {
 **Page structure:**
 
 ```
-Hero strip (bg-primary)          ← "Alrayan Blog" H1 + short description
+Hero strip (bg-primary)          ← "Zad Academy Blog" H1 + short description
 FeaturedPost (latest post)
 Category filter + post grid
 Pagination

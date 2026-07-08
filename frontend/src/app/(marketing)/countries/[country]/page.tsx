@@ -9,7 +9,7 @@ import { LinkButton } from '@/components/ui/link-button'
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion'
 import { whatsappLink } from '@/config/site'
 import { countriesData } from '@/content/countries'
-import { pricingTiers } from '@/content/pricing'
+import { pricingPackages, basePricePerLesson } from '@/content/pricing'
 import {
   Clock,
   ShieldCheck,
@@ -146,7 +146,7 @@ export default async function CountryPage({ params }: Props) {
               Why {country.shortName} Families Choose Us
             </p>
             <h2 id="why-heading" className="heading-xl font-heading text-primary">
-              The Azhary Difference
+              The Zad Academy Difference
             </h2>
           </div>
 
@@ -217,44 +217,53 @@ export default async function CountryPage({ params }: Props) {
               Transparent Pricing
             </p>
             <h2 id="pricing-heading" className="heading-xl font-display text-primary">
-              Simple Monthly Plans
+              Simple Lesson Packages
             </h2>
+            <p className="text-muted-text mt-3">
+              Buy a package of lessons — the more you book, the less you pay per lesson.
+            </p>
           </div>
 
           <ul className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6" role="list">
-            {pricingTiers.map((tier) => (
-              <li
-                key={tier.id}
-                className={[
-                  'bg-white rounded-2xl p-6 border flex flex-col gap-3',
-                  tier.highlighted
-                    ? 'border-accent ring-2 ring-accent shadow-xl'
-                    : 'border-border-soft shadow-soft',
-                ].join(' ')}
-              >
-                {tier.highlighted && (
-                  <span className="self-start bg-accent text-primary text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-full">
-                    Most Popular
-                  </span>
-                )}
-                <h3 className="font-display font-semibold text-primary text-lg">{tier.name}</h3>
-                <div className="flex items-end gap-1">
-                  <span className="text-4xl font-display font-semibold text-primary">
-                    ${tier.priceUsd}
-                  </span>
-                  <span className="text-muted-text text-sm pb-1">/mo</span>
-                </div>
-                <p className="text-muted-text text-sm">
-                  {tier.sessionsPerMonth} classes &middot; {tier.minutesPerSession} min each
-                </p>
-                <Link
-                  href="/pricing"
-                  className="mt-auto text-secondary text-sm font-semibold hover:underline"
-                >
-                  See full details →
-                </Link>
-              </li>
-            ))}
+            {pricingPackages
+              .filter((pkg) => ['discovery', 'silver', 'diamond'].includes(pkg.id))
+              .map((pkg) => {
+                const base = basePricePerLesson['30'].USD
+                const price = Math.round(base * pkg.lessons * (1 - pkg.discount) * 100) / 100
+                const perLesson = price / pkg.lessons
+                return (
+                  <li
+                    key={pkg.id}
+                    className={[
+                      'bg-white rounded-2xl p-6 border flex flex-col gap-3',
+                      pkg.featured
+                        ? 'border-accent ring-2 ring-accent shadow-xl'
+                        : 'border-border-soft shadow-soft',
+                    ].join(' ')}
+                  >
+                    {pkg.featured && (
+                      <span className="self-start bg-accent text-primary text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-full">
+                        Most Chosen
+                      </span>
+                    )}
+                    <h3 className="font-display font-semibold text-primary text-lg">{pkg.name}</h3>
+                    <div className="flex items-end gap-1">
+                      <span className="text-4xl font-display font-semibold text-primary">
+                        ${price.toFixed(2)}
+                      </span>
+                    </div>
+                    <p className="text-muted-text text-sm">
+                      {pkg.lessons} lessons &middot; ${perLesson.toFixed(2)} / lesson (30 min)
+                    </p>
+                    <Link
+                      href="/pricing"
+                      className="mt-auto text-secondary text-sm font-semibold hover:underline"
+                    >
+                      See full details →
+                    </Link>
+                  </li>
+                )
+              })}
           </ul>
 
           <p className="text-center text-muted-text text-sm italic mb-8">

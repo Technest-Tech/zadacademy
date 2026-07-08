@@ -21,7 +21,8 @@ Route::prefix('v1')->group(function () {
     Route::get('/blog/{slug}',    [BlogController::class, 'show']);
     Route::get('/courses',        [CourseApiController::class, 'index']);
     Route::get('/courses/{slug}', [CourseApiController::class, 'show']);
-    Route::get('/teachers',       [TeacherController::class, 'index']);
+    Route::get('/teachers',        [TeacherController::class, 'index']);
+    Route::get('/teachers/{slug}', [TeacherController::class, 'show']);
     Route::get('/pricing',        [\App\Http\Controllers\Api\PublicPricingController::class, 'show'])->name('api.pricing');
 });
 

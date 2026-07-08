@@ -144,11 +144,11 @@ export function ClassicCert({ data }: { data: CertData }) {
 
         {/* Logo */}
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src="/logo/alrayan-mark.svg" alt="Azhary" style={{ height: 48, marginBottom: 6, objectFit: 'contain' }} />
+        <img src="/logo/zad-mark.svg" alt="Zad Academy" style={{ height: 48, marginBottom: 6, objectFit: 'contain' }} />
 
         {/* Academy name EN */}
         <div style={{ fontSize: 10, letterSpacing: 7, textTransform: 'uppercase', color: '#7A6030', marginBottom: 2 }}>
-          Azhary
+          Zad Academy
         </div>
         {/* Academy name AR */}
         <div style={{
@@ -156,7 +156,7 @@ export function ClassicCert({ data }: { data: CertData }) {
           fontFamily: '"Amiri", "Scheherazade New", serif',
           direction: 'rtl',
         }}>
-          أكاديمية أزهري
+          أكاديمية زاد
         </div>
 
         {/* Ornamental divider */}
@@ -302,15 +302,15 @@ export function ModernCert({ data }: { data: CertData }) {
         display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 18,
       }}>
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src="/images/logo-nobg.png" alt="Azhary"
+        <img src="/images/logo-nobg.png" alt="Zad Academy"
           style={{ height: 54, objectFit: 'contain', filter: 'brightness(0) invert(1)' }} />
         <div>
-          <div style={{ color: '#ffffff', fontSize: 22, fontWeight: 800, letterSpacing: 3 }}>AZHARY</div>
+          <div style={{ color: '#ffffff', fontSize: 22, fontWeight: 800, letterSpacing: 3 }}>ZAD ACADEMY</div>
           <div style={{
             color: '#C9A24B', fontSize: 13, marginTop: 3,
             fontFamily: '"Amiri", "Scheherazade New", serif', direction: 'rtl',
           }}>
-            أكاديمية أزهري
+            أكاديمية زاد
           </div>
         </div>
       </div>
@@ -525,8 +525,8 @@ body{width:297mm;height:210mm;background:#FDF8EE;position:relative;overflow:hidd
 <div class="content">
   <div class="bismillah">بِسۡمِ ٱللَّهِ ٱلرَّحۡمَٰنِ ٱلرَّحِيمِ</div>
   <img class="logo" src="${mark}" alt="Logo">
-  <div class="an-en">Azhary</div>
-  <div class="an-ar">أكاديمية أزهري</div>
+  <div class="an-en">Zad Academy</div>
+  <div class="an-ar">أكاديمية زاد</div>
   <svg width="130mm" height="8mm" viewBox="0 0 130 8" xmlns="http://www.w3.org/2000/svg" style="margin-bottom:3mm">
     ${htmlOrnaDiv(65, 4, 60, '#C9A24B')}
   </svg>
@@ -636,7 +636,7 @@ body{width:297mm;height:210mm;background:#F9FAFB;position:relative;overflow:hidd
 </svg>
 <div class="hdr-content">
   <img class="logo" src="${logo}" alt="Logo">
-  <div><div class="an-en">AZHARY</div><div class="an-ar">أكاديمية أزهري</div></div>
+  <div><div class="an-en">ZAD ACADEMY</div><div class="an-ar">أكاديمية زاد</div></div>
 </div>
 <div class="content">
   <div class="bismillah">بِسۡمِ ٱللَّهِ ٱلرَّحۡمَٰنِ ٱلرَّحِيمِ</div>
@@ -687,7 +687,7 @@ async function toDataUrl(path: string): Promise<string> {
 export async function downloadCertificatePDF(data: CertData, template: 'classic' | 'modern') {
   const [logoDataUrl, markDataUrl] = await Promise.all([
     toDataUrl('/images/logo-nobg.png'),
-    toDataUrl('/logo/alrayan-mark.svg'),
+    toDataUrl('/logo/zad-mark.svg'),
   ])
 
   const html = template === 'classic'

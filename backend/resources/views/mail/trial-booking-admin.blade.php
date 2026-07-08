@@ -26,7 +26,7 @@
 <body>
   <div class="wrapper">
     <div class="header">
-      <h1>Azhary</h1>
+      <h1>Zad Academy</h1>
       <p>New Trial Booking Notification</p>
     </div>
     <div class="divider"></div>
@@ -52,7 +52,7 @@
       </div>
     </div>
     <div class="footer">
-      Azhary &middot; info@alrayan-academy.com
+      Zad Academy &middot; info@zadacademiq.com
     </div>
   </div>
 </body>

@@ -39,8 +39,8 @@ These ship from Sprint 1 onward — verified in code review, not by the owner.
 
 ## Pre-launch (do once)
 
-- [ ] Buy domain (`alrayan-academy.com` already chosen — verify it's owned)
-- [ ] Set up Google Search Console — add both `https://alrayan-academy.com` and `https://www.alrayan-academy.com` properties
+- [ ] Buy domain (`zadacademiq.com` already chosen — verify it's owned)
+- [ ] Set up Google Search Console — add both `https://zadacademiq.com` and `https://www.zadacademiq.com` properties
 - [ ] Submit sitemap in Search Console
 - [ ] Set up Bing Webmaster Tools — submit sitemap
 - [ ] Set up Google Analytics 4 (or Plausible if owner prefers privacy-first)

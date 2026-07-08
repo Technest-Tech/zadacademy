@@ -14,9 +14,9 @@ import type { BlogPost } from '@/content/blog'
 export const revalidate = 3600
 
 export const metadata: Metadata = buildMetadata({
-  title: 'Blog — Quran Learning Tips & Guides | Azhary',
+  title: 'Blog — Quran Learning Tips & Guides | Zad Academy',
   description:
-    'Articles on Tajweed, Hifz, online Quran learning, and Islamic education from certified teachers at Azhary.',
+    'Articles on Tajweed, Hifz, online Quran learning, and Islamic education from certified teachers at Zad Academy.',
   path: '/blog',
 })
 
@@ -90,7 +90,7 @@ export default async function BlogPage({ searchParams }: Props) {
         />
         <Container className="relative text-center">
           <p className="text-accent text-sm font-semibold uppercase tracking-widest mb-4">
-            Azhary
+            Zad Academy
           </p>
           <h1 className="heading-display font-display text-white mb-4">Blog</h1>
           <p className="text-white/70 text-xl max-w-2xl mx-auto">

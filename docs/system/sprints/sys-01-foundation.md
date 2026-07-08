@@ -2,7 +2,7 @@
 
 **Duration:** 2 weeks
 **Status:** In progress — implementation started 2026-05-10.
-**Sprint goal:** the system shell loads at `app.alrayan-academy.com`, looks like a polished modern admin tool, is fully isolated from the public site, and is wired to a Laravel app that knows about a `system` guard. Empty pages are clickable; nothing functional yet.
+**Sprint goal:** the system shell loads at `app.zadacademiq.com`, looks like a polished modern admin tool, is fully isolated from the public site, and is wired to a Laravel app that knows about a `system` guard. Empty pages are clickable; nothing functional yet.
 
 > **Prereqs** — site Sprint 4 (Conversion + Backend) has shipped. Laravel has Sanctum, queues, and Resend wired up. The frontend Tailwind config and design tokens are locked.
 
@@ -10,9 +10,9 @@
 
 ## Definition of Done
 
-- [x] `app.localhost:3000` (local) and `app-staging.alrayan-academy.com` (staging) both serve the `(system)` route group
-- [x] Visiting `alrayan-academy.com/students` returns 404 (system routes hidden from public host) — middleware implemented
-- [x] Visiting `app.alrayan-academy.com/about` returns 404 (marketing routes hidden from system host) — middleware implemented
+- [x] `app.localhost:3000` (local) and `app-staging.zadacademiq.com` (staging) both serve the `(system)` route group
+- [x] Visiting `zadacademiq.com/students` returns 404 (system routes hidden from public host) — middleware implemented
+- [x] Visiting `app.zadacademiq.com/about` returns 404 (marketing routes hidden from system host) — middleware implemented
 - [x] System layout renders: sidebar (collapsible 260↔72px), topbar (60px), page header, content area with cream/navy backgrounds
 - [x] Sidebar uses navy `--color-primary` background; active item is green `--color-secondary`; collapse persists in localStorage
 - [x] Topbar shows: search input (no behavior yet), command-palette trigger (`⌘K` opens an empty palette), notification bell, user menu (placeholder "Admin" + sign out)
@@ -21,7 +21,7 @@
 - [x] `GET /api/system/health` route returns `200 {"status":"ok","version":"1.0.0"}`
 - [x] `GET /api/system/me` returns `401 Unauthenticated` without a session cookie
 - [x] `scripts/check-system-isolation.sh` created and executable
-- [ ] Vercel deploys `app.alrayan-academy.com` (prod) and `app-staging.alrayan-academy.com` (staging) successfully — needs DNS/Vercel setup (S1-01)
+- [ ] Vercel deploys `app.zadacademiq.com` (prod) and `app-staging.zadacademiq.com` (staging) successfully — needs DNS/Vercel setup (S1-01)
 - [ ] Lighthouse on staging `/login` (the only public system page): Performance ≥ 85, Accessibility ≥ 95, Best Practices = 100
 - [ ] Mobile QA: sidebar collapses to a Sheet on `<lg` breakpoint — needs Playwright test (S1-12)
 - [ ] Demo recording reviewed by owner
@@ -34,7 +34,7 @@
 
 **Goal:** the subdomain exists and serves the same Next.js app.
 
-- [ ] Add `app.alrayan-academy.com` and `app-staging.alrayan-academy.com` to the Vercel project as additional domains
+- [ ] Add `app.zadacademiq.com` and `app-staging.zadacademiq.com` to the Vercel project as additional domains
 - [ ] Create CNAMEs in Cloudflare:
   - `app` → `cname.vercel-dns.com`
   - `app-staging` → `cname.vercel-dns.com`
@@ -45,9 +45,9 @@
 **Env vars (Next.js, Vercel project):**
 
 ```
-NEXT_PUBLIC_SITE_HOST=alrayan-academy.com
-NEXT_PUBLIC_APP_HOST=app.alrayan-academy.com
-NEXT_PUBLIC_API_URL=https://api.alrayan-academy.com
+NEXT_PUBLIC_SITE_HOST=zadacademiq.com
+NEXT_PUBLIC_APP_HOST=app.zadacademiq.com
+NEXT_PUBLIC_API_URL=https://api.zadacademiq.com
 NEXT_PUBLIC_SYSTEM_API_PREFIX=/api/system
 ```
 
@@ -56,11 +56,11 @@ For local: `NEXT_PUBLIC_APP_HOST=app.localhost:3000` and `NEXT_PUBLIC_API_URL=ht
 **Env vars (Laravel):**
 
 ```
-APP_URL=https://api.alrayan-academy.com
-SESSION_DOMAIN=.alrayan-academy.com
-SANCTUM_STATEFUL_DOMAINS=alrayan-academy.com,app.alrayan-academy.com,staging.alrayan-academy.com,app-staging.alrayan-academy.com,localhost:3000,app.localhost:3000
-SYSTEM_FRONTEND_URL=https://app.alrayan-academy.com
-SYSTEM_FRONTEND_URL_STAGING=https://app-staging.alrayan-academy.com
+APP_URL=https://api.zadacademiq.com
+SESSION_DOMAIN=.zadacademiq.com
+SANCTUM_STATEFUL_DOMAINS=zadacademiq.com,app.zadacademiq.com,staging.zadacademiq.com,app-staging.zadacademiq.com,localhost:3000,app.localhost:3000
+SYSTEM_FRONTEND_URL=https://app.zadacademiq.com
+SYSTEM_FRONTEND_URL_STAGING=https://app-staging.zadacademiq.com
 ```
 
 ---
@@ -74,8 +74,8 @@ SYSTEM_FRONTEND_URL_STAGING=https://app-staging.alrayan-academy.com
 ```ts
 import { NextResponse, type NextRequest } from 'next/server'
 
-const APP_HOST = process.env.NEXT_PUBLIC_APP_HOST!         // app.alrayan-academy.com OR app.localhost:3000
-const SITE_HOST = process.env.NEXT_PUBLIC_SITE_HOST!       // alrayan-academy.com OR localhost:3000
+const APP_HOST = process.env.NEXT_PUBLIC_APP_HOST!         // app.zadacademiq.com OR app.localhost:3000
+const SITE_HOST = process.env.NEXT_PUBLIC_SITE_HOST!       // zadacademiq.com OR localhost:3000
 
 function isAppHost(host: string) {
   return host === APP_HOST || host === `app-staging.${SITE_HOST}` || host.startsWith('app.localhost')
@@ -123,10 +123,10 @@ export const config = {
 
 **Tests** — Playwright (added in S1-12):
 
-- `https://alrayan-academy.com/students` → 404
-- `https://app.alrayan-academy.com/about` → 404
-- `https://app.alrayan-academy.com/login` → 200 + login UI
-- `https://alrayan-academy.com/` → 200 + marketing home
+- `https://zadacademiq.com/students` → 404
+- `https://app.zadacademiq.com/about` → 404
+- `https://app.zadacademiq.com/login` → 200 + login UI
+- `https://zadacademiq.com/` → 200 + marketing home
 
 ---
 
@@ -574,10 +574,10 @@ export function useStudents(params: { status?: string; q?: string } = {}) {
 ```php
 'paths' => ['api/*', 'sanctum/csrf-cookie'],
 'allowed_origins' => [
-    env('FRONTEND_URL'),                 // alrayan-academy.com
-    env('FRONTEND_URL_STAGING'),         // staging.alrayan-academy.com
-    env('SYSTEM_FRONTEND_URL'),          // app.alrayan-academy.com
-    env('SYSTEM_FRONTEND_URL_STAGING'),  // app-staging.alrayan-academy.com
+    env('FRONTEND_URL'),                 // zadacademiq.com
+    env('FRONTEND_URL_STAGING'),         // staging.zadacademiq.com
+    env('SYSTEM_FRONTEND_URL'),          // app.zadacademiq.com
+    env('SYSTEM_FRONTEND_URL_STAGING'),  // app-staging.zadacademiq.com
     'http://localhost:3000',
     'http://app.localhost:3000',
 ],
@@ -669,7 +669,7 @@ public function show()
 ```php
 return [
     'version' => '1.0.0',
-    'frontend_url' => env('SYSTEM_FRONTEND_URL', 'https://app.alrayan-academy.com'),
+    'frontend_url' => env('SYSTEM_FRONTEND_URL', 'https://app.zadacademiq.com'),
     'default_timezone' => env('SYSTEM_DEFAULT_TZ', 'Africa/Cairo'),
     'default_currency' => env('SYSTEM_DEFAULT_CURRENCY', 'USD'),
     'default_base_currency' => 'EGP',
@@ -869,7 +869,7 @@ Add to `.github/workflows/frontend-ci.yml` and `backend-deploy.yml`:
 
 - [ ] Push branch → CI passes (typecheck, lint, isolation script, tests)
 - [ ] Vercel preview attaches `app-preview-*.vercel.app` and `preview-*.vercel.app` (both hosts)
-- [ ] After merge → staging cuts over: `app-staging.alrayan-academy.com` reachable
+- [ ] After merge → staging cuts over: `app-staging.zadacademiq.com` reachable
 - [ ] Production cutover with owner approval
 - [ ] Lighthouse CLI on `/login` (the only public page) — capture baseline scores in PR description
 - [ ] Owner walks through: visit `/login`, see the design; check responsive at 375px; check dark mode; confirm marketing site is unchanged
@@ -952,9 +952,9 @@ docs/system/sprints/sys-01-foundation.md                (THIS FILE)
 
 Walk the owner through (~10 minutes):
 
-1. Open `alrayan-academy.com` — site looks unchanged.
-2. Open `app.alrayan-academy.com` — redirects to `/login`. Notice the navy left rail and the sign-in card.
-3. Try visiting `app.alrayan-academy.com/about` — 404. Try `alrayan-academy.com/students` — 404. The two are isolated.
+1. Open `zadacademiq.com` — site looks unchanged.
+2. Open `app.zadacademiq.com` — redirects to `/login`. Notice the navy left rail and the sign-in card.
+3. Try visiting `app.zadacademiq.com/about` — 404. Try `zadacademiq.com/students` — 404. The two are isolated.
 4. Stub a login by editing local cookie (or shell into Tinker and create a session) — see the dashboard placeholder.
 5. Click the sidebar collapse toggle — sidebar narrows. Reload — stays narrow.
 6. Toggle dark mode — every surface flips.

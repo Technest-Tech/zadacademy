@@ -57,7 +57,7 @@ The 21 modules from [../../../system-requirments.md](../../../system-requirments
 
 Every sprint must end with:
 
-1. ✅ All scoped pages/features deployed to **staging** at `app-staging.alrayan-academy.com`
+1. ✅ All scoped pages/features deployed to **staging** at `app-staging.zadacademiq.com`
 2. ✅ Lighthouse Performance ≥ 80 / Accessibility ≥ 95 on every new page (system targets are different from marketing)
 3. ✅ TypeScript: no `any`, no errors
 4. ✅ ESLint + Prettier pass; PHP CS Fixer / Pint pass
@@ -77,10 +77,10 @@ System-specific extras:
 
 ## SYS-01 — Foundation, Subdomain & Design System  *(DETAILED)*
 
-**Goal:** the system shell loads at `app.alrayan-academy.com`, looks like a polished admin tool, and is wired to a Laravel app that knows about a `system` guard. Empty pages are clickable; nothing functional yet.
+**Goal:** the system shell loads at `app.zadacademiq.com`, looks like a polished admin tool, and is wired to a Laravel app that knows about a `system` guard. Empty pages are clickable; nothing functional yet.
 
 **Highlights:**
-- DNS + Vercel project configured for `app.alrayan-academy.com` + staging subdomain.
+- DNS + Vercel project configured for `app.zadacademiq.com` + staging subdomain.
 - Next.js `middleware.ts` rewrites the host to the `(system)` route group.
 - Laravel: `routes/system.php` registered, `system` guard added, Spatie Permission installed and migrated, base controller + middleware in place.
 - System app shell: sidebar (collapsible), topbar (search shell, command palette stub, notification bell stub, user menu stub), breadcrumbs, page header.
@@ -265,7 +265,7 @@ These appear in [../../../system-requirments.md](../../../system-requirments.md)
 - Curriculum progress tracking (which Surah / Juz).
 - Coupon / discount codes for marketing campaigns.
 - Referral system (student brings student).
-- Student portal at `student.alrayan-academy.com`.
+- Student portal at `student.zadacademiq.com`.
 - Student change requests (schedule / teacher change via system).
 - Communication log per student.
 - Campaign ROI tracking in CRM.

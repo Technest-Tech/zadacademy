@@ -46,26 +46,27 @@ const socialLinks = [
 
 export function Footer() {
   const year = new Date().getFullYear()
+  const { Courses: courseLinks, ...otherNav } = footerNav
 
   return (
     <footer className="bg-primary text-white" role="contentinfo">
       {/* Main footer */}
-      <div className="section">
+      <div className="py-12 lg:py-14">
         <Container>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-12 lg:gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-x-8 gap-y-10">
             {/* Brand column — spans 2 cols on lg */}
-            <div className="lg:col-span-2 space-y-6">
+            <div className="lg:col-span-2 space-y-5">
               <Link
                 href="/"
-                aria-label="Azhary — Home"
+                aria-label="Zad Academy — Home"
                 className="inline-block"
               >
                 <Image
-                  src="/logo/alrayan-white.svg"
-                  alt="Azhary"
-                  width={200}
-                  height={52}
-                  className="h-12 w-auto"
+                  src="/logo/zad-logo.png"
+                  alt="Zad Academy"
+                  width={512}
+                  height={512}
+                  className="h-20 w-auto rounded-xl"
                 />
               </Link>
 
@@ -130,18 +131,37 @@ export function Footer() {
               </div>
             </div>
 
-            {/* Nav columns */}
+            {/* Courses — split into two columns, spans 2 cols on lg */}
+            <div className="lg:col-span-2">
+              <h3 className="text-sm font-semibold uppercase tracking-wider text-accent mb-4">
+                Courses
+              </h3>
+              <ul className="grid grid-cols-2 gap-x-6 gap-y-2.5" role="list">
+                {courseLinks.map((link) => (
+                  <li key={link.href}>
+                    <Link
+                      href={link.href}
+                      className="text-sm text-white/70 hover:text-white transition-colors"
+                    >
+                      {link.label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            {/* Remaining nav columns */}
             {(
-              Object.entries(footerNav) as [
-                keyof typeof footerNav,
+              Object.entries(otherNav) as [
+                string,
                 { label: string; href: string }[],
               ][]
             ).map(([group, links]) => (
               <div key={group}>
-                <h3 className="text-sm font-semibold uppercase tracking-wider text-accent mb-5">
+                <h3 className="text-sm font-semibold uppercase tracking-wider text-accent mb-4">
                   {group}
                 </h3>
-                <ul className="space-y-3" role="list">
+                <ul className="space-y-2.5" role="list">
                   {links.map((link) => (
                     <li key={link.href}>
                       <Link

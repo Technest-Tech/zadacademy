@@ -64,7 +64,7 @@ export function LoginForm() {
           id="email"
           type="email"
           autoComplete="email"
-          placeholder="you@alrayan-academy.com"
+          placeholder="you@zadacademiq.com"
           className={[
             'w-full px-4 py-3 rounded-xl text-sm outline-none transition-all',
             'focus:bg-white focus:border-[#C9A24B]',

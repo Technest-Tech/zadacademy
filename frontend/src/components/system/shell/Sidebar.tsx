@@ -47,7 +47,7 @@ export function Sidebar({ collapsed, onToggle, nav, mobileOpen, onMobileClose }:
           {showLabels ? (
             <div className="flex flex-col leading-none text-center">
               <span className="font-display text-[1.6rem] font-semibold tracking-tight text-white">
-                Azhary
+                Zad Academy
               </span>
               <span className="text-[0.6rem] font-semibold uppercase tracking-[0.22em] mt-0.5" style={{ color: '#C9A24B' }}>
                 Quran Academy

@@ -9,9 +9,9 @@ import { faqs, faqPageContent } from '@/content/faq'
 import { FaqContent } from '@/components/conversion/FaqContent'
 
 export const metadata: Metadata = buildMetadata({
-  title: 'FAQ | Quran Classes Online | Azhary',
+  title: 'FAQ | Quran Classes Online | Zad Academy',
   description:
-    "Answers to common questions about Azhary's online Quran, Arabic, and Islamic Studies classes — teachers, pricing, scheduling, and more.",
+    "Answers to common questions about Zad Academy's online Quran, Arabic, and Islamic Studies classes — teachers, pricing, scheduling, and more.",
   path: '/faq',
 })
 

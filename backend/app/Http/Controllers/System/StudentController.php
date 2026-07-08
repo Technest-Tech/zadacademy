@@ -100,7 +100,7 @@ class StudentController extends Controller
 
     private function generateStudentEmail(string $name): string
     {
-        $domain   = config('app.student_email_domain', 'students.alrayanquran.com');
+        $domain   = config('app.student_email_domain', 'students.zadacademiq.com');
         $slug     = Str::slug($name, '.');
         $email    = "{$slug}@{$domain}";
         $counter  = 2;

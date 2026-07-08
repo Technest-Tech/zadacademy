@@ -1,6 +1,6 @@
-# Alrayan Academy — Website Monorepo
+# Zad Academy — Website Monorepo
 
-Production website for [Alrayan Academy](https://alrayan-academy.com) (الريان) — premium online Quran, Arabic, and Islamic studies for English-speaking students in the USA, UK, Canada, Australia, and Europe.
+Production website for [Zad Academy](https://zadacademiq.com) (الريان) — premium online Quran, Arabic, and Islamic studies for English-speaking students in the USA, UK, Canada, Australia, and Europe.
 
 ```
 site/

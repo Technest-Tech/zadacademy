@@ -1,6 +1,6 @@
 import { ForgotPasswordForm } from '@/components/system/auth/ForgotPasswordForm'
 
-export const metadata = { title: 'Forgot password — Azhary' }
+export const metadata = { title: 'Forgot password — Zad Academy' }
 
 export default function ForgotPasswordPage() {
   return (

@@ -15,9 +15,9 @@
 - [ ] Floating WhatsApp button visible on every route, opens `wa.me` link
 - [ ] Footer renders with course/company/legal columns and social icons
 - [ ] All design tokens (colors, fonts, spacing, radii, shadows) accessible as Tailwind classes AND CSS variables
-- [ ] `https://api.alrayan-academy.com/api/v1/up` (locally `http://localhost:8000/api/v1/up`) returns `{"status":"ok"}`
+- [ ] `https://api.zadacademiq.com/api/v1/up` (locally `http://localhost:8000/api/v1/up`) returns `{"status":"ok"}`
 - [ ] GitHub Actions: typecheck + lint passes on every PR
-- [ ] Vercel staging deployed at `staging.alrayan-academy.com`
+- [ ] Vercel staging deployed at `staging.zadacademiq.com`
 - [ ] Lighthouse on staging home: Performance ≥ 95, Accessibility ≥ 95, Best Practices = 100, SEO ≥ 90
 - [ ] Mobile QA: tested on iPhone SE (375px) and Pixel 5 (393px)
 
@@ -27,7 +27,7 @@
 
 ### S1-01 — Repo & monorepo scaffolding *(0.5 day)*
 
-- [ ] Initialize git repo at `/Users/ahmedomar/Documents/Alrayan-Academy/site`
+- [ ] Initialize git repo at `/Users/ahmedomar/Documents/Zad Academy-Academy/site`
 - [ ] Create top-level `.gitignore` (covers `node_modules`, `.next`, `vendor`, `.env`, `.DS_Store`, etc.)
 - [ ] Create `frontend/` and `backend/` empty dirs
 - [ ] Top-level `README.md` describing both apps and how to run them
@@ -168,11 +168,11 @@ export const fontArabic = Amiri({
 
 ```ts
 export const siteConfig = {
-  name: 'Alrayan Academy',
+  name: 'Zad Academy',
   nameArabic: 'الريان',
   description: 'Premium online Quran, Arabic, and Islamic studies for students worldwide.',
-  url: process.env.NEXT_PUBLIC_SITE_URL ?? 'https://alrayan-academy.com',
-  email: 'info@alrayan-academy.com',
+  url: process.env.NEXT_PUBLIC_SITE_URL ?? 'https://zadacademiq.com',
+  email: 'info@zadacademiq.com',
   phone: '+20 100 000 0000',
   whatsapp: process.env.NEXT_PUBLIC_WHATSAPP ?? '201000000000',
   whatsappPrefilled: 'Assalamu alaikum, I would like to learn more about your courses.',
@@ -251,7 +251,7 @@ export const footerNav = {
 
 A clean, single-color-fillable logo with:
 - Left: small geometric mark (octagonal Islamic motif) in **gold** (`#C9A24B`)
-- Right: stacked wordmark — top line "الريان" in **Amiri** navy (`#0B1F3A`), bottom line "Alrayan Academy" in **Fraunces small caps** navy
+- Right: stacked wordmark — top line "الريان" in **Amiri** navy (`#0B1F3A`), bottom line "Zad Academy" in **Fraunces small caps** navy
 - Total dimensions: 240 × 64
 
 Also create:
@@ -479,7 +479,7 @@ Add `pnpm typecheck` script in `frontend/package.json` (`tsc --noEmit`).
 - [ ] Push branch to GitHub
 - [ ] Vercel → import → root `frontend`
 - [ ] Add env vars (placeholders for now: `NEXT_PUBLIC_SITE_URL`, `NEXT_PUBLIC_API_URL`, `NEXT_PUBLIC_WHATSAPP`)
-- [ ] Add `staging.alrayan-academy.com` domain (after DNS CNAME set)
+- [ ] Add `staging.zadacademiq.com` domain (after DNS CNAME set)
 - [ ] First deploy succeeds → URL shared with owner
 
 ---
@@ -549,9 +549,9 @@ site/
 ## Owner inputs needed before sprint starts
 
 - [ ] Confirm WhatsApp number (or accept placeholder, swap later)
-- [ ] Confirm domain `alrayan-academy.com` is registered + DNS access available
+- [ ] Confirm domain `zadacademiq.com` is registered + DNS access available
 - [ ] Confirm Vercel + Hostinger/DO accounts exist (or create during sprint)
-- [ ] Confirm primary support email: is `info@alrayan-academy.com` correct?
+- [ ] Confirm primary support email: is `info@zadacademiq.com` correct?
 - [ ] Logo direction: is the placeholder geometric+wordmark approach acceptable for Sprint 1, with a polished version later?
 
 ---

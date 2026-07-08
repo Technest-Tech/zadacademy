@@ -180,7 +180,7 @@ Every sprint must end with:
 **Goal:** owner can self-serve content + bookings. Site is launch-ready.
 
 **Backend:**
-- Filament 3 admin panel at `https://api.alrayan-academy.com/admin`
+- Filament 3 admin panel at `https://api.zadacademiq.com/admin`
 - Resources: Trial Bookings (read + status), Contact Messages (read + reply), Courses (CRUD), Teachers (CRUD), Blog Posts (CRUD), Users (admin invites)
 - Roles via Spatie Permission: super-admin, editor
 - 2FA on admin login (Filament plugin)

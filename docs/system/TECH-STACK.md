@@ -86,7 +86,7 @@ shadcn/ui primitives, Tailwind, react-hook-form, zod, lucide-react, clsx, tailwi
 | **Object storage** | Backblaze B2 — `~$5/month for 1TB` | Invoice PDFs, certificate PDFs, exports, teacher photos. S3-compatible. |
 | **Queue workers** | systemd services on the VPS | One worker per queue: `default` (4 procs), `notifications` (2 procs), `reports` (1 proc). |
 | **Scheduler** | `cron` → `php artisan schedule:run` every minute | Standard Laravel. |
-| **DNS** | Add `app.alrayan-academy.com` CNAME → Vercel | Done in SYS-01. |
+| **DNS** | Add `app.zadacademiq.com` CNAME → Vercel | Done in SYS-01. |
 | **SSL** | Vercel auto for `app.*`; Let's Encrypt for `api.*` already configured | No new work. |
 
 Cost delta vs the site-only stack: ~**$25–35/month** for Redis + B2 + Vercel Pro upgrade (only if free tier is exhausted).

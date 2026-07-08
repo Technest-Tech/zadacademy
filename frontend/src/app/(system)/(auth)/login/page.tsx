@@ -2,7 +2,7 @@ import { Suspense } from 'react'
 import Image from 'next/image'
 import { LoginForm } from '@/components/system/auth/LoginForm'
 
-export const metadata = { title: 'Sign in — Azhary' }
+export const metadata = { title: 'Sign in — Zad Academy' }
 
 export default function LoginPage() {
   return (
@@ -55,8 +55,8 @@ export default function LoginPage() {
           <div>
             <div className="inline-flex items-center justify-center rounded-2xl bg-white p-3 shadow-lg">
               <Image
-                src="/logo/azhary.png"
-                alt="Azhary"
+                src="/logo/zad.png"
+                alt="Zad Academy"
                 width={72}
                 height={72}
                 priority
@@ -106,7 +106,7 @@ export default function LoginPage() {
 
           {/* Bottom badge */}
           <div className="text-xs" style={{ color: 'rgba(255,255,255,0.25)' }}>
-            © {new Date().getFullYear()} Azhary · All rights reserved
+            © {new Date().getFullYear()} Zad Academy · All rights reserved
           </div>
         </div>
       </div>
@@ -129,8 +129,8 @@ export default function LoginPage() {
             {/* Logo — full colour, centered */}
             <div className="flex justify-center mb-8">
               <Image
-                src="/logo/azhary.png"
-                alt="Azhary"
+                src="/logo/zad.png"
+                alt="Zad Academy"
                 width={120}
                 height={120}
                 priority
@@ -165,7 +165,7 @@ export default function LoginPage() {
           <p className="text-center text-xs mt-6" style={{ color: 'rgb(var(--status-neutral, 90 100 112))' }}>
             Authorised personnel only ·{' '}
             <a
-              href="mailto:support@alrayan-academy.com"
+              href="mailto:support@zadacademiq.com"
               className="hover:underline"
               style={{ color: 'rgb(11 31 58)' }}
             >

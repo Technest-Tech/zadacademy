@@ -13,7 +13,7 @@ export function organizationSchema() {
     url: siteConfig.url,
     email: siteConfig.email,
     telephone: siteConfig.phone,
-    logo: `${siteConfig.url}/logo/alrayan-full.svg`,
+    logo: `${siteConfig.url}/logo/zad-full.svg`,
     image: `${siteConfig.url}/og-default.jpg`,
     sameAs: Object.values(siteConfig.social),
     areaServed: 'Worldwide',
@@ -40,21 +40,6 @@ export function breadcrumbSchema(
       name: item.name,
       item: `${siteConfig.url}${item.href}`,
     })),
-  }
-}
-
-export function aboutPageSchema() {
-  return {
-    '@context': 'https://schema.org',
-    '@type': 'AboutPage',
-    name: `About ${siteConfig.name}`,
-    url: `${siteConfig.url}/about`,
-    description: 'Learn about Azhary — our mission, story, teaching approach, and certified teachers.',
-    publisher: {
-      '@type': 'EducationalOrganization',
-      name: siteConfig.name,
-      url: siteConfig.url,
-    },
   }
 }
 
@@ -133,7 +118,7 @@ export function blogPostingSchema(post: BlogPost) {
       url: siteConfig.url,
       logo: {
         '@type': 'ImageObject',
-        url: `${siteConfig.url}/logo/alrayan-full.svg`,
+        url: `${siteConfig.url}/logo/zad-full.svg`,
       },
     },
     timeRequired: `PT${post.reading_minutes}M`,

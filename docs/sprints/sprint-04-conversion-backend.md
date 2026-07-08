@@ -11,7 +11,7 @@
 - [ ] `/pricing`, `/faq`, `/contact` all render on staging with real copy
 - [ ] Submitting the trial booking form from staging:
   - Saves a `trial_bookings` row in the DB
-  - Sends `TrialBookingAdminNotification` to `info@alrayan-academy.com`
+  - Sends `TrialBookingAdminNotification` to `info@zadacademiq.com`
   - Sends `TrialBookingConfirmation` to the visitor's email
   - Returns `{ reference, message }` JSON to the frontend
   - UI displays the reference number + a WhatsApp deep link
@@ -210,8 +210,8 @@ export const faqs: FaqItem[] = [
   {
     id: 'g1',
     category: 'General',
-    q: 'What is Alrayan Academy?',
-    a: 'Alrayan Academy is an online Quran and Arabic education academy offering 1-on-1 live classes with certified teachers from Al-Azhar University and other leading Islamic institutions. We serve students in 50+ countries across all age groups and levels.',
+    q: 'What is Zad Academy?',
+    a: 'Zad Academy is an online Quran and Arabic education academy offering 1-on-1 live classes with certified teachers from Al-Azhar University and other leading Islamic institutions. We serve students in 50+ countries across all age groups and levels.',
   },
   {
     id: 'g2',
@@ -422,7 +422,7 @@ Reuse the existing `Accordion` component from `@/components/ui/accordion`. Secti
 **Metadata:**
 ```ts
 export const metadata: Metadata = buildMetadata({
-  title: 'Quran Class Pricing | Transparent Plans | Alrayan Academy',
+  title: 'Quran Class Pricing | Transparent Plans | Zad Academy',
   description: 'Simple, transparent pricing for online Quran classes. Plans from $30/month. Free first class, no contracts, cancel anytime.',
   path: '/pricing',
 })
@@ -480,8 +480,8 @@ const allFaqs = faqs.map(({ q, a }) => ({ q, a }))
 **Metadata:**
 ```ts
 export const metadata: Metadata = buildMetadata({
-  title: 'FAQ | Quran Classes Online | Alrayan Academy',
-  description: 'Answers to common questions about Alrayan Academy\'s online Quran, Arabic, and Islamic Studies classes — teachers, pricing, scheduling, and more.',
+  title: 'FAQ | Quran Classes Online | Zad Academy',
+  description: 'Answers to common questions about Zad Academy\'s online Quran, Arabic, and Islamic Studies classes — teachers, pricing, scheduling, and more.',
   path: '/faq',
 })
 ```
@@ -812,7 +812,7 @@ Right column (`lg:col-span-2`):
 - Sticky `top-32`
 - Contact info card: `bg-white rounded-2xl p-8 border border-border-soft shadow-sm`
   - Section heading "Get in Touch"
-  - Email row: `Mail` icon + `info@alrayan-academy.com`
+  - Email row: `Mail` icon + `info@zadacademiq.com`
   - WhatsApp row: phone icon + WhatsApp link "Chat on WhatsApp"
   - Hours row: `Clock` icon + "7 days a week · All timezones"
   - Divider
@@ -823,7 +823,7 @@ The toggle is a client component (`'use client'`) that wraps the right column, m
 **Metadata:**
 ```ts
 export const metadata: Metadata = buildMetadata({
-  title: 'Book a Free Trial Quran Class | Contact Alrayan Academy',
+  title: 'Book a Free Trial Quran Class | Contact Zad Academy',
   description: 'Book your free first Quran class. Fill out the form and we will match you with a certified teacher within 24 hours. No credit card required.',
   path: '/contact',
 })
@@ -1127,7 +1127,7 @@ Same pattern as `TrialBookingController`. Validates `name`, `email`, `subject`, 
 Four Mailables, each extending `Mailable` + implements `ShouldQueue`.
 
 **Common email design (all four):**
-- Branded Blade layout: navy header band (`#0B1F3A`) with white logo text "Alrayan Academy", gold `#C9A96E` horizontal divider, white content area, footer with academy email + WhatsApp number
+- Branded Blade layout: navy header band (`#0B1F3A`) with white logo text "Zad Academy", gold `#C9A96E` horizontal divider, white content area, footer with academy email + WhatsApp number
 - Plain-text version included (`->text('mail.plain')` or inline `->text()`)
 
 **`TrialBookingAdminNotification`:**
@@ -1148,7 +1148,7 @@ Body:
 - "Your booking is confirmed. Here are your details:" — small table (Course / Preferred Time / Reference)
 - "What happens next?" — 3 steps: "We match you with a teacher → You receive a WhatsApp message with the meeting link → First class is free, no payment required."
 - Gold CTA button: "Chat on WhatsApp"
-- Closing: "Jazakum Allahu khayran — The Alrayan Academy Team"
+- Closing: "Jazakum Allahu khayran — The Zad Academy Team"
 
 **`ContactReceived`:** Subject + table of fields. Simple admin notification.
 
@@ -1190,15 +1190,15 @@ backend/resources/views/mail/
 In `.env`:
 ```
 MAIL_MAILER=resend
-MAIL_FROM_ADDRESS=info@alrayan-academy.com
-MAIL_FROM_NAME="Alrayan Academy"
-MAIL_ADMIN_ADDRESS=info@alrayan-academy.com
+MAIL_FROM_ADDRESS=info@zadacademiq.com
+MAIL_FROM_NAME="Zad Academy"
+MAIL_ADMIN_ADDRESS=info@zadacademiq.com
 RESEND_API_KEY=
 ```
 
 Add `admin_address` to `config/mail.php`:
 ```php
-'admin_address' => env('MAIL_ADMIN_ADDRESS', 'info@alrayan-academy.com'),
+'admin_address' => env('MAIL_ADMIN_ADDRESS', 'info@zadacademiq.com'),
 ```
 
 Queue driver in `.env`:
@@ -1238,7 +1238,7 @@ Route::prefix('v1')
 
 `.env` (staging):
 ```
-CORS_ALLOWED_ORIGINS=https://staging.alrayan-academy.com,https://alrayan-academy.com
+CORS_ALLOWED_ORIGINS=https://staging.zadacademiq.com,https://zadacademiq.com
 ```
 
 **Acceptance:**
@@ -1403,10 +1403,10 @@ backend/
 ## Owner inputs needed before sprint ends
 
 - [ ] **Cloudflare Turnstile keys** — create a widget at dash.cloudflare.com, provide `TURNSTILE_SITE_KEY` + `TURNSTILE_SECRET_KEY`
-- [ ] **Resend API key** — create account at resend.com, verify `alrayan-academy.com` domain, provide `RESEND_API_KEY`
+- [ ] **Resend API key** — create account at resend.com, verify `zadacademiq.com` domain, provide `RESEND_API_KEY`
 - [ ] **Confirm pricing** — approve $30 / $50 / $70 USD tier pricing
 - [ ] **WhatsApp number** — confirm the final number (currently placeholder `201000000000`)
-- [ ] **Admin email** — confirm `info@alrayan-academy.com` is the right destination for booking notifications
+- [ ] **Admin email** — confirm `info@zadacademiq.com` is the right destination for booking notifications
 
 ---
 
