@@ -1,56 +1,67 @@
+// Navigation structure. Labels are dictionary KEYS (resolved via the i18n
+// translator), not literal strings, so the same structure serves EN and FR.
+// hrefs are the un-prefixed (English) paths; components add the `/fr` prefix
+// for French via localizedHref().
+
 export type NavItem = {
-  label: string
+  labelKey: string
   href: string
   children?: NavItem[]
 }
 
+// Course slugs in display order. Labels come from `courseLinks.<slug>`.
+export const courseSlugs = [
+  'quran-classes-for-kids',
+  'quran-classes-for-adults',
+  'tajweed-course',
+  'hifz-memorization',
+  'noorani-qaida',
+  'arabic-for-non-arabs',
+  'islamic-studies',
+  'ijazah-program',
+  'tafseer-course',
+  'ten-qiraat',
+  'female-quran-teachers',
+] as const
+
+const courseChildren: NavItem[] = courseSlugs.map((slug) => ({
+  labelKey: `courseLinks.${slug}`,
+  href: `/courses/${slug}`,
+}))
+
 export const mainNav: NavItem[] = [
-  { label: 'Home', href: '/' },
-  { label: 'Teachers', href: '/#teachers' },
-  {
-    label: 'Courses',
-    href: '/courses',
-    children: [
-      { label: 'Quran for Kids', href: '/courses/quran-classes-for-kids' },
-      { label: 'Quran for Adults', href: '/courses/quran-classes-for-adults' },
-      { label: 'Tajweed Course', href: '/courses/tajweed-course' },
-      { label: 'Hifz / Memorization', href: '/courses/hifz-memorization' },
-      { label: 'Noorani Qaida', href: '/courses/noorani-qaida' },
-      { label: 'Arabic for Non-Arabs', href: '/courses/arabic-for-non-arabs' },
-      { label: 'Islamic Studies', href: '/courses/islamic-studies' },
-      { label: 'Ijazah Program', href: '/courses/ijazah-program' },
-      { label: 'Tafseer', href: '/courses/tafseer-course' },
-      { label: 'Ten Qiraat', href: '/courses/ten-qiraat' },
-      { label: 'Female Teachers', href: '/courses/female-quran-teachers' },
-    ],
-  },
-  { label: 'Pricing', href: '/pricing' },
-  { label: 'Blog', href: '/blog' },
-  { label: 'FAQ', href: '/faq' },
+  { labelKey: 'nav.home', href: '/' },
+  { labelKey: 'nav.teachers', href: '/#teachers' },
+  { labelKey: 'nav.courses', href: '/courses', children: courseChildren },
+  { labelKey: 'nav.pricing', href: '/pricing' },
+  { labelKey: 'nav.blog', href: '/blog' },
+  { labelKey: 'nav.faq', href: '/faq' },
 ]
 
-export const footerNav = {
-  Courses: [
-    { label: 'Noorani Qaida', href: '/courses/noorani-qaida' },
-    { label: 'Quran for Kids', href: '/courses/quran-classes-for-kids' },
-    { label: 'Quran for Adults', href: '/courses/quran-classes-for-adults' },
-    { label: 'Tajweed Course', href: '/courses/tajweed-course' },
-    { label: 'Hifz / Memorization', href: '/courses/hifz-memorization' },
-    { label: 'Tafseer', href: '/courses/tafseer-course' },
-    { label: 'Ijazah Program', href: '/courses/ijazah-program' },
-    { label: 'Ten Qiraat', href: '/courses/ten-qiraat' },
-    { label: 'Arabic for Non-Arabs', href: '/courses/arabic-for-non-arabs' },
-    { label: 'Islamic Studies', href: '/courses/islamic-studies' },
-    { label: 'Female Teachers', href: '/courses/female-quran-teachers' },
-  ],
-  Company: [
-    { label: 'Pricing', href: '/pricing' },
-    { label: 'FAQ', href: '/faq' },
-    { label: 'Blog', href: '/blog' },
-    { label: 'Contact', href: '/contact' },
-  ],
-  Legal: [
-    { label: 'Privacy Policy', href: '/privacy' },
-    { label: 'Terms of Service', href: '/terms' },
-  ],
+export type FooterGroup = {
+  headingKey: string
+  items: NavItem[]
+}
+
+export const footerNav: Record<'courses' | 'company' | 'legal', FooterGroup> = {
+  courses: {
+    headingKey: 'footer.coursesHeading',
+    items: courseChildren,
+  },
+  company: {
+    headingKey: 'footer.companyHeading',
+    items: [
+      { labelKey: 'footer.pricing', href: '/pricing' },
+      { labelKey: 'footer.faq', href: '/faq' },
+      { labelKey: 'footer.blog', href: '/blog' },
+      { labelKey: 'footer.contact', href: '/contact' },
+    ],
+  },
+  legal: {
+    headingKey: 'footer.legalHeading',
+    items: [
+      { labelKey: 'footer.privacy', href: '/privacy' },
+      { labelKey: 'footer.terms', href: '/terms' },
+    ],
+  },
 }

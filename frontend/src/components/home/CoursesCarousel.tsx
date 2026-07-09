@@ -19,6 +19,8 @@ import {
 import type { LucideIcon } from 'lucide-react'
 import { LinkButton } from '@/components/ui/link-button'
 import type { Course } from '@/content/courses'
+import { useT } from '@/i18n/MarketingI18nProvider'
+import { localizedHref } from '@/i18n/href'
 
 const iconMap: Record<string, LucideIcon> = {
   BookOpen, Star, Mic, Brain, Award, Globe, Lightbulb, BookMarked, Layers, Heart,
@@ -39,6 +41,7 @@ const iconAccent: Record<string, string> = {
 }
 
 export function CoursesCarousel({ courses }: { courses: Course[] }) {
+  const { locale, t } = useT()
   const trackRef = useRef<HTMLDivElement>(null)
   const [canLeft, setCanLeft]   = useState(false)
   const [canRight, setCanRight] = useState(true)
@@ -76,10 +79,10 @@ export function CoursesCarousel({ courses }: { courses: Course[] }) {
       <div className="flex items-end justify-between mb-8 gap-4">
         <div>
           <p className="text-secondary text-sm font-semibold uppercase tracking-wider mb-2">
-            Our Courses
+            {t('coursesCarousel.eyebrow')}
           </p>
           <h2 className="heading-xl font-heading text-primary">
-            What Would You Like to Learn?
+            {t('coursesCarousel.heading')}
           </h2>
         </div>
         {/* Nav arrows */}
@@ -87,7 +90,7 @@ export function CoursesCarousel({ courses }: { courses: Course[] }) {
           <button
             onClick={() => nudge('left')}
             disabled={!canLeft}
-            aria-label="Scroll left"
+            aria-label={t('common.scrollLeft')}
             className="size-10 rounded-full border border-border-soft bg-white shadow-sm flex items-center justify-center text-primary hover:border-secondary/50 hover:text-secondary disabled:opacity-30 disabled:cursor-not-allowed transition-all"
           >
             <ChevronLeft className="size-4" />
@@ -95,7 +98,7 @@ export function CoursesCarousel({ courses }: { courses: Course[] }) {
           <button
             onClick={() => nudge('right')}
             disabled={!canRight}
-            aria-label="Scroll right"
+            aria-label={t('common.scrollRight')}
             className="size-10 rounded-full border border-border-soft bg-white shadow-sm flex items-center justify-center text-primary hover:border-secondary/50 hover:text-secondary disabled:opacity-30 disabled:cursor-not-allowed transition-all"
           >
             <ChevronRight className="size-4" />
@@ -116,7 +119,7 @@ export function CoursesCarousel({ courses }: { courses: Course[] }) {
           return (
             <a
               key={course.slug}
-              href={`/courses/${course.slug}`}
+              href={localizedHref(`/courses/${course.slug}`, locale)}
               data-card
               className="group shrink-0 w-[272px] md:w-[300px] bg-white rounded-2xl p-6 border border-border-soft shadow-soft hover:shadow-md hover:border-secondary/30 transition-all duration-200 flex flex-col"
               style={{ scrollSnapAlign: 'start' }}
@@ -127,7 +130,7 @@ export function CoursesCarousel({ courses }: { courses: Course[] }) {
                   <Icon className="size-5" aria-hidden="true" />
                 </div>
                 <span className={`text-[11px] font-semibold px-2.5 py-1 rounded-full ${badgeCls}`}>
-                  {course.level}
+                  {t(`common.levels.${course.level}`)}
                 </span>
               </div>
 
@@ -144,13 +147,13 @@ export function CoursesCarousel({ courses }: { courses: Course[] }) {
               {/* Meta */}
               {(course.ageGroup ?? course.durationMonths) && (
                 <p className="text-[11px] text-muted-text mb-3 font-medium">
-                  {course.ageGroup ?? `~${course.durationMonths} months`}
+                  {course.ageGroup ?? t('coursePage.lengthMonths', { n: course.durationMonths ?? '' })}
                 </p>
               )}
 
               {/* CTA */}
               <span className="flex items-center gap-1.5 text-secondary text-sm font-semibold mt-auto">
-                Learn more
+                {t('coursesIndex.learnMore')}
                 <ArrowRight
                   className="size-3.5 group-hover:translate-x-0.5 transition-transform"
                   aria-hidden="true"
@@ -163,9 +166,9 @@ export function CoursesCarousel({ courses }: { courses: Course[] }) {
 
       {/* ── Footer ── */}
       <div className="flex items-center justify-between mt-6">
-        <p className="text-muted-text text-sm">{courses.length} courses available</p>
-        <LinkButton href="/courses" variant="outline" size="sm">
-          View All Courses
+        <p className="text-muted-text text-sm">{t('coursesCarousel.coursesAvailable', { n: courses.length })}</p>
+        <LinkButton href={localizedHref('/courses', locale)} variant="outline" size="sm">
+          {t('coursesGrid.viewAll')}
         </LinkButton>
       </div>
     </div>

@@ -8,6 +8,9 @@ import { whatsappLink } from '@/config/site'
 import { fetchTeachers, fetchTeacher } from '@/content/teachersApi'
 import { TeacherCard } from '@/components/teachers/TeacherCard'
 import { ReviewForm } from '@/components/teachers/ReviewForm'
+import { getLocale } from '@/i18n/getLocale'
+import { getT } from '@/i18n/getDictionary'
+import { localizedHref } from '@/i18n/href'
 import {
   BookOpen,
   Clock,
@@ -33,12 +36,14 @@ export async function generateStaticParams() {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { id } = await params
-  const t = await fetchTeacher(id)
+  const locale = await getLocale()
+  const t = await fetchTeacher(id, locale)
   if (!t) return {}
   return buildMetadata({
     title: `${t.name} — ${t.role} | Zad Academy`,
     description: t.bio,
     path: `/our-teachers/${id}`,
+    locale,
   })
 }
 
@@ -67,9 +72,9 @@ function PanelTitle({ icon: Icon, children }: { icon?: typeof Star; children: Re
   )
 }
 
-function Stars({ rating, className = 'size-4' }: { rating: number; className?: string }) {
+function Stars({ rating, label, className = 'size-4' }: { rating: number; label: string; className?: string }) {
   return (
-    <span className="flex" aria-label={`${rating} out of 5`}>
+    <span className="flex" aria-label={label}>
       {Array.from({ length: 5 }).map((_, i) => (
         <Star key={i} className={`${className} ${i < Math.round(rating) ? 'fill-accent text-accent' : 'text-white/25'}`} aria-hidden="true" />
       ))}
@@ -79,24 +84,26 @@ function Stars({ rating, className = 'size-4' }: { rating: number; className?: s
 
 export default async function TeacherPage({ params }: Props) {
   const { id } = await params
-  const t = await fetchTeacher(id)
+  const locale = await getLocale()
+  const tr = getT(locale)
+  const t = await fetchTeacher(id, locale)
   if (!t) notFound()
 
-  const similar = (await fetchTeachers()).filter((x) => x.id !== id).slice(0, 6)
-  const bookMsg = `Assalamu alaikum, I would like to book a class with ${t.name}.`
+  const similar = (await fetchTeachers(locale)).filter((x) => x.id !== id).slice(0, 6)
+  const bookMsg = tr('teacherPage.waBook', { name: t.name })
 
   const whyChooseMe = [
-    t.forChildren && 'Suitable for children',
-    t.freeTrial && 'Free trial lesson offered',
-    'Ijazah-certified teacher',
-    'One-on-one online lessons',
+    t.forChildren && tr('teacherPage.whySuitableChildren'),
+    t.freeTrial && tr('teacherPage.whyFreeTrial'),
+    tr('teacherPage.whyIjazah'),
+    tr('teacherPage.whyOneOnOne'),
   ].filter(Boolean) as string[]
 
   const breakdown = [
-    { label: 'Reassurance', value: t.ratingBreakdown.reassurance },
-    { label: 'Clarity', value: t.ratingBreakdown.clarity },
-    { label: 'Progression', value: t.ratingBreakdown.progression },
-    { label: 'Preparation', value: t.ratingBreakdown.preparation },
+    { label: tr('teacherPage.ratingReassurance'), value: t.ratingBreakdown.reassurance },
+    { label: tr('teacherPage.ratingClarity'), value: t.ratingBreakdown.clarity },
+    { label: tr('teacherPage.ratingProgression'), value: t.ratingBreakdown.progression },
+    { label: tr('teacherPage.ratingPreparation'), value: t.ratingBreakdown.preparation },
   ]
 
   return (
@@ -110,9 +117,9 @@ export default async function TeacherPage({ params }: Props) {
         dangerouslySetInnerHTML={{
           __html: JSON.stringify(
             breadcrumbSchema([
-              { name: 'Home', href: '/' },
-              { name: 'Teachers', href: '/#teachers' },
-              { name: t.name, href: `/our-teachers/${t.id}` },
+              { name: tr('nav.home'), href: localizedHref('/', locale) },
+              { name: tr('nav.teachers'), href: localizedHref('/#teachers', locale) },
+              { name: t.name, href: localizedHref(`/our-teachers/${t.id}`, locale) },
             ]),
           ),
         }}
@@ -141,7 +148,7 @@ export default async function TeacherPage({ params }: Props) {
                 <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-primary/50 via-transparent to-transparent" />
                 {t.forChildren && (
                   <span className="absolute left-3 top-3 inline-flex items-center gap-1.5 rounded-full bg-secondary px-3 py-1.5 text-xs font-semibold text-white shadow-lg">
-                    <Baby className="size-3.5" aria-hidden="true" /> Perfect for children
+                    <Baby className="size-3.5" aria-hidden="true" /> {tr('teacherPage.perfectForChildren')}
                   </span>
                 )}
               </div>
@@ -170,17 +177,17 @@ export default async function TeacherPage({ params }: Props) {
                 <div className="px-4 text-center">
                   <BookOpen className="mx-auto mb-2 size-5 text-emerald-400" aria-hidden="true" />
                   <div className="font-display text-2xl font-bold text-white">{t.coursesGiven}</div>
-                  <div className="mt-0.5 text-xs text-white/45">courses given</div>
+                  <div className="mt-0.5 text-xs text-white/45">{tr('teacherPage.coursesGiven')}</div>
                 </div>
                 <div className="px-4 text-center">
                   <Clock className="mx-auto mb-2 size-5 text-emerald-400" aria-hidden="true" />
                   <div className="font-display text-2xl font-bold text-white">{t.teachingHours.toLocaleString()}</div>
-                  <div className="mt-0.5 text-xs text-white/45">hours taught</div>
+                  <div className="mt-0.5 text-xs text-white/45">{tr('teacherPage.hoursTaught')}</div>
                 </div>
                 <div className="px-4 text-center">
                   <Star className="mx-auto mb-2 size-5 text-emerald-400" aria-hidden="true" />
                   <div className="font-display text-2xl font-bold text-white">{t.rating.toFixed(1)}<span className="text-base text-white/50"> /5</span></div>
-                  <div className="mt-0.5 text-xs text-white/45">{t.reviewsCount} reviews</div>
+                  <div className="mt-0.5 text-xs text-white/45">{t.reviewsCount} {tr('teacherPage.reviewsWord')}</div>
                 </div>
               </div>
 
@@ -196,13 +203,13 @@ export default async function TeacherPage({ params }: Props) {
               {/* Languages */}
               <div className="mt-6">
                 <p className="mb-2 flex items-center gap-1.5 text-sm text-white/60">
-                  <Globe className="size-4" aria-hidden="true" /> I speak
+                  <Globe className="size-4" aria-hidden="true" /> {tr('teacherPage.iSpeak')}
                 </p>
                 <div className="flex flex-wrap gap-2">
                   {t.languages.map((lang, i) => (
                     <span key={lang} className="rounded-lg border border-white/15 bg-white/[0.03] px-3 py-1.5 text-sm text-white">
                       {lang}
-                      <span className="ml-1.5 text-xs text-white/40">{i === 0 ? '· Native' : '· Fluent'}</span>
+                      <span className="ml-1.5 text-xs text-white/40">{i === 0 ? tr('teacherPage.native') : tr('teacherPage.fluent')}</span>
                     </span>
                   ))}
                 </div>
@@ -213,11 +220,11 @@ export default async function TeacherPage({ params }: Props) {
                 <div className="flex items-center gap-3">
                   <p className="text-white">
                     <span className="text-3xl font-bold">€{t.hourlyRate}</span>
-                    <span className="text-white/50"> /hour</span>
+                    <span className="text-white/50"> {tr('teacherPage.perHour')}</span>
                   </p>
                   {t.freeTrial && (
                     <span className="inline-flex items-center gap-1.5 rounded-full border border-secondary/40 bg-secondary/15 px-3 py-1.5 text-sm font-medium text-emerald-300">
-                      <Check className="size-4" aria-hidden="true" /> Free Trial
+                      <Check className="size-4" aria-hidden="true" /> {tr('teacherPage.freeTrialBadge')}
                     </span>
                   )}
                 </div>
@@ -227,7 +234,7 @@ export default async function TeacherPage({ params }: Props) {
                   rel="noopener noreferrer"
                   className="ml-auto inline-flex items-center gap-2.5 rounded-xl bg-[#25D366] px-7 py-3.5 font-semibold text-white shadow-lg transition-transform hover:scale-[1.03]"
                 >
-                  <MessageCircle className="size-5" aria-hidden="true" /> Book a course
+                  <MessageCircle className="size-5" aria-hidden="true" /> {tr('teacherPage.bookCourse')}
                 </a>
               </div>
             </div>
@@ -242,16 +249,16 @@ export default async function TeacherPage({ params }: Props) {
           <div className="space-y-6">
             {/* About */}
             <Panel>
-              <PanelTitle>About me</PanelTitle>
+              <PanelTitle>{tr('teacherPage.about')}</PanelTitle>
               <p className="leading-relaxed text-white/70">{t.about}</p>
             </Panel>
 
             {/* Journey */}
             <Panel>
-              <PanelTitle>My journey</PanelTitle>
+              <PanelTitle>{tr('teacherPage.journey')}</PanelTitle>
 
               <h3 className="mb-3 flex items-center gap-2 text-sm font-semibold uppercase tracking-wide text-emerald-300">
-                <Briefcase className="size-4" aria-hidden="true" /> Professional experience
+                <Briefcase className="size-4" aria-hidden="true" /> {tr('teacherPage.professionalExperience')}
               </h3>
               <ol className="mb-7 space-y-5 border-l border-white/10 pl-5">
                 {t.journey.map((j, i) => (
@@ -266,7 +273,7 @@ export default async function TeacherPage({ params }: Props) {
               </ol>
 
               <h3 className="mb-3 flex items-center gap-2 text-sm font-semibold uppercase tracking-wide text-emerald-300">
-                <Award className="size-4" aria-hidden="true" /> Certifications &amp; diplomas
+                <Award className="size-4" aria-hidden="true" /> {tr('teacherPage.certificationsDiplomas')}
               </h3>
               <ul className="space-y-2.5">
                 {t.certifications.map((c, i) => (
@@ -283,19 +290,19 @@ export default async function TeacherPage({ params }: Props) {
 
             {/* Teaching style */}
             <Panel>
-              <PanelTitle>My teaching style</PanelTitle>
+              <PanelTitle>{tr('teacherPage.teachingStyle')}</PanelTitle>
               <p className="leading-relaxed text-white/70">{t.teachingStyle}</p>
             </Panel>
 
             {/* Strengths */}
             <Panel>
-              <PanelTitle>My strengths</PanelTitle>
+              <PanelTitle>{tr('teacherPage.strengths')}</PanelTitle>
               <p className="leading-relaxed text-white/70">{t.strengths}</p>
             </Panel>
 
             {/* Specialties */}
             <Panel>
-              <PanelTitle>My specialties</PanelTitle>
+              <PanelTitle>{tr('teacherPage.specialties')}</PanelTitle>
               <div className="grid gap-4 sm:grid-cols-2">
                 {t.specialtyDetails.map((s) => (
                   <div key={s.title} className="rounded-xl border border-white/10 bg-white/[0.02] p-4">
@@ -309,8 +316,8 @@ export default async function TeacherPage({ params }: Props) {
             {/* Reviews */}
             <Panel>
               <div className="mb-5 flex items-center justify-between">
-                <PanelTitle>What my students say</PanelTitle>
-                <span className="text-sm text-white/45">{t.reviews.length} reviews</span>
+                <PanelTitle>{tr('teacherPage.reviews')}</PanelTitle>
+                <span className="text-sm text-white/45">{t.reviews.length} {tr('teacherPage.reviewsWord')}</span>
               </div>
 
               {/* Breakdown */}
@@ -333,7 +340,7 @@ export default async function TeacherPage({ params }: Props) {
                       </div>
                       <div className="flex items-center gap-2">
                         <span className="font-semibold text-white">{r.author}</span>
-                        <Stars rating={r.rating} className="size-3.5" />
+                        <Stars rating={r.rating} label={tr('common.ratingAria', { rating: r.rating })} className="size-3.5" />
                       </div>
                     </div>
                     <p className="mt-2.5 text-sm leading-relaxed text-white/65">{r.text}</p>
@@ -344,7 +351,7 @@ export default async function TeacherPage({ params }: Props) {
 
             {/* Leave a review */}
             <Panel>
-              <PanelTitle>Leave a review</PanelTitle>
+              <PanelTitle>{tr('teacherPage.leaveReview')}</PanelTitle>
               <ReviewForm teacherName={t.name} />
             </Panel>
           </div>
@@ -353,7 +360,7 @@ export default async function TeacherPage({ params }: Props) {
           <aside className="space-y-6 lg:sticky lg:top-28 lg:self-start">
             {/* Availability */}
             <Panel className="p-5 sm:p-6">
-              <PanelTitle icon={CalendarDays}>Availability</PanelTitle>
+              <PanelTitle icon={CalendarDays}>{tr('teacherPage.availability')}</PanelTitle>
               <ul className="space-y-1">
                 {t.availability.map((d) => (
                   <li
@@ -362,7 +369,7 @@ export default async function TeacherPage({ params }: Props) {
                   >
                     <span className={d.slots ? 'font-medium text-emerald-300' : 'text-white/40'}>{d.day}</span>
                     <span className={d.slots ? 'text-emerald-200/80' : 'text-white/30'}>
-                      {d.slots ?? 'Unavailable'}
+                      {d.slots ?? tr('teacherPage.unavailable')}
                     </span>
                   </li>
                 ))}
@@ -373,13 +380,13 @@ export default async function TeacherPage({ params }: Props) {
                 rel="noopener noreferrer"
                 className="mt-4 flex w-full items-center justify-center gap-2 rounded-xl bg-secondary py-3.5 font-semibold text-white transition-colors hover:bg-[#0a6849]"
               >
-                <MessageCircle className="size-5" aria-hidden="true" /> Book now
+                <MessageCircle className="size-5" aria-hidden="true" /> {tr('teacherPage.bookNow')}
               </a>
             </Panel>
 
             {/* Why choose me */}
             <Panel className="p-5 sm:p-6">
-              <h3 className="mb-4 font-heading text-lg font-bold text-white">Why choose me?</h3>
+              <h3 className="mb-4 font-heading text-lg font-bold text-white">{tr('teacherPage.whyChooseMe')}</h3>
               <ul className="space-y-3">
                 {whyChooseMe.map((w) => (
                   <li key={w} className="flex items-center gap-2.5 text-sm text-white/75">
@@ -397,15 +404,15 @@ export default async function TeacherPage({ params }: Props) {
         {/* ═══ Similar teachers ═══ */}
         <section className="mt-16">
           <div className="mb-6 flex items-center justify-between">
-            <h2 className="font-heading text-2xl font-bold text-white">Similar teachers</h2>
-            <Link href="/#teachers" className="text-sm font-medium text-emerald-300 hover:text-accent">
-              View all →
+            <h2 className="font-heading text-2xl font-bold text-white">{tr('teacherPage.similar')}</h2>
+            <Link href={localizedHref('/#teachers', locale)} className="text-sm font-medium text-emerald-300 hover:text-accent">
+              {tr('teacherPage.viewAll')}
             </Link>
           </div>
           <div className="flex gap-5 overflow-x-auto pb-4 [scrollbar-width:thin]">
             {similar.map((s) => (
               <div key={s.id} className="w-[270px] shrink-0">
-                <TeacherCard t={s} />
+                <TeacherCard t={s} locale={locale} />
               </div>
             ))}
           </div>

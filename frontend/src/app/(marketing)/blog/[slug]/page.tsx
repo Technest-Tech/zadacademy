@@ -1,6 +1,10 @@
 import type { Metadata } from 'next'
+import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { buildMetadata } from '@/lib/seo'
+import { getLocale } from '@/i18n/getLocale'
+import { getT } from '@/i18n/getDictionary'
+import { localizedHref } from '@/i18n/href'
 import { breadcrumbSchema, blogPostingSchema } from '@/lib/schema'
 import { Section } from '@/components/layout/Section'
 import { Container } from '@/components/layout/Container'
@@ -44,6 +48,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     description: post.seo_description ?? post.excerpt,
     path: `/blog/${slug}`,
     type: 'article',
+    locale: await getLocale(),
   })
 }
 
@@ -69,6 +74,8 @@ function addHeadingIds(html: string): string {
 
 export default async function BlogPostPage({ params }: Props) {
   const { slug } = await params
+  const locale = await getLocale()
+  const t = getT(locale)
   const post = await getPost(slug)
   if (!post) notFound()
 
@@ -115,10 +122,10 @@ export default async function BlogPostPage({ params }: Props) {
         />
         <Container className="relative max-w-4xl">
           {/* Breadcrumb */}
-          <nav className="flex items-center gap-2 text-white/60 text-sm mb-6" aria-label="Breadcrumb">
-            <a href="/" className="hover:text-white transition-colors">Home</a>
+          <nav className="flex items-center gap-2 text-white/60 text-sm mb-6" aria-label={t('countryPage.breadcrumb')}>
+            <Link href={localizedHref('/', locale)} className="hover:text-white transition-colors">{t('nav.home')}</Link>
             <span aria-hidden="true">/</span>
-            <a href="/blog" className="hover:text-white transition-colors">Blog</a>
+            <Link href={localizedHref('/blog', locale)} className="hover:text-white transition-colors">{t('nav.blog')}</Link>
             <span aria-hidden="true">/</span>
             <span className="text-white/40 line-clamp-1">{post.title}</span>
           </nav>

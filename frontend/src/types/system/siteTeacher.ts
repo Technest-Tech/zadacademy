@@ -4,6 +4,7 @@ export interface SiteTeacherReview {
   author: string
   rating: number
   text: string
+  text_fr?: string | null
   approved: boolean
   sort_order: number
 }
@@ -40,6 +41,19 @@ export interface SiteTeacher {
   strengths: string | null
   featured: boolean
   sort_order: number
+  // French translations (nullable — served on the public API when ?locale=fr)
+  role_fr?: string | null
+  title_fr?: string | null
+  country_fr?: string | null
+  bio_fr?: string | null
+  credentials_fr?: string | null
+  quote_fr?: string | null
+  about_fr?: string | null
+  teaching_style_fr?: string | null
+  strengths_fr?: string | null
+  specialties_fr?: string[] | null
+  languages_fr?: string[] | null
+  tags_fr?: string[] | null
   reviews_count_relation?: number
   reviews?: SiteTeacherReview[]
 }

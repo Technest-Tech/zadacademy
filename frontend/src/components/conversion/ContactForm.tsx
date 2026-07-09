@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useMemo } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
@@ -9,6 +9,8 @@ import { Button } from '@/components/ui/button'
 import { FormField } from './FormField'
 import { SuccessState } from './SuccessState'
 import { TurnstileWidget } from './TurnstileWidget'
+import { useT } from '@/i18n/MarketingI18nProvider'
+import type { TranslateFn } from '@/i18n/translate'
 
 // Cloudflare Turnstile is optional: the captcha only appears (and is required)
 // when a site key is configured. Without one, the form submits without it and
@@ -17,32 +19,36 @@ const SITE_KEY = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY
 const CAPTCHA_ENABLED = Boolean(SITE_KEY)
 const API_URL = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:8000'
 
-const schema = z
-  .object({
-    name: z.string().min(2, 'Full name required'),
-    email: z.string().email('Valid email required'),
-    subject: z.string().min(3, 'Subject required'),
-    message: z.string().min(10, 'Please write at least 10 characters'),
-    turnstileToken: z.string().optional(),
-  })
-  .superRefine((val, ctx) => {
-    if (CAPTCHA_ENABLED && !val.turnstileToken) {
-      ctx.addIssue({
-        code: 'custom',
-        message: 'Please complete the security check',
-        path: ['turnstileToken'],
-      })
-    }
-  })
+const makeSchema = (t: TranslateFn) =>
+  z
+    .object({
+      name: z.string().min(2, t('contactForm.nameRequired')),
+      email: z.string().email(t('contactForm.emailInvalid')),
+      subject: z.string().min(3, t('contactForm.subjectRequired')),
+      message: z.string().min(10, t('contactForm.messageMin')),
+      turnstileToken: z.string().optional(),
+    })
+    .superRefine((val, ctx) => {
+      if (CAPTCHA_ENABLED && !val.turnstileToken) {
+        ctx.addIssue({
+          code: 'custom',
+          message: t('contactForm.captchaRequired'),
+          path: ['turnstileToken'],
+        })
+      }
+    })
 
-type FormValues = z.infer<typeof schema>
+type FormValues = z.infer<ReturnType<typeof makeSchema>>
 
 type Status = 'idle' | 'loading' | 'success' | 'error'
 
 export function ContactForm() {
+  const { t, locale } = useT()
   const [status, setStatus] = useState<Status>('idle')
   const [reference, setReference] = useState('')
   const [errorMsg, setErrorMsg] = useState('')
+
+  const schema = useMemo(() => makeSchema(t), [locale])
 
   const {
     register,
@@ -69,14 +75,14 @@ export function ContactForm() {
       })
       if (!res.ok) {
         const err = await res.json().catch(() => ({}))
-        throw new Error((err as { message?: string }).message ?? 'Submission failed')
+        throw new Error((err as { message?: string }).message ?? t('contactForm.errorGeneric'))
       }
       const json = (await res.json()) as { reference: string }
       setReference(json.reference)
       setStatus('success')
     } catch (e) {
       setStatus('error')
-      setErrorMsg(e instanceof Error ? e.message : 'Something went wrong. Please try again.')
+      setErrorMsg(e instanceof Error ? e.message : t('contactForm.errorGeneric'))
     }
   }
 
@@ -91,19 +97,19 @@ export function ContactForm() {
       <div className="grid sm:grid-cols-2 gap-4">
         <FormField
           id="contact-name"
-          label="Full Name"
+          label={t('contactForm.nameLabel')}
           required
-          placeholder="Your name"
+          placeholder={t('contactForm.namePlaceholder')}
           error={errors.name?.message}
           disabled={isLoading}
           {...register('name')}
         />
         <FormField
           id="contact-email"
-          label="Email Address"
+          label={t('contactForm.emailLabel')}
           type="email"
           required
-          placeholder="you@example.com"
+          placeholder={t('contactForm.emailPlaceholder')}
           error={errors.email?.message}
           disabled={isLoading}
           {...register('email')}
@@ -112,9 +118,9 @@ export function ContactForm() {
 
       <FormField
         id="contact-subject"
-        label="Subject"
+        label={t('contactForm.subjectLabel')}
         required
-        placeholder="What is your question about?"
+        placeholder={t('contactForm.subjectPlaceholder')}
         error={errors.subject?.message}
         disabled={isLoading}
         {...register('subject')}
@@ -122,10 +128,10 @@ export function ContactForm() {
 
       <FormField
         id="contact-message"
-        label="Message"
+        label={t('contactForm.messageLabel')}
         as="textarea"
         required
-        placeholder="Write your message here…"
+        placeholder={t('contactForm.messagePlaceholder')}
         rows={4}
         error={errors.message?.message}
         disabled={isLoading}
@@ -161,10 +167,10 @@ export function ContactForm() {
         {isLoading ? (
           <>
             <Loader2 className="size-4 animate-spin" aria-hidden="true" />
-            Sending…
+            {t('contactForm.submitting')}
           </>
         ) : (
-          'Send Message'
+          t('contactForm.submit')
         )}
       </Button>
     </form>

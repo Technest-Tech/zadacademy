@@ -6,6 +6,7 @@ import type {
   RatingBreakdown,
   DaySchedule,
 } from './teachers'
+import type { Locale } from '@/i18n/config'
 
 const API = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:8001'
 
@@ -44,48 +45,101 @@ type ApiTeacher = {
   reviews?: ApiReview[]
 }
 
-const SPECIALTY_DESC: Record<string, string> = {
-  'Tajweed': 'Mastery of the rules of Tajweed for correct and fluent recitation of the Quran.',
-  'Hifz': 'A structured method to memorize the Holy Quran and retain it for life.',
-  'Hifz / Memorization': 'A structured method to memorize the Holy Quran and retain it for life.',
-  'Ijazah': 'Certification with an authentic, unbroken chain of transmission (sanad).',
-  'Ten Qiraat': 'The ten canonical modes of Quranic recitation, taught with precision.',
-  'Quran for Kids': 'A playful and caring approach to teaching children the Quran and Arabic.',
-  'Noorani Qaida': 'The foundational primer for reading Arabic letters and Quranic script.',
-  'Arabic for Non-Arabs': 'Arabic from the alphabet to conversation, built for non-native speakers.',
-  'Arabic': 'Arabic from the alphabet to conversation, built for non-native speakers.',
-  'Quranic Arabic': 'Understand the language of the Quran — grammar, vocabulary and meaning.',
-  'Islamic Studies': 'Introduction to Islamic sciences: fiqh, seerah, aqeedah and Muslim character.',
-  'Islamic Studies for Kids': 'Islamic manners and stories, taught in a way children love.',
-  'Tafseer': 'Deep study of the meanings and wisdom behind the verses of the Quran.',
-  'Seerah': 'The life of the Prophet ﷺ and the lessons it holds for us today.',
-  'Aqeedah': 'The foundations of Islamic belief, taught clearly and authentically.',
-  'Quran for Adults': 'Start or restart your Quran journey with patience and no judgment.',
-  'Revision Techniques': "Proven techniques to review and cement what you've memorized.",
+const SPECIALTY_DESC: Record<Locale, Record<string, string>> = {
+  en: {
+    'Tajweed': 'Mastery of the rules of Tajweed for correct and fluent recitation of the Quran.',
+    'Hifz': 'A structured method to memorize the Holy Quran and retain it for life.',
+    'Hifz / Memorization': 'A structured method to memorize the Holy Quran and retain it for life.',
+    'Ijazah': 'Certification with an authentic, unbroken chain of transmission (sanad).',
+    'Ten Qiraat': 'The ten canonical modes of Quranic recitation, taught with precision.',
+    'Quran for Kids': 'A playful and caring approach to teaching children the Quran and Arabic.',
+    'Noorani Qaida': 'The foundational primer for reading Arabic letters and Quranic script.',
+    'Arabic for Non-Arabs': 'Arabic from the alphabet to conversation, built for non-native speakers.',
+    'Arabic': 'Arabic from the alphabet to conversation, built for non-native speakers.',
+    'Quranic Arabic': 'Understand the language of the Quran — grammar, vocabulary and meaning.',
+    'Islamic Studies': 'Introduction to Islamic sciences: fiqh, seerah, aqeedah and Muslim character.',
+    'Islamic Studies for Kids': 'Islamic manners and stories, taught in a way children love.',
+    'Tafseer': 'Deep study of the meanings and wisdom behind the verses of the Quran.',
+    'Seerah': 'The life of the Prophet ﷺ and the lessons it holds for us today.',
+    'Aqeedah': 'The foundations of Islamic belief, taught clearly and authentically.',
+    'Quran for Adults': 'Start or restart your Quran journey with patience and no judgment.',
+    'Revision Techniques': "Proven techniques to review and cement what you've memorized.",
+  },
+  fr: {
+    'Tajweed': 'Maîtrise des règles du Tajwid pour une récitation correcte et fluide du Coran.',
+    'Hifz': 'Une méthode structurée pour mémoriser le Saint Coran et le retenir à vie.',
+    'Hifz / Memorization': 'Une méthode structurée pour mémoriser le Saint Coran et le retenir à vie.',
+    'Ijazah': 'Une certification avec une chaîne de transmission authentique et ininterrompue (sanad).',
+    'Ten Qiraat': 'Les dix modes canoniques de récitation coranique, enseignés avec précision.',
+    'Quran for Kids': 'Une approche ludique et bienveillante pour enseigner le Coran et l’arabe aux enfants.',
+    'Noorani Qaida': 'Le manuel fondamental pour apprendre à lire les lettres arabes et l’écriture coranique.',
+    'Arabic for Non-Arabs': 'L’arabe, de l’alphabet à la conversation, conçu pour les non-arabophones.',
+    'Arabic': 'L’arabe, de l’alphabet à la conversation, conçu pour les non-arabophones.',
+    'Quranic Arabic': 'Comprendre la langue du Coran — grammaire, vocabulaire et sens.',
+    'Islamic Studies': 'Introduction aux sciences islamiques : fiqh, sîra, aqida et comportement du musulman.',
+    'Islamic Studies for Kids': 'Le savoir-vivre islamique et des récits, enseignés d’une façon que les enfants adorent.',
+    'Tafseer': 'Étude approfondie des sens et de la sagesse des versets du Coran.',
+    'Seerah': 'La vie du Prophète ﷺ et les enseignements qu’elle nous offre aujourd’hui.',
+    'Aqeedah': 'Les fondements de la croyance islamique, enseignés clairement et avec authenticité.',
+    'Quran for Adults': 'Commencez ou reprenez votre parcours coranique avec patience et sans jugement.',
+    'Revision Techniques': 'Des techniques éprouvées pour réviser et ancrer ce que vous avez mémorisé.',
+  },
 }
 
-const SHARED_AVAILABILITY: DaySchedule[] = [
-  { day: 'Sunday', slots: null },
-  { day: 'Monday', slots: '09:00–12:00, 16:00–20:00' },
-  { day: 'Tuesday', slots: '09:00–12:00, 16:00–20:00' },
-  { day: 'Wednesday', slots: '09:00–12:00, 16:00–20:00' },
-  { day: 'Thursday', slots: '09:00–12:00, 16:00–20:00' },
-  { day: 'Friday', slots: '16:00–20:00' },
-  { day: 'Saturday', slots: '09:00–12:00, 16:00–20:00' },
+const SPECIALTY_FALLBACK: Record<Locale, string> = {
+  en: 'Taught with care, authenticity and a personalised approach.',
+  fr: 'Enseigné avec soin, authenticité et une approche personnalisée.',
+}
+
+const DAY_NAMES: Record<Locale, string[]> = {
+  en: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
+  fr: ['Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi'],
+}
+
+const DAY_SLOTS: (string | null)[] = [
+  null,
+  '09:00–12:00, 16:00–20:00',
+  '09:00–12:00, 16:00–20:00',
+  '09:00–12:00, 16:00–20:00',
+  '09:00–12:00, 16:00–20:00',
+  '16:00–20:00',
+  '09:00–12:00, 16:00–20:00',
 ]
 
-function firstName(name: string): string {
-  return name.replace(/^(Sheikh|Sister|Dr\.?)\s+/i, '').split(' ')[0]
+function availability(locale: Locale): DaySchedule[] {
+  return DAY_NAMES[locale].map((day, i) => ({ day, slots: DAY_SLOTS[i] }))
 }
 
-function specialtyDetails(specialties: string[]): SpecialtyDetail[] {
+function firstName(name: string): string {
+  return name.replace(/^(Sheikh|Sister|Dr\.?|Cheikh|Sœur)\s+/i, '').split(' ')[0]
+}
+
+function specialtyDetails(specialties: string[], locale: Locale): SpecialtyDetail[] {
   return specialties.map((s) => ({
     title: s,
-    desc: SPECIALTY_DESC[s] ?? 'Taught with care, authenticity and a personalised approach.',
+    desc: SPECIALTY_DESC[locale][s] ?? SPECIALTY_FALLBACK[locale],
   }))
 }
 
-function journey(role: string, primary: string): TeacherExperience[] {
+function journey(role: string, primary: string, locale: Locale): TeacherExperience[] {
+  if (locale === 'fr') {
+    return [
+      {
+        role,
+        org: 'Zad Academy',
+        period: '2023 – Aujourd’hui · En ligne',
+        location: 'En ligne',
+        desc: `Cours particuliers de ${primary} en ligne pour des élèves du monde entier, enfants et adultes, du niveau débutant au niveau avancé.`,
+      },
+      {
+        role: 'Enseignant de Coran et d’arabe',
+        org: 'Institut islamique',
+        period: '2016 – 2023 · Le Caire, Égypte',
+        location: 'Le Caire, Égypte',
+        desc: 'A enseigné le Coran, le Tajwid et l’arabe à des élèves de tous âges, en présentiel et en ligne.',
+      },
+    ]
+  }
   return [
     {
       role,
@@ -104,12 +158,16 @@ function journey(role: string, primary: string): TeacherExperience[] {
   ]
 }
 
-function certifications(credentials: string): TeacherCertification[] {
-  const first = credentials ? credentials.split('.')[0].trim() : 'Quranic Sciences degree'
-  const org = credentials ? credentials.split('—')[0].trim() : 'Al-Azhar University'
+function certifications(credentials: string, locale: Locale): TeacherCertification[] {
+  const fallbackDegree = locale === 'fr' ? 'Diplôme en sciences coraniques' : 'Quranic Sciences degree'
+  const fallbackOrg = locale === 'fr' ? 'Université Al-Azhar' : 'Al-Azhar University'
+  const first = credentials ? credentials.split('.')[0].trim() : fallbackDegree
+  const org = credentials ? credentials.split('—')[0].trim() : fallbackOrg
+  const ijazahTitle = locale === 'fr' ? 'Ijazah en Hafs ‘an ‘Asim (avec sanad)' : 'Ijazah in Hafs an ‘Asim (with sanad)'
+  const ijazahOrg = locale === 'fr' ? 'Chaîne de transmission certifiée' : 'Certified chain of transmission'
   return [
     { title: first, org, year: '2016' },
-    { title: 'Ijazah in Hafs an ‘Asim (with sanad)', org: 'Certified chain of transmission', year: '2019' },
+    { title: ijazahTitle, org: ijazahOrg, year: '2019' },
   ]
 }
 
@@ -118,7 +176,19 @@ function ratingBreakdown(rating: number): RatingBreakdown {
   return { reassurance: rating, clarity: softer, progression: softer, preparation: rating }
 }
 
-function mapApiTeacher(a: ApiTeacher): Teacher {
+const TEACHING_STYLE_FALLBACK: Record<Locale, string> = {
+  en: 'A warm, interactive approach that emphasises practice and active learning, tailored to your level and goals.',
+  fr: 'Une approche chaleureuse et interactive qui met l’accent sur la pratique et l’apprentissage actif, adaptée à votre niveau et à vos objectifs.',
+}
+
+function strengthsFallback(tags: string[], first: string, locale: Locale): string {
+  const lead = tags.slice(0, 3).join(', ')
+  return locale === 'fr'
+    ? `${lead}. ${first} adapte chaque séance à l’élève.`
+    : `${lead}. ${first} adapts every session to the student.`
+}
+
+function mapApiTeacher(a: ApiTeacher, locale: Locale): Teacher {
   const specialties = a.specialties ?? []
   const first = firstName(a.name)
   return {
@@ -147,15 +217,11 @@ function mapApiTeacher(a: ApiTeacher): Teacher {
     teachingHours: a.teaching_hours,
     quote: a.quote ?? '',
     about: a.about ?? a.bio,
-    teachingStyle:
-      a.teaching_style ??
-      'A warm, interactive approach that emphasises practice and active learning, tailored to your level and goals.',
-    strengths:
-      a.strengths ??
-      `${(a.tags ?? []).slice(0, 3).join(', ')}. ${first} adapts every session to the student.`,
-    specialtyDetails: specialtyDetails(specialties),
-    journey: journey(a.role, specialties[0] ?? 'Quran'),
-    certifications: certifications(a.credentials ?? ''),
+    teachingStyle: a.teaching_style ?? TEACHING_STYLE_FALLBACK[locale],
+    strengths: a.strengths ?? strengthsFallback(a.tags ?? [], first, locale),
+    specialtyDetails: specialtyDetails(specialties, locale),
+    journey: journey(a.role, specialties[0] ?? 'Quran', locale),
+    certifications: certifications(a.credentials ?? '', locale),
     ratingBreakdown: ratingBreakdown(Number(a.rating)),
     reviews: (a.reviews ?? []).map((r) => ({
       id: String(r.id),
@@ -163,27 +229,31 @@ function mapApiTeacher(a: ApiTeacher): Teacher {
       rating: r.rating,
       text: r.text,
     })),
-    availability: SHARED_AVAILABILITY,
+    availability: availability(locale),
   }
 }
 
-export async function fetchTeachers(): Promise<Teacher[]> {
+function localeParam(locale: Locale): string {
+  return locale === 'fr' ? '?locale=fr' : ''
+}
+
+export async function fetchTeachers(locale: Locale = 'en'): Promise<Teacher[]> {
   try {
-    const res = await fetch(`${API}/api/v1/teachers`, { cache: 'no-store' })
+    const res = await fetch(`${API}/api/v1/teachers${localeParam(locale)}`, { cache: 'no-store' })
     if (!res.ok) return []
     const json = await res.json()
-    return (json.data as ApiTeacher[]).map(mapApiTeacher)
+    return (json.data as ApiTeacher[]).map((a) => mapApiTeacher(a, locale))
   } catch {
     return []
   }
 }
 
-export async function fetchTeacher(slug: string): Promise<Teacher | null> {
+export async function fetchTeacher(slug: string, locale: Locale = 'en'): Promise<Teacher | null> {
   try {
-    const res = await fetch(`${API}/api/v1/teachers/${slug}`, { cache: 'no-store' })
+    const res = await fetch(`${API}/api/v1/teachers/${slug}${localeParam(locale)}`, { cache: 'no-store' })
     if (!res.ok) return null
     const json = await res.json()
-    return mapApiTeacher(json.data as ApiTeacher)
+    return mapApiTeacher(json.data as ApiTeacher, locale)
   } catch {
     return null
   }

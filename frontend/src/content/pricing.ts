@@ -8,6 +8,8 @@
    discount updates every card consistently.
    ============================================================ */
 
+import type { Locale } from '@/i18n/config'
+
 export type DurationId = '30' | '45' | '60'
 export type CurrencyCode = 'USD' | 'EUR'
 
@@ -233,4 +235,179 @@ export const pricingPageContent = {
     ctaPrimary: 'Book Free Trial',
     ctaSecondary: 'Chat on WhatsApp',
   },
+}
+
+/* ============================================================
+   French mirrors — used when the active locale is 'fr'.
+   The English exports above remain the untouched default.
+   ============================================================ */
+
+export const pricingPackagesFr: PricingPackage[] = [
+  {
+    id: 'discovery',
+    name: 'Discovery',
+    tagline: 'Parfait pour faire vos premiers pas et découvrir notre méthode.',
+    badge: 'Découverte',
+    icon: 'sprout',
+    lessons: 4,
+    discount: 0,
+    ctaLabel: 'Choisir ce forfait',
+  },
+  {
+    id: 'hafiz',
+    name: 'Hafiz',
+    tagline: 'Pour installer un rythme d’apprentissage régulier et constant.',
+    badge: 'Régulier',
+    icon: 'book',
+    lessons: 8,
+    discount: 0.04,
+    ctaLabel: 'Choisir ce forfait',
+  },
+  {
+    id: 'mujtahid',
+    name: 'Mujtahid',
+    tagline: 'Progressez sérieusement à un rythme soutenu.',
+    badge: 'Avancé',
+    icon: 'graduation',
+    lessons: 12,
+    discount: 0.08,
+    ctaLabel: 'Choisir ce forfait',
+  },
+  {
+    id: 'silver',
+    name: 'Silver',
+    tagline: 'Notre formule équilibrée pour des résultats durables et constants.',
+    badge: 'Le plus choisi',
+    icon: 'star',
+    lessons: 24,
+    discount: 0.12,
+    featured: true,
+    ctaLabel: 'Choisir ce forfait',
+  },
+  {
+    id: 'gold',
+    name: 'Gold',
+    tagline: 'Un engagement avancé pour une maîtrise rapide.',
+    badge: 'Meilleur rapport qualité-prix',
+    icon: 'crown',
+    lessons: 48,
+    discount: 0.16,
+    ctaLabel: 'Choisir ce forfait',
+  },
+  {
+    id: 'diamond',
+    name: 'Diamond',
+    tagline: 'Le forfait ultime pour une immersion complète.',
+    badge: 'Immersion',
+    icon: 'gem',
+    lessons: 100,
+    discount: 0.2,
+    ctaLabel: 'Choisir ce forfait',
+  },
+]
+
+export function getPricingPackages(locale: Locale): PricingPackage[] {
+  return locale === 'fr' ? pricingPackagesFr : pricingPackages
+}
+
+export const includedFeaturesFr: IncludedFeature[] = [
+  {
+    icon: 'gift',
+    title: 'Cours d’essai gratuit',
+    desc: 'Essayez notre méthode sans aucun engagement.',
+  },
+  {
+    icon: 'graduation',
+    title: 'Enseignants certifiés Al-Azhar',
+    desc: 'Apprenez avec des diplômés — pour hommes, femmes et enfants.',
+  },
+  {
+    icon: 'certificate',
+    title: 'Certificat de fin de formation',
+    desc: 'Délivré à l’issue de votre programme.',
+  },
+  {
+    icon: 'clock',
+    title: 'Horaires flexibles',
+    desc: 'Des cours organisés selon votre emploi du temps.',
+  },
+  {
+    icon: 'book',
+    title: 'Supports de votre choix',
+    desc: 'Coran, Tajwid, arabe et sciences islamiques.',
+  },
+  {
+    icon: 'shield',
+    title: 'Annulation à tout moment',
+    desc: 'Sans contrat, sans engagement et sans frais cachés.',
+  },
+]
+
+export function getIncludedFeatures(locale: Locale): IncludedFeature[] {
+  return locale === 'fr' ? includedFeaturesFr : includedFeatures
+}
+
+export const pricingFaqsFr: PricingFaqItem[] = [
+  {
+    q: 'Comment fonctionne la tarification par forfait ?',
+    a: 'Vous achetez un forfait de cours à un prix fixe par cours. Plus vous réservez de cours à la fois, plus le prix par cours est bas — la remise est appliquée automatiquement et affichée sur chaque carte.',
+  },
+  {
+    q: 'Le premier cours est-il vraiment gratuit ?',
+    a: 'Oui. Chaque élève bénéficie de son premier cours entièrement gratuit, sans carte bancaire requise. Nous ne prélevons de paiement qu’une fois que vous décidez de continuer.',
+  },
+  {
+    q: 'Mes cours expirent-ils ?',
+    a: 'Vos cours restent valables tant que vous continuez à réserver régulièrement. Si un imprévu survient, écrivez-nous sur WhatsApp et nous prolongerons votre forfait.',
+  },
+  {
+    q: 'Que se passe-t-il si je manque un cours ?',
+    a: 'Report gratuit avec un préavis de 24 heures. Les cours annulés avec moins de 24 heures de préavis sont décomptés de votre forfait.',
+  },
+  {
+    q: 'Puis-je choisir un enseignant homme ou femme ?',
+    a: 'Tout à fait. Les préférences d’enseignant — y compris le genre — peuvent être définies lors de la réservation de votre essai et modifiées à tout moment sur WhatsApp.',
+  },
+  {
+    q: 'Quelles devises et quels moyens de paiement acceptez-vous ?',
+    a: 'Vous pouvez consulter les prix en USD ou en EUR, et nous acceptons toutes les principales cartes de crédit et de débit ainsi que PayPal. Les paiements sont traités en toute sécurité.',
+  },
+]
+
+export function getPricingFaqs(locale: Locale): PricingFaqItem[] {
+  return locale === 'fr' ? pricingFaqsFr : pricingFaqs
+}
+
+export const pricingPageContentFr: typeof pricingPageContent = {
+  hero: {
+    eyebrow: 'Premier cours offert',
+    heading: 'Des forfaits clairs pour un apprentissage serein',
+    highlight: 'un apprentissage serein',
+    subheading:
+      'Plus vous réservez de cours, plus le prix par cours est bas. Choisissez la durée qui vous convient et commencez par un essai gratuit et sans engagement.',
+  },
+  included: {
+    eyebrow: 'Les mêmes garanties pour tous',
+    heading: 'Inclus dans chaque forfait',
+    highlight: 'chaque forfait',
+    subheading: 'Les mêmes garanties pour tous, quel que soit le forfait que vous choisissez.',
+  },
+  guarantee: {
+    badge: 'Sans engagement',
+    heading: 'Vous ne savez pas quel forfait vous convient ?',
+    body: 'Notre équipe vous conseille gratuitement pour choisir la formule adaptée à votre niveau et à vos objectifs — et nous vous offrons votre premier cours gratuitement.',
+    ctaPrimary: 'Réserver mon essai gratuit',
+    ctaSecondary: 'Discuter sur WhatsApp',
+  },
+  cta: {
+    heading: 'Prêt à commencer votre parcours avec le Coran ?',
+    subheading:
+      'Réservez un essai gratuit sur n’importe quel forfait. Nous vous recommanderons la formule idéale selon votre niveau et votre emploi du temps.',
+    ctaPrimary: 'Réserver un essai gratuit',
+    ctaSecondary: 'Discuter sur WhatsApp',
+  },
+}
+
+export function getPricingPageContent(locale: Locale) {
+  return locale === 'fr' ? pricingPageContentFr : pricingPageContent
 }

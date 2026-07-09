@@ -17,12 +17,15 @@ import {
   durations,
   currencies,
   basePricePerLesson,
-  pricingPackages,
+  getPricingPackages,
   type DurationId,
   type CurrencyCode,
   type PricingPackage,
   type PackageIcon,
 } from '@/content/pricing'
+import { useT } from '@/i18n/MarketingI18nProvider'
+import { localeTag, type Locale } from '@/i18n/config'
+import type { TranslateFn } from '@/i18n/translate'
 
 const ICONS: Record<PackageIcon, LucideIcon> = {
   sprout: Sprout,
@@ -33,8 +36,8 @@ const ICONS: Record<PackageIcon, LucideIcon> = {
   gem: Gem,
 }
 
-function formatMoney(amount: number, currency: CurrencyCode) {
-  return new Intl.NumberFormat('en-US', {
+function formatMoney(amount: number, currency: CurrencyCode, locale: Locale) {
+  return new Intl.NumberFormat(localeTag[locale], {
     style: 'currency',
     currency,
     minimumFractionDigits: 2,
@@ -96,11 +99,15 @@ function PackageCard({
   duration,
   currency,
   ctaHref,
+  locale,
+  t,
 }: {
   pkg: PricingPackage
   duration: DurationId
   currency: CurrencyCode
   ctaHref: string
+  locale: Locale
+  t: TranslateFn
 }) {
   const Icon = ICONS[pkg.icon]
   const base = basePricePerLesson[duration][currency]
@@ -111,6 +118,7 @@ function PackageCard({
   const savings = Math.round((full - price) * 100) / 100
   const hasDiscount = savings > 0
   const featured = pkg.featured
+  const minutes = durations.find((d) => d.id === duration)?.minutes ?? 0
 
   return (
     <div
@@ -163,8 +171,8 @@ function PackageCard({
           {pkg.lessons}
         </span>
         <div className="text-xs leading-tight text-white/55">
-          <div className="font-semibold uppercase tracking-wide text-white/75">Lessons</div>
-          <div>{durations.find((d) => d.id === duration)?.minutes} min each</div>
+          <div className="font-semibold uppercase tracking-wide text-white/75">{t('pricingPlans.lessons')}</div>
+          <div>{t('pricingPlans.minEach', { m: minutes })}</div>
         </div>
       </div>
 
@@ -172,22 +180,22 @@ function PackageCard({
       <div className="mt-5">
         <div className="flex items-end gap-2">
           <span className="font-display text-4xl font-semibold text-white">
-            {formatMoney(price, currency)}
+            {formatMoney(price, currency, locale)}
           </span>
           {hasDiscount && (
             <span className="pb-1 text-sm text-white/35 line-through">
-              {formatMoney(full, currency)}
+              {formatMoney(full, currency, locale)}
             </span>
           )}
         </div>
         <div className="mt-2 flex flex-wrap items-center gap-x-2 gap-y-1 text-sm">
           <span className="text-white/55">
-            {formatMoney(perLesson, currency)}{' '}
-            <span className="text-white/40">/ lesson</span>
+            {formatMoney(perLesson, currency, locale)}{' '}
+            <span className="text-white/40">{t('pricingPlans.perLesson')}</span>
           </span>
           {hasDiscount && (
             <span className="inline-flex items-center rounded-full bg-secondary/20 px-2 py-0.5 text-xs font-semibold text-emerald-300 ring-1 ring-inset ring-secondary/30">
-              Save {formatMoney(savings, currency)}
+              {t('pricingPlans.save', { amount: formatMoney(savings, currency, locale) })}
             </span>
           )}
         </div>
@@ -196,10 +204,10 @@ function PackageCard({
       {/* Features */}
       <ul className="mt-6 mb-7 flex-1 space-y-2.5 text-sm">
         {[
-          `${pkg.lessons} one-to-one lessons`,
-          `${durations.find((d) => d.id === duration)?.minutes}-minute sessions`,
-          'Al-Azhar certified teacher',
-          'Personalised follow-up',
+          t('pricingPlans.lessonsFeature', { n: pkg.lessons }),
+          t('pricingPlans.minutesFeature', { m: minutes }),
+          t('pricingPlans.certifiedTeacher'),
+          t('pricingPlans.personalisedFollowUp'),
         ].map((f) => (
           <li key={f} className="flex items-start gap-2.5 text-white/70">
             <Check
@@ -232,9 +240,11 @@ function PackageCard({
 }
 
 export function PricingPlans({ ctaHref = '/contact' }: { ctaHref?: string }) {
+  const { locale, t } = useT()
   const [duration, setDuration] = useState<DurationId>('30')
   const [currency, setCurrency] = useState<CurrencyCode>('USD')
 
+  const pricingPackages = useMemo(() => getPricingPackages(locale), [locale])
   const durationSegments = useMemo(
     () => durations.map((d) => ({ id: d.id, label: d.label })),
     [],
@@ -249,13 +259,13 @@ export function PricingPlans({ ctaHref = '/contact' }: { ctaHref?: string }) {
       {/* Controls */}
       <div className="mb-12 flex flex-col items-center justify-center gap-8 sm:flex-row sm:gap-14">
         <SegmentedControl
-          label="Lesson duration"
+          label={t('pricingPlans.lessonDuration')}
           segments={durationSegments}
           value={duration}
           onChange={setDuration}
         />
         <SegmentedControl
-          label="Currency"
+          label={t('pricingPlans.currency')}
           segments={currencySegments}
           value={currency}
           onChange={setCurrency}
@@ -271,6 +281,8 @@ export function PricingPlans({ ctaHref = '/contact' }: { ctaHref?: string }) {
             duration={duration}
             currency={currency}
             ctaHref={ctaHref}
+            locale={locale}
+            t={t}
           />
         ))}
       </div>

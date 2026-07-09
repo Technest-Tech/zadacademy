@@ -10,12 +10,18 @@ import { mainNav, type NavItem } from '@/config/nav'
 import { whatsappLink } from '@/config/site'
 import { LinkButton } from '@/components/ui/link-button'
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'
+import { useT } from '@/i18n/MarketingI18nProvider'
+import { localizedHref, stripLocale } from '@/i18n/href'
+import { LanguageSwitcher } from './LanguageSwitcher'
 
 export function Navbar() {
   const [scrolled, setScrolled] = useState(false)
   const [openDropdown, setOpenDropdown] = useState<string | null>(null)
   const [mobileOpen, setMobileOpen] = useState(false)
-  const pathname = usePathname()
+  const { locale, t } = useT()
+  const rawPathname = usePathname()
+  const { path: pathname } = stripLocale(rawPathname)
+  const href = (p: string) => localizedHref(p, locale)
   // Pages that open with a dark hero get the transparent-at-top navbar treatment.
   const hasDarkHero =
     pathname === '/' ||
@@ -37,7 +43,7 @@ export function Navbar() {
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setMobileOpen(false)
-  }, [pathname])
+  }, [rawPathname])
 
   // Light bar only on inner pages sitting at the very top; everywhere else
   // (home hero at top, or ANY page once scrolled) uses light text.
@@ -68,7 +74,7 @@ export function Navbar() {
         href="#main"
         className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[100] focus:bg-accent focus:text-primary focus:px-4 focus:py-2 focus:rounded-lg focus:font-medium"
       >
-        Skip to main content
+        {t('nav.skipToContent')}
       </a>
 
       <header className={navClass} role="banner">
@@ -85,9 +91,9 @@ export function Navbar() {
           >
             <span className="text-accent shrink-0" aria-hidden="true">✦</span>
             <p className="text-accent text-xs font-medium">
-              Your first class is completely free — no credit card required.{' '}
-              <Link href="/contact" className="underline decoration-accent/40 underline-offset-2 hover:decoration-accent transition-all">
-                Book now →
+              {t('nav.announcement')}{' '}
+              <Link href={href('/contact')} className="underline decoration-accent/40 underline-offset-2 hover:decoration-accent transition-all">
+                {t('nav.announcementCta')}
               </Link>
             </p>
           </div>
@@ -95,12 +101,12 @@ export function Navbar() {
 
         <nav
           className="container-site flex items-center justify-between h-16 sm:h-20 md:h-24 lg:h-28"
-          aria-label="Main navigation"
+          aria-label={t('nav.mainNavAria')}
         >
           {/* Logo */}
           <Link
-            href="/"
-            aria-label="Zad Academy — Home"
+            href={href('/')}
+            aria-label={t('nav.homeAria')}
             className="flex items-center leading-none group"
           >
             <Image
@@ -119,7 +125,7 @@ export function Navbar() {
               <li
                 key={item.href}
                 className="relative"
-                onMouseEnter={() => item.children && setOpenDropdown(item.label)}
+                onMouseEnter={() => item.children && setOpenDropdown(item.labelKey)}
                 onMouseLeave={() => setOpenDropdown(null)}
               >
                 {item.children ? (
@@ -127,13 +133,13 @@ export function Navbar() {
                     <button
                       className={cn(linkClass(false), 'gap-1')}
                       aria-haspopup="true"
-                      aria-expanded={openDropdown === item.label}
+                      aria-expanded={openDropdown === item.labelKey}
                     >
-                      {item.label}
+                      {t(item.labelKey)}
                       <ChevronDown
                         className={cn(
                           'size-3.5 transition-transform duration-200',
-                          openDropdown === item.label ? 'rotate-180' : '',
+                          openDropdown === item.labelKey ? 'rotate-180' : '',
                         )}
                         aria-hidden="true"
                       />
@@ -142,7 +148,7 @@ export function Navbar() {
                     <div
                       className={cn(
                         'absolute top-full left-1/2 -translate-x-1/2 pt-2 transition-all duration-200 min-w-[220px]',
-                        openDropdown === item.label
+                        openDropdown === item.labelKey
                           ? 'opacity-100 translate-y-0 pointer-events-auto'
                           : 'opacity-0 -translate-y-2 pointer-events-none',
                       )}
@@ -152,12 +158,12 @@ export function Navbar() {
                         {item.children.map((child) => (
                           <Link
                             key={child.href}
-                            href={child.href}
+                            href={href(child.href)}
                             role="menuitem"
                             className="block px-4 py-2.5 text-sm text-primary rounded-xl hover:bg-cream hover:text-secondary transition-colors font-medium"
                             onClick={() => setOpenDropdown(null)}
                           >
-                            {child.label}
+                            {t(child.labelKey)}
                           </Link>
                         ))}
                       </div>
@@ -165,11 +171,11 @@ export function Navbar() {
                   </>
                 ) : (
                   <Link
-                    href={item.href}
+                    href={href(item.href)}
                     className={linkClass(pathname === item.href)}
                     aria-current={pathname === item.href ? 'page' : undefined}
                   >
-                    {item.label}
+                    {t(item.labelKey)}
                   </Link>
                 )}
               </li>
@@ -178,6 +184,7 @@ export function Navbar() {
 
           {/* Desktop CTAs */}
           <div className="hidden lg:flex items-center gap-3">
+            <LanguageSwitcher variant={useLightText ? 'light' : 'dark'} />
             <a
               href={whatsappLink()}
               target="_blank"
@@ -186,24 +193,24 @@ export function Navbar() {
                 'flex items-center gap-1.5 text-sm font-medium transition-colors',
                 useLightText ? 'text-white/80 hover:text-white' : 'text-primary hover:text-secondary',
               )}
-              aria-label="Chat with us on WhatsApp"
+              aria-label={t('nav.chatWhatsapp')}
             >
               <Phone className="size-4" aria-hidden="true" />
-              <span className="hidden xl:inline">WhatsApp</span>
+              <span className="hidden xl:inline">{t('nav.whatsapp')}</span>
             </a>
             <span
               className={cn('w-px h-5 opacity-20', useLightText ? 'bg-white' : 'bg-primary')}
               aria-hidden="true"
             />
             <LinkButton
-              href="/contact"
+              href={href('/contact')}
               size="sm"
               variant="gold"
               className={cn(
                 useLightText && 'shadow-[0_0_20px_rgba(201,162,75,0.35)]',
               )}
             >
-              Free Trial Class
+              {t('nav.freeTrial')}
             </LinkButton>
           </div>
 
@@ -214,7 +221,7 @@ export function Navbar() {
                 'lg:hidden p-2 rounded-lg transition-colors',
                 useLightText ? 'text-white hover:bg-white/10' : 'text-primary hover:bg-cream',
               )}
-              aria-label="Open navigation menu"
+              aria-label={t('nav.openMenu')}
             >
               <Menu className="size-6" aria-hidden="true" />
             </SheetTrigger>
@@ -223,7 +230,7 @@ export function Navbar() {
               <div className="flex flex-col h-full">
                 {/* Mobile header */}
                 <div className="flex items-center justify-between p-5 border-b border-border-soft">
-                  <Link href="/" aria-label="Zad Academy" onClick={() => setMobileOpen(false)} className="flex items-center leading-none">
+                  <Link href={href('/')} aria-label={t('nav.homeAria')} onClick={() => setMobileOpen(false)} className="flex items-center leading-none">
                     <Image
                       src="/logo/zad-logo-gold.png"
                       alt="Zad Academy"
@@ -235,14 +242,14 @@ export function Navbar() {
                   <button
                     className="p-2 rounded-lg text-muted-text hover:bg-cream transition-colors"
                     onClick={() => setMobileOpen(false)}
-                    aria-label="Close navigation menu"
+                    aria-label={t('nav.closeMenu')}
                   >
                     <X className="size-5" aria-hidden="true" />
                   </button>
                 </div>
 
                 {/* Mobile nav items */}
-                <nav className="flex-1 overflow-y-auto p-5 space-y-1" aria-label="Mobile navigation">
+                <nav className="flex-1 overflow-y-auto p-5 space-y-1" aria-label={t('nav.mobileNavAria')}>
                   {mainNav.map((item) => (
                     <MobileNavItem
                       key={item.href}
@@ -255,12 +262,15 @@ export function Navbar() {
 
                 {/* Mobile CTA */}
                 <div className="p-5 border-t border-border-soft space-y-3">
+                  <div className="flex justify-center">
+                    <LanguageSwitcher variant="dark" />
+                  </div>
                   <LinkButton
-                    href="/contact"
+                    href={href('/contact')}
                     className="w-full justify-center"
                     onClick={() => setMobileOpen(false)}
                   >
-                    Book Free Trial Class
+                    {t('nav.bookFreeTrial')}
                   </LinkButton>
                   <a
                     href={whatsappLink()}
@@ -268,7 +278,7 @@ export function Navbar() {
                     rel="noopener noreferrer"
                     className="flex items-center justify-center gap-2 w-full h-11 rounded-xl border border-border-soft text-sm font-medium text-primary hover:bg-cream transition-colors"
                   >
-                    Chat on WhatsApp
+                    {t('nav.chatWhatsapp')}
                   </a>
                 </div>
               </div>
@@ -290,11 +300,13 @@ function MobileNavItem({
   onClose: () => void
 }) {
   const [open, setOpen] = useState(false)
+  const { locale, t } = useT()
+  const href = (p: string) => localizedHref(p, locale)
 
   if (!item.children) {
     return (
       <Link
-        href={item.href}
+        href={href(item.href)}
         onClick={onClose}
         className={cn(
           'flex items-center px-4 py-3 rounded-xl text-sm font-medium transition-colors',
@@ -304,7 +316,7 @@ function MobileNavItem({
         )}
         aria-current={currentPath === item.href ? 'page' : undefined}
       >
-        {item.label}
+        {t(item.labelKey)}
       </Link>
     )
   }
@@ -316,7 +328,7 @@ function MobileNavItem({
         onClick={() => setOpen(!open)}
         aria-expanded={open}
       >
-        {item.label}
+        {t(item.labelKey)}
         <ChevronDown
           className={cn('size-4 transition-transform', open ? 'rotate-180' : '')}
           aria-hidden="true"
@@ -327,11 +339,11 @@ function MobileNavItem({
           {item.children?.map((child) => (
             <Link
               key={child.href}
-              href={child.href}
+              href={href(child.href)}
               onClick={onClose}
               className="flex items-center px-4 py-2.5 rounded-xl text-sm text-muted-text hover:text-secondary hover:bg-cream transition-colors"
             >
-              {child.label}
+              {t(child.labelKey)}
             </Link>
           ))}
         </div>

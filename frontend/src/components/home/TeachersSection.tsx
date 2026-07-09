@@ -2,9 +2,13 @@ import { Award } from 'lucide-react'
 import { TeacherCard } from '@/components/teachers/TeacherCard'
 import { SectionDivider } from '@/components/layout/SectionDivider'
 import { fetchTeachers } from '@/content/teachersApi'
+import { getLocale } from '@/i18n/getLocale'
+import { getT } from '@/i18n/getDictionary'
 
 export async function TeachersSection() {
-  const teachers = await fetchTeachers()
+  const locale = await getLocale()
+  const t = getT(locale)
+  const teachers = await fetchTeachers(locale)
   if (teachers.length === 0) return null
 
   return (
@@ -26,27 +30,26 @@ export async function TeachersSection() {
         {/* Header */}
         <div className="mx-auto mb-14 max-w-2xl text-center">
           <span className="mb-5 inline-flex items-center gap-2 rounded-full border border-accent/40 bg-accent/10 px-4 py-1.5 text-xs font-bold uppercase tracking-[0.2em] text-accent">
-            <Award className="size-3.5" aria-hidden="true" /> Al-Azhar Graduates
+            <Award className="size-3.5" aria-hidden="true" /> {t('teachersSection.badge')}
           </span>
           <h2 id="teachers-heading" className="heading-xl font-heading text-white">
-            Our Expert{' '}
+            {t('teachersSection.headingLead')}{' '}
             <span
               className="text-accent"
               style={{ textShadow: '0 0 30px rgba(201,162,75,0.5)' }}
             >
-              Teachers
+              {t('teachersSection.headingAccent')}
             </span>
           </h2>
           <p className="mx-auto mt-4 max-w-md text-base leading-relaxed text-white/60">
-            Al-Azhar graduate teachers, dedicated to your success — each chosen for
-            their excellence and teaching skill.
+            {t('teachersSection.subheading')}
           </p>
         </div>
 
         {/* Cards */}
         <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
           {teachers.map((t) => (
-            <TeacherCard key={t.id} t={t} />
+            <TeacherCard key={t.id} t={t} locale={locale} />
           ))}
         </div>
       </div>

@@ -2,22 +2,26 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { Star, MapPin, ArrowRight, Award, Baby } from 'lucide-react'
 import type { Teacher } from '@/content/teachers'
+import type { Locale } from '@/i18n/config'
+import { getT } from '@/i18n/getDictionary'
+import { localizedHref } from '@/i18n/href'
 
-export function TeacherCard({ t }: { t: Teacher }) {
+export function TeacherCard({ t, locale }: { t: Teacher; locale: Locale }) {
+  const tr = getT(locale)
   return (
     <Link
-      href={`/our-teachers/${t.id}`}
+      href={localizedHref(`/our-teachers/${t.id}`, locale)}
       className="group relative flex flex-col rounded-2xl border border-white/10 bg-white/[0.03] p-5 pt-8 transition-all duration-200 hover:-translate-y-1 hover:border-accent/40 hover:bg-white/[0.05] hover:shadow-[0_18px_40px_rgba(0,0,0,0.45)]"
     >
       {/* Badges */}
       {t.elite && (
         <span className="absolute left-4 top-4 inline-flex items-center gap-1 rounded-full border border-accent/40 bg-accent/15 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-accent">
-          <Award className="size-3" aria-hidden="true" /> Elite
+          <Award className="size-3" aria-hidden="true" /> {tr('teacherCard.elite')}
         </span>
       )}
       {t.forChildren && (
         <span className="absolute right-4 top-4 inline-flex items-center gap-1 rounded-full border border-secondary/40 bg-secondary/20 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-emerald-300">
-          <Baby className="size-3" aria-hidden="true" /> Children
+          <Baby className="size-3" aria-hidden="true" /> {tr('teacherCard.children')}
         </span>
       )}
 
@@ -66,7 +70,7 @@ export function TeacherCard({ t }: { t: Teacher }) {
       <div className="mt-5 flex items-center justify-between border-t border-white/10 pt-4">
         <p className="text-white">
           <span className="text-xl font-bold">{t.hourlyRate}</span>
-          <span className="text-sm text-white/50"> € /hour</span>
+          <span className="text-sm text-white/50"> € {tr('teacherPage.perHour')}</span>
         </p>
         <span className="flex size-10 items-center justify-center rounded-full bg-secondary text-white transition-colors group-hover:bg-accent group-hover:text-primary">
           <ArrowRight className="size-4" aria-hidden="true" />

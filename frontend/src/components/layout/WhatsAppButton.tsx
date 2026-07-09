@@ -2,19 +2,22 @@
 
 import { usePathname } from 'next/navigation'
 import { whatsappLink } from '@/config/site'
+import { useT } from '@/i18n/MarketingI18nProvider'
+import { stripLocale } from '@/i18n/href'
 
 export function WhatsAppButton() {
   const pathname = usePathname()
+  const { t } = useT()
 
   // On the contact page the form is the primary booking action — suppress the button
-  if (pathname === '/contact') return null
+  if (stripLocale(pathname).path === '/contact') return null
 
   return (
     <a
       href={whatsappLink()}
       target="_blank"
       rel="noopener noreferrer"
-      aria-label="Chat with us on WhatsApp"
+      aria-label={t('common.whatsappButtonAria')}
       className="
         fixed bottom-6 right-6 z-40
         flex items-center justify-center

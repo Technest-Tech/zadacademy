@@ -3,7 +3,10 @@ import { Star, ArrowRight } from 'lucide-react'
 import { LinkButton } from '@/components/ui/link-button'
 import { Container } from '@/components/layout/Container'
 import { whatsappLink } from '@/config/site'
-import { homeContent } from '@/content/home'
+import { getHomeContent } from '@/content/home'
+import { getLocale } from '@/i18n/getLocale'
+import { getT } from '@/i18n/getDictionary'
+import { localizedHref } from '@/i18n/href'
 
 /** Small twinkling stars scattered across the hero backdrop. */
 const TWINKLES = [
@@ -17,7 +20,10 @@ const TWINKLES = [
   { top: '12%', left: '70%', size: 2, delay: '1.5s' },
 ] as const
 
-export function Hero() {
+export async function Hero() {
+  const locale = await getLocale()
+  const t = getT(locale)
+  const homeContent = getHomeContent(locale)
   return (
     <section
       className="relative min-h-screen flex items-center overflow-hidden"
@@ -100,7 +106,7 @@ export function Hero() {
             {/* CTAs */}
             <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 mb-4">
               <LinkButton
-                href="/contact"
+                href={localizedHref('/contact', locale)}
                 size="lg"
                 variant="gold"
                 className="group w-full sm:w-auto justify-center font-bold text-primary animate-cta-pulse hover:scale-[1.03]"
@@ -121,7 +127,7 @@ export function Hero() {
             {/* Reassurance microcopy under the CTA */}
             <p className="flex items-center gap-2 text-white/60 text-sm mb-8 sm:mb-10">
               <span className="inline-block size-1.5 rounded-full bg-secondary" aria-hidden="true" />
-              Free trial — no credit card required. Cancel anytime.
+              {t('home.heroReassure')}
             </p>
 
             {/* Social proof strip */}
@@ -152,7 +158,7 @@ export function Hero() {
                   ))}
                   <span className="text-white font-semibold text-sm ml-1.5">4.9</span>
                 </div>
-                <p className="text-white/60 text-xs">Trusted by 10,000+ students worldwide</p>
+                <p className="text-white/60 text-xs">{t('home.heroSocialProof')}</p>
               </div>
             </div>
           </div>
@@ -166,7 +172,7 @@ export function Hero() {
               <div className="relative rounded-3xl overflow-hidden ring-1 ring-white/10 shadow-[0_24px_70px_rgba(0,0,0,0.55)]">
                 <Image
                   src="/images/hero-image.png"
-                  alt="A Muslim family learning Quran and Arabic online together"
+                  alt={t('home.heroImageAlt')}
                   width={900}
                   height={600}
                   priority
@@ -182,7 +188,7 @@ export function Hero() {
 
       {/* Scroll cue */}
       <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-10 hidden sm:flex flex-col items-center gap-2" aria-hidden="true">
-        <span className="text-white/40 text-[11px] tracking-[0.2em] uppercase">Scroll</span>
+        <span className="text-white/40 text-[11px] tracking-[0.2em] uppercase">{t('home.heroScroll')}</span>
         <span className="block w-px h-8 bg-gradient-to-b from-accent/60 to-transparent" />
       </div>
     </section>

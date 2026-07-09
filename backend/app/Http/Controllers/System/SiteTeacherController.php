@@ -64,6 +64,7 @@ class SiteTeacherController extends Controller
             'author'     => ['required', 'string', 'max:120'],
             'rating'     => ['required', 'integer', 'min:1', 'max:5'],
             'text'       => ['required', 'string', 'max:1000'],
+            'text_fr'    => ['sometimes', 'nullable', 'string', 'max:1000'],
             'approved'   => ['sometimes', 'boolean'],
             'sort_order' => ['sometimes', 'integer'],
         ]);
@@ -80,6 +81,7 @@ class SiteTeacherController extends Controller
             'author'     => ['sometimes', 'string', 'max:120'],
             'rating'     => ['sometimes', 'integer', 'min:1', 'max:5'],
             'text'       => ['sometimes', 'string', 'max:1000'],
+            'text_fr'    => ['sometimes', 'nullable', 'string', 'max:1000'],
             'approved'   => ['sometimes', 'boolean'],
             'sort_order' => ['sometimes', 'integer'],
         ]);
@@ -136,6 +138,22 @@ class SiteTeacherController extends Controller
             'strengths'        => ['sometimes', 'nullable', 'string', 'max:2000'],
             'featured'         => ['sometimes', 'boolean'],
             'sort_order'       => ['sometimes', 'integer'],
+            // ── French translations (all optional; English is the fallback) ──
+            'role_fr'          => ['sometimes', 'nullable', 'string', 'max:160'],
+            'title_fr'         => ['sometimes', 'nullable', 'string', 'max:200'],
+            'country_fr'       => ['sometimes', 'nullable', 'string', 'max:100'],
+            'bio_fr'           => ['sometimes', 'nullable', 'string', 'max:2000'],
+            'credentials_fr'   => ['sometimes', 'nullable', 'string', 'max:1000'],
+            'quote_fr'         => ['sometimes', 'nullable', 'string', 'max:300'],
+            'about_fr'         => ['sometimes', 'nullable', 'string', 'max:3000'],
+            'teaching_style_fr' => ['sometimes', 'nullable', 'string', 'max:2000'],
+            'strengths_fr'     => ['sometimes', 'nullable', 'string', 'max:2000'],
+            'specialties_fr'   => ['sometimes', 'nullable', 'array'],
+            'specialties_fr.*' => ['string', 'max:80'],
+            'languages_fr'     => ['sometimes', 'nullable', 'array'],
+            'languages_fr.*'   => ['string', 'max:60'],
+            'tags_fr'          => ['sometimes', 'nullable', 'array'],
+            'tags_fr.*'        => ['string', 'max:60'],
         ]);
     }
 

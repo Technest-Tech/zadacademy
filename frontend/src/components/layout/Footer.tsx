@@ -4,6 +4,9 @@ import { Mail, Phone, MapPin } from 'lucide-react'
 import { footerNav } from '@/config/nav'
 import { siteConfig } from '@/config/site'
 import { fetchSiteSettings, waLink, type SiteSocial } from '@/content/siteSettings'
+import { getLocale } from '@/i18n/getLocale'
+import { getT } from '@/i18n/getDictionary'
+import { localizedHref } from '@/i18n/href'
 import { Container } from './Container'
 
 const SOCIAL_META: Record<keyof SiteSocial, { label: string; path: string }> = {
@@ -34,6 +37,10 @@ const SOCIAL_META: Record<keyof SiteSocial, { label: string; path: string }> = {
 }
 
 export async function Footer() {
+  const locale = await getLocale()
+  const t = getT(locale)
+  const href = (p: string) => localizedHref(p, locale)
+
   const settings = await fetchSiteSettings()
   const { contact, social } = settings
   const socials = (Object.keys(SOCIAL_META) as (keyof SiteSocial)[])
@@ -41,7 +48,7 @@ export async function Footer() {
     .filter((s) => s.href && s.href.trim())
 
   const year = new Date().getFullYear()
-  const { Courses: courseLinks, ...otherNav } = footerNav
+  const { courses, ...otherGroups } = footerNav
 
   return (
     <footer className="bg-primary text-white" role="contentinfo">
@@ -52,8 +59,8 @@ export async function Footer() {
             {/* Brand column — spans 2 cols on lg */}
             <div className="lg:col-span-2 space-y-5">
               <Link
-                href="/"
-                aria-label="Zad Academy — Home"
+                href={href('/')}
+                aria-label={t('nav.homeAria')}
                 className="inline-block"
               >
                 <Image
@@ -66,8 +73,7 @@ export async function Footer() {
               </Link>
 
               <p className="text-white/70 text-sm leading-relaxed max-w-xs">
-                Premium online Quran, Arabic, and Islamic studies for students
-                worldwide. Certified teachers. 1-on-1 classes. Free trial.
+                {t('footer.brandBlurb')}
               </p>
 
               {/* Arabic ayah */}
@@ -75,7 +81,7 @@ export async function Footer() {
                 className="font-arabic text-accent text-lg leading-relaxed"
                 dir="rtl"
                 lang="ar"
-                aria-label="Quranic verse — Al-Alaq 1"
+                aria-label={t('footer.verseAria')}
               >
                 اقْرَأْ بِاسْمِ رَبِّكَ
               </p>
@@ -100,7 +106,7 @@ export async function Footer() {
                       target="_blank"
                       rel="noopener noreferrer"
                       className="flex items-center gap-2.5 hover:text-accent transition-colors"
-                      aria-label="Chat on WhatsApp"
+                      aria-label={t('footer.chatWhatsapp')}
                     >
                       <Phone className="size-4 shrink-0" aria-hidden="true" />
                       {contact.phone}
@@ -123,7 +129,7 @@ export async function Footer() {
                     href={s.href}
                     target="_blank"
                     rel="noopener noreferrer"
-                    aria-label={`Follow us on ${s.label}`}
+                    aria-label={t('footer.followOn', { name: s.label })}
                     className="flex items-center justify-center size-9 rounded-full border border-white/20 text-white/60 hover:border-accent hover:text-accent transition-colors"
                   >
                     <svg viewBox="0 0 24 24" className="size-4 fill-current" aria-hidden="true">
@@ -137,16 +143,16 @@ export async function Footer() {
             {/* Courses — split into two columns, spans 2 cols on lg */}
             <div className="lg:col-span-2">
               <h3 className="text-sm font-semibold uppercase tracking-wider text-accent mb-4">
-                Courses
+                {t(courses.headingKey)}
               </h3>
               <ul className="grid grid-cols-2 gap-x-6 gap-y-2.5" role="list">
-                {courseLinks.map((link) => (
+                {courses.items.map((link) => (
                   <li key={link.href}>
                     <Link
-                      href={link.href}
+                      href={href(link.href)}
                       className="text-sm text-white/70 hover:text-white transition-colors"
                     >
-                      {link.label}
+                      {t(link.labelKey)}
                     </Link>
                   </li>
                 ))}
@@ -154,24 +160,19 @@ export async function Footer() {
             </div>
 
             {/* Remaining nav columns */}
-            {(
-              Object.entries(otherNav) as [
-                string,
-                { label: string; href: string }[],
-              ][]
-            ).map(([group, links]) => (
+            {Object.entries(otherGroups).map(([group, { headingKey, items }]) => (
               <div key={group}>
                 <h3 className="text-sm font-semibold uppercase tracking-wider text-accent mb-4">
-                  {group}
+                  {t(headingKey)}
                 </h3>
                 <ul className="space-y-2.5" role="list">
-                  {links.map((link) => (
+                  {items.map((link) => (
                     <li key={link.href}>
                       <Link
-                        href={link.href}
+                        href={href(link.href)}
                         className="text-sm text-white/70 hover:text-white transition-colors"
                       >
-                        {link.label}
+                        {t(link.labelKey)}
                       </Link>
                     </li>
                   ))}
@@ -187,8 +188,7 @@ export async function Footer() {
         <Container>
           <div className="py-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-white/50">
             <p>
-              © {year} {siteConfig.name} ({siteConfig.nameArabic}). All rights
-              reserved.
+              © {year} {siteConfig.name} ({siteConfig.nameArabic}). {t('footer.rights')}
             </p>
             <p className="text-accent/80 font-arabic text-sm" aria-hidden="true">
               بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ

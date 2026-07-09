@@ -16,12 +16,19 @@ class Teacher extends Model
         'courses_given', 'teaching_hours',
         'quote', 'about', 'teaching_style', 'strengths',
         'featured', 'sort_order',
+        // French translations (nullable; English is the fallback).
+        'role_fr', 'title_fr', 'country_fr', 'bio_fr', 'credentials_fr',
+        'quote_fr', 'about_fr', 'teaching_style_fr', 'strengths_fr',
+        'specialties_fr', 'languages_fr', 'tags_fr',
     ];
 
     protected $casts = [
         'specialties'      => 'array',
         'languages'        => 'array',
         'tags'             => 'array',
+        'specialties_fr'   => 'array',
+        'languages_fr'     => 'array',
+        'tags_fr'          => 'array',
         'is_female'        => 'boolean',
         'featured'         => 'boolean',
         'elite'            => 'boolean',

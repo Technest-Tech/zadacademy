@@ -5,9 +5,12 @@ import Image from 'next/image'
 import { buildMetadata } from '@/lib/seo'
 import { courseSchema, breadcrumbSchema, faqSchema } from '@/lib/schema'
 import { whatsappLink } from '@/config/site'
-import { courses } from '@/content/courses'
+import { courses, getCourses } from '@/content/courses'
 import { courseImage } from '@/content/courseImages'
-import { teachers, featuredTeachers } from '@/content/teachers'
+import { fetchTeachers } from '@/content/teachersApi'
+import { getLocale } from '@/i18n/getLocale'
+import { getT } from '@/i18n/getDictionary'
+import { localizedHref } from '@/i18n/href'
 import { StickyCourseCta } from '@/components/courses/StickyCourseCta'
 import {
   ArrowLeft,
@@ -32,22 +35,25 @@ export function generateStaticParams() {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params
-  const course = courses.find((c) => c.slug === slug)
+  const locale = await getLocale()
+  const course = getCourses(locale).find((c) => c.slug === slug)
   if (!course) return {}
   return buildMetadata({
     title: course.seoTitle,
     description: course.seoDescription,
     path: `/courses/${slug}`,
+    locale,
   })
 }
 
 const LEVELS = ['Beginner', 'Intermediate', 'Advanced'] as const
 
-const REQUIREMENTS: Record<string, string> = {
-  'Beginner': 'None — start from scratch',
-  'All Levels': 'None — all levels welcome',
-  'Intermediate': 'Basic Quran reading',
-  'Advanced': 'Strong Tajweed & fluency',
+// Requirement copy keyed by the ENGLISH level (see the index-aligned lookup below).
+const REQUIREMENT_KEYS: Record<string, string> = {
+  'Beginner': 'coursePage.reqBeginner',
+  'All Levels': 'coursePage.reqAllLevels',
+  'Intermediate': 'coursePage.reqIntermediate',
+  'Advanced': 'coursePage.reqAdvanced',
 }
 
 /* ── Building blocks ── */
@@ -66,46 +72,52 @@ function PanelTitle({ children }: { children: React.ReactNode }) {
 
 export default async function CourseDetailPage({ params }: Props) {
   const { slug } = await params
-  const course = courses.find((c) => c.slug === slug)
-  if (!course) notFound()
+  const locale = await getLocale()
+  const t = getT(locale)
+  const localizedCourses = getCourses(locale)
+  const courseIndex = localizedCourses.findIndex((c) => c.slug === slug)
+  if (courseIndex === -1) notFound()
+  const course = localizedCourses[courseIndex]
+  // `level` styling/lookups must key off the English source at the same index —
+  // the translated array is index-aligned with the English `courses` (see courses/page.tsx).
+  const enLevel = courses[courseIndex].level
 
-  const courseTeachers = (() => {
-    const filtered = teachers.filter((t) =>
-      t.specialties.some((s) => course.specialtyTags.includes(s)),
-    )
-    return filtered.length > 0 ? filtered.slice(0, 3) : featuredTeachers.slice(0, 3)
-  })()
+  const allTeachers = await fetchTeachers(locale)
+  const filteredTeachers = allTeachers.filter((teacher) =>
+    teacher.specialties.some((s) => course.specialtyTags.includes(s)),
+  )
+  const courseTeachers = (filteredTeachers.length > 0 ? filteredTeachers : allTeachers).slice(0, 3)
 
   const relatedCourses = course.relatedSlugs
-    .map((s) => courses.find((c) => c.slug === s))
-    .filter(Boolean) as typeof courses
+    .map((s) => localizedCourses.find((c) => c.slug === s))
+    .filter(Boolean) as typeof localizedCourses
 
   const otherCourses =
     relatedCourses.length >= 3
       ? relatedCourses.slice(0, 4)
-      : courses.filter((c) => c.slug !== course.slug).slice(0, 4)
+      : localizedCourses.filter((c) => c.slug !== course.slug).slice(0, 4)
 
   const tags = [...course.specialtyTags, ...(course.ageGroup ? [course.ageGroup] : [])].slice(0, 4)
-  const levelActive = course.level === 'All Levels' ? LEVELS : [course.level]
+  const levelActive = enLevel === 'All Levels' ? LEVELS : [enLevel]
 
   const characteristics = [
-    { icon: Star, label: 'Rating', value: '4.9 / 5' },
-    { icon: Users, label: 'Course type', value: 'Individual (1-on-1)' },
-    { icon: Clock, label: 'Length', value: course.durationMonths ? `~${course.durationMonths} months` : 'approx. 24 hours / level' },
-    { icon: ClipboardList, label: 'Requirements', value: REQUIREMENTS[course.level] ?? 'None' },
+    { icon: Star, label: t('coursePage.ratingLabel'), value: t('coursePage.ratingValue') },
+    { icon: Users, label: t('coursePage.courseTypeLabel'), value: t('coursePage.courseTypeValue') },
+    { icon: Clock, label: t('coursePage.lengthLabel'), value: course.durationMonths ? t('coursePage.lengthMonths', { n: course.durationMonths }) : t('coursePage.lengthDefault') },
+    { icon: ClipboardList, label: t('coursePage.requirements'), value: t(REQUIREMENT_KEYS[enLevel] ?? 'coursePage.reqNone') },
   ]
 
   const schemas = [
     courseSchema(course),
     breadcrumbSchema([
-      { name: 'Home', href: '/' },
-      { name: 'Courses', href: '/courses' },
-      { name: course.title, href: `/courses/${course.slug}` },
+      { name: t('nav.home'), href: localizedHref('/', locale) },
+      { name: t('nav.courses'), href: localizedHref('/courses', locale) },
+      { name: course.title, href: localizedHref(`/courses/${course.slug}`, locale) },
     ]),
     faqSchema(course.faqs),
   ]
 
-  const waHref = whatsappLink(`Assalamu alaikum, I'm interested in the ${course.title} course.`)
+  const waHref = whatsappLink(t('coursePage.waInterested', { course: course.title }))
 
   return (
     <div className="bg-primary">
@@ -125,8 +137,8 @@ export default async function CourseDetailPage({ params }: Props) {
           style={{ background: 'radial-gradient(ellipse 60% 70% at 85% 0%, rgba(14,124,90,0.28), transparent 70%)' }}
         />
         <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <Link href="/courses" className="mb-8 inline-flex items-center gap-2 text-sm text-white/60 transition-colors hover:text-white">
-            <ArrowLeft className="size-4" aria-hidden="true" /> Back to classes
+          <Link href={localizedHref('/courses', locale)} className="mb-8 inline-flex items-center gap-2 text-sm text-white/60 transition-colors hover:text-white">
+            <ArrowLeft className="size-4" aria-hidden="true" /> {t('coursePage.backToClasses')}
           </Link>
 
           <div className="grid items-center gap-10 lg:grid-cols-[1fr_460px]">
@@ -170,7 +182,7 @@ export default async function CourseDetailPage({ params }: Props) {
           <div className="space-y-6">
             {/* Perks strip */}
             <div className="flex flex-wrap items-center gap-x-6 gap-y-2 rounded-2xl border border-accent/20 bg-accent/[0.06] px-6 py-4 text-sm font-medium text-accent">
-              {['Flexible hours', 'Used by thousands', '1-on-1 lessons', 'Certificate on completion'].map((p) => (
+              {[t('coursePage.perkFlexible'), t('coursePage.perkThousands'), t('coursePage.perkOneOnOne'), t('coursePage.perkCertificate')].map((p) => (
                 <span key={p} className="inline-flex items-center gap-1.5">
                   <Sparkles className="size-3.5" aria-hidden="true" /> {p}
                 </span>
@@ -179,7 +191,7 @@ export default async function CourseDetailPage({ params }: Props) {
 
             {/* About */}
             <Panel>
-              <PanelTitle>About this course</PanelTitle>
+              <PanelTitle>{t('coursePage.about')}</PanelTitle>
               <p className="leading-relaxed text-white/70">{course.longDescription}</p>
               <p className="mt-4 leading-relaxed text-white/70">{course.shortDescription}</p>
 
@@ -196,7 +208,7 @@ export default async function CourseDetailPage({ params }: Props) {
                           : 'border-white/10 text-white/35'
                       }`}
                     >
-                      {lvl}
+                      {t(`common.levels.${lvl}`)}
                     </span>
                   )
                 })}
@@ -205,7 +217,7 @@ export default async function CourseDetailPage({ params }: Props) {
 
             {/* What you'll learn */}
             <Panel>
-              <PanelTitle>What you will learn</PanelTitle>
+              <PanelTitle>{t('coursePage.outcomes')}</PanelTitle>
               <ul className="grid gap-3 sm:grid-cols-2">
                 {course.outcomes.map((o) => (
                   <li key={o} className="flex items-start gap-2.5">
@@ -218,7 +230,7 @@ export default async function CourseDetailPage({ params }: Props) {
 
             {/* Course program (curriculum) */}
             <Panel>
-              <PanelTitle>Course program</PanelTitle>
+              <PanelTitle>{t('coursePage.curriculum')}</PanelTitle>
               <div className="space-y-3">
                 {course.curriculum.map((item, i) => (
                   <details key={item.module} className="group rounded-xl border border-white/10 bg-white/[0.02] [&_summary]:list-none" open={i === 0}>
@@ -244,7 +256,7 @@ export default async function CourseDetailPage({ params }: Props) {
 
             {/* Who this is for */}
             <Panel>
-              <PanelTitle>Who this course is for</PanelTitle>
+              <PanelTitle>{t('coursePage.personas')}</PanelTitle>
               <div className="grid gap-4 sm:grid-cols-2">
                 {course.personas.map((p) => (
                   <div key={p.title} className="rounded-xl border border-white/10 bg-white/[0.02] p-4">
@@ -257,24 +269,24 @@ export default async function CourseDetailPage({ params }: Props) {
 
             {/* Your teachers */}
             <Panel>
-              <PanelTitle>Your teachers</PanelTitle>
+              <PanelTitle>{t('coursePage.teachers')}</PanelTitle>
               <ul className="grid gap-4 sm:grid-cols-3">
-                {courseTeachers.map((t) => (
-                  <li key={t.id}>
+                {courseTeachers.map((teacher) => (
+                  <li key={teacher.id}>
                     <Link
-                      href={`/our-teachers/${t.id}`}
+                      href={localizedHref(`/our-teachers/${teacher.id}`, locale)}
                       className="group flex h-full flex-col items-center rounded-xl border border-white/10 bg-white/[0.02] p-5 text-center transition-colors hover:border-accent/40"
                     >
                       <Image
-                        src={t.photo}
-                        alt={t.name}
+                        src={teacher.photo}
+                        alt={teacher.name}
                         width={64}
                         height={64}
                         className="mb-3 size-14 rounded-full object-cover ring-2 ring-accent/40"
                       />
-                      <p className="font-semibold text-white group-hover:text-accent">{t.name}</p>
-                      <p className="mt-0.5 text-xs text-emerald-300">{t.role}</p>
-                      <p className="mt-2 text-xs text-white/40">{t.yearsExperience} yrs · {t.studentsCount}+ students</p>
+                      <p className="font-semibold text-white group-hover:text-accent">{teacher.name}</p>
+                      <p className="mt-0.5 text-xs text-emerald-300">{teacher.role}</p>
+                      <p className="mt-2 text-xs text-white/40">{teacher.yearsExperience} {t('coursePage.yrs')} · {teacher.studentsCount}+ {t('teacherPage.students')}</p>
                     </Link>
                   </li>
                 ))}
@@ -283,7 +295,7 @@ export default async function CourseDetailPage({ params }: Props) {
 
             {/* FAQ */}
             <Panel>
-              <PanelTitle>Frequently asked questions</PanelTitle>
+              <PanelTitle>{t('coursePage.faqs')}</PanelTitle>
               <div className="space-y-3">
                 {course.faqs.map((faq, i) => (
                   <details key={i} className="group rounded-xl border border-white/10 bg-white/[0.02] [&_summary]:list-none">
@@ -302,9 +314,9 @@ export default async function CourseDetailPage({ params }: Props) {
           <aside className="space-y-6 lg:sticky lg:top-28 lg:self-start">
             {/* Start now */}
             <div className="overflow-hidden rounded-2xl bg-gradient-to-br from-secondary to-[#0a6849] p-6 shadow-lg">
-              <h3 className="font-heading text-xl font-bold text-white">Start now!</h3>
+              <h3 className="font-heading text-xl font-bold text-white">{t('coursePage.startNow')}</h3>
               <p className="mt-2 text-sm leading-relaxed text-white/80">
-                Book your free trial lesson and discover our teaching method.
+                {t('coursePage.startNowSub')}
               </p>
 
               <ul className="my-5 space-y-2.5 border-y border-white/15 py-4">
@@ -318,24 +330,24 @@ export default async function CourseDetailPage({ params }: Props) {
               </ul>
 
               <Link
-                href="/contact"
+                href={localizedHref('/contact', locale)}
                 className="flex w-full items-center justify-center gap-2 rounded-xl bg-white py-3.5 font-semibold text-secondary transition-transform hover:scale-[1.02]"
               >
-                Book your free trial <ArrowRight className="size-4" aria-hidden="true" />
+                {t('nav.bookFreeTrial')} <ArrowRight className="size-4" aria-hidden="true" />
               </Link>
               <p className="mt-3 text-center text-xs text-white/70">
-                ✓ Free first class · No credit card required
+                {t('coursePage.freeFirstNoCard')}
               </p>
             </div>
 
             {/* Other courses */}
             <Panel className="p-5 sm:p-6">
-              <h3 className="mb-4 font-heading text-lg font-bold text-white">Other courses</h3>
+              <h3 className="mb-4 font-heading text-lg font-bold text-white">{t('coursePage.otherCourses')}</h3>
               <ul className="divide-y divide-white/10">
                 {otherCourses.map((c) => (
                   <li key={c.slug}>
                     <Link
-                      href={`/courses/${c.slug}`}
+                      href={localizedHref(`/courses/${c.slug}`, locale)}
                       className="group flex items-center gap-2 py-3 text-sm text-white/75 transition-colors hover:text-accent"
                     >
                       <GraduationCap className="size-4 shrink-0 text-emerald-400" aria-hidden="true" />
@@ -349,9 +361,9 @@ export default async function CourseDetailPage({ params }: Props) {
 
             {/* Any questions */}
             <Panel className="p-5 sm:p-6">
-              <h3 className="mb-2 font-heading text-lg font-bold text-white">Any questions?</h3>
+              <h3 className="mb-2 font-heading text-lg font-bold text-white">{t('coursePage.anyQuestions')}</h3>
               <p className="mb-4 text-sm leading-relaxed text-white/60">
-                Our team is available to answer all your questions.
+                {t('coursePage.anyQuestionsSub')}
               </p>
               <a
                 href={waHref}
@@ -359,7 +371,7 @@ export default async function CourseDetailPage({ params }: Props) {
                 rel="noopener noreferrer"
                 className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#25D366] py-3.5 font-semibold text-white transition-transform hover:scale-[1.02]"
               >
-                <MessageCircle className="size-5" aria-hidden="true" /> WhatsApp
+                <MessageCircle className="size-5" aria-hidden="true" /> {t('nav.chatWhatsapp')}
               </a>
             </Panel>
           </aside>

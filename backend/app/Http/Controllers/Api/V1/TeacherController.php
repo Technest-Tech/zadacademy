@@ -3,26 +3,27 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\TeacherResource;
 use App\Models\Teacher;
-use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
 class TeacherController extends Controller
 {
-    public function index(): JsonResponse
+    public function index(): AnonymousResourceCollection
     {
         $data = Teacher::where('featured', true)
             ->orderBy('sort_order')
             ->get();
 
-        return response()->json(['data' => $data]);
+        return TeacherResource::collection($data);
     }
 
-    public function show(string $slug): JsonResponse
+    public function show(string $slug): TeacherResource
     {
         $teacher = Teacher::where('slug', $slug)
             ->with(['reviews' => fn ($q) => $q->where('approved', true)->orderBy('sort_order')])
             ->firstOrFail();
 
-        return response()->json(['data' => $teacher]);
+        return new TeacherResource($teacher);
     }
 }

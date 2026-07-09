@@ -5,10 +5,13 @@ import { Container } from '@/components/layout/Container'
 import { PricingPlans } from '@/components/pricing/PricingPlans'
 import { whatsappLink } from '@/config/site'
 import {
-  includedFeatures,
-  pricingPageContent,
+  getIncludedFeatures,
+  getPricingPageContent,
   type IncludedIcon,
 } from '@/content/pricing'
+import { getLocale } from '@/i18n/getLocale'
+import { getT } from '@/i18n/getDictionary'
+import { localizedHref } from '@/i18n/href'
 import {
   Gift,
   GraduationCap,
@@ -22,12 +25,16 @@ import {
   type LucideIcon,
 } from 'lucide-react'
 
-export const metadata: Metadata = buildMetadata({
-  title: 'Quran Class Pricing | Lesson Packages | Zad Academy',
-  description:
-    'Transparent lesson packages for online Quran classes. The more you book, the less you pay per lesson. Free first lesson, no contracts, cancel anytime.',
-  path: '/pricing',
-})
+export async function generateMetadata(): Promise<Metadata> {
+  const locale = await getLocale()
+  const t = getT(locale)
+  return buildMetadata({
+    title: t('meta.pricingTitle'),
+    description: t('meta.pricingDescription'),
+    path: '/pricing',
+    locale,
+  })
+}
 
 const INCLUDED_ICONS: Record<IncludedIcon, LucideIcon> = {
   gift: Gift,
@@ -38,11 +45,14 @@ const INCLUDED_ICONS: Record<IncludedIcon, LucideIcon> = {
   shield: ShieldCheck,
 }
 
-export default function PricingPage() {
-  const { hero, included, guarantee } = pricingPageContent
+export default async function PricingPage() {
+  const locale = await getLocale()
+  const t = getT(locale)
+  const { hero, included, guarantee } = getPricingPageContent(locale)
+  const includedFeatures = getIncludedFeatures(locale)
   const crumbs = breadcrumbSchema([
-    { name: 'Home', href: '/' },
-    { name: 'Pricing', href: '/pricing' },
+    { name: t('nav.home'), href: localizedHref('/', locale) },
+    { name: t('nav.pricing'), href: localizedHref('/pricing', locale) },
   ])
 
   const renderHighlight = (text: string, highlight?: string) => {
@@ -95,7 +105,7 @@ export default function PricingPage() {
                 </p>
               </div>
 
-              <PricingPlans ctaHref="/contact" />
+              <PricingPlans ctaHref={localizedHref('/contact', locale)} />
             </Container>
           </section>
         </div>
@@ -165,9 +175,7 @@ export default function PricingPage() {
                 </p>
                 <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
                   <a
-                    href={whatsappLink(
-                      'Assalamu alaikum, I would like a free trial lesson and advice on which package suits me.',
-                    )}
+                    href={whatsappLink(t('pricingPlans.waMessage'))}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="inline-flex h-12 items-center justify-center gap-2 rounded-xl bg-secondary px-6 text-sm font-semibold text-white transition-colors hover:bg-[#0a6849]"
@@ -176,7 +184,7 @@ export default function PricingPage() {
                     {guarantee.ctaSecondary}
                   </a>
                   <a
-                    href="/contact"
+                    href={localizedHref('/contact', locale)}
                     className="inline-flex h-12 items-center justify-center gap-2 rounded-xl bg-accent px-6 text-sm font-semibold text-primary transition-colors hover:bg-[#d8b258]"
                   >
                     {guarantee.ctaPrimary}

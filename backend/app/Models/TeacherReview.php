@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class TeacherReview extends Model
 {
     protected $fillable = [
-        'teacher_id', 'author', 'rating', 'text', 'approved', 'sort_order',
+        'teacher_id', 'author', 'rating', 'text', 'text_fr', 'approved', 'sort_order',
     ];
 
     protected $casts = [

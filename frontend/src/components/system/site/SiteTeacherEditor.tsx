@@ -80,6 +80,19 @@ export function SiteTeacherEditor({ teacher }: { teacher?: SiteTeacher }) {
     courses_given: teacher?.courses_given ?? 0,
     teaching_hours: teacher?.teaching_hours ?? 0,
     sort_order: teacher?.sort_order ?? 0,
+    // French translations
+    role_fr: teacher?.role_fr ?? '',
+    title_fr: teacher?.title_fr ?? '',
+    country_fr: teacher?.country_fr ?? '',
+    quote_fr: teacher?.quote_fr ?? '',
+    bio_fr: teacher?.bio_fr ?? '',
+    about_fr: teacher?.about_fr ?? '',
+    teaching_style_fr: teacher?.teaching_style_fr ?? '',
+    strengths_fr: teacher?.strengths_fr ?? '',
+    credentials_fr: teacher?.credentials_fr ?? '',
+    specialties_fr: (teacher?.specialties_fr ?? []).join(', '),
+    languages_fr: (teacher?.languages_fr ?? []).join(', '),
+    tags_fr: (teacher?.tags_fr ?? []).join(', '),
   })
 
   const set = (k: string, v: unknown) => setForm((p) => ({ ...p, [k]: v }))
@@ -107,6 +120,9 @@ export function SiteTeacherEditor({ teacher }: { teacher?: SiteTeacher }) {
       specialties: csv(form.specialties),
       languages: csv(form.languages),
       tags: csv(form.tags),
+      specialties_fr: csv(form.specialties_fr),
+      languages_fr: csv(form.languages_fr),
+      tags_fr: csv(form.tags_fr),
       rating: Number(form.rating),
       reviews_count: Number(form.reviews_count),
       hourly_rate: Number(form.hourly_rate),
@@ -211,6 +227,31 @@ export function SiteTeacherEditor({ teacher }: { teacher?: SiteTeacher }) {
           <Field label="Credentials"><Textarea rows={2} value={String(form.credentials)} onChange={(e) => set('credentials', e.target.value)} /></Field>
         </div>
 
+        {/* ── French translations ── */}
+        <div className={CARD}>
+          <div className="flex items-center gap-2">
+            <span className="text-base">🇫🇷</span>
+            <Label className="text-sm font-semibold">Français (translations)</Label>
+          </div>
+          <p className="text-xs text-muted-text">
+            Optional. Shown on the public site when the visitor’s language is French. Leave blank to fall back to the English text above.
+          </p>
+          <div className="grid gap-4 sm:grid-cols-2">
+            <Field label="Rôle (Role)"><Input value={String(form.role_fr)} onChange={(e) => set('role_fr', e.target.value)} /></Field>
+            <Field label="Titre / accroche (Title)"><Input value={String(form.title_fr)} onChange={(e) => set('title_fr', e.target.value)} /></Field>
+            <Field label="Pays (Country)"><Input value={String(form.country_fr)} onChange={(e) => set('country_fr', e.target.value)} /></Field>
+          </div>
+          <Field label="Citation (Quote)"><Input value={String(form.quote_fr)} onChange={(e) => set('quote_fr', e.target.value)} /></Field>
+          <Field label="Spécialités (comma separated)"><Input value={String(form.specialties_fr)} onChange={(e) => set('specialties_fr', e.target.value)} /></Field>
+          <Field label="Langues (comma separated)"><Input value={String(form.languages_fr)} onChange={(e) => set('languages_fr', e.target.value)} /></Field>
+          <Field label="Tags (comma separated)"><Input value={String(form.tags_fr)} onChange={(e) => set('tags_fr', e.target.value)} /></Field>
+          <Field label="Bio courte (Short bio)"><Textarea rows={3} value={String(form.bio_fr)} onChange={(e) => set('bio_fr', e.target.value)} /></Field>
+          <Field label="À propos (About)"><Textarea rows={4} value={String(form.about_fr)} onChange={(e) => set('about_fr', e.target.value)} /></Field>
+          <Field label="Méthode d’enseignement (Teaching style)"><Textarea rows={3} value={String(form.teaching_style_fr)} onChange={(e) => set('teaching_style_fr', e.target.value)} /></Field>
+          <Field label="Points forts (Strengths)"><Textarea rows={3} value={String(form.strengths_fr)} onChange={(e) => set('strengths_fr', e.target.value)} /></Field>
+          <Field label="Diplômes (Credentials)"><Textarea rows={2} value={String(form.credentials_fr)} onChange={(e) => set('credentials_fr', e.target.value)} /></Field>
+        </div>
+
         {isEdit && <ReviewsManager teacher={teacher} />}
       </div>
     </form>
@@ -222,14 +263,14 @@ export function SiteTeacherEditor({ teacher }: { teacher?: SiteTeacher }) {
 function ReviewsManager({ teacher }: { teacher: SiteTeacher }) {
   const create = useCreateReview(teacher.slug)
   const del = useDeleteReview(teacher.slug)
-  const [draft, setDraft] = useState({ author: '', rating: 5, text: '' })
+  const [draft, setDraft] = useState({ author: '', rating: 5, text: '', text_fr: '' })
   const reviews = teacher.reviews ?? []
 
   async function add() {
     if (!draft.author.trim() || !draft.text.trim()) return
     try {
       await create.mutateAsync(draft)
-      setDraft({ author: '', rating: 5, text: '' })
+      setDraft({ author: '', rating: 5, text: '', text_fr: '' })
       toast.success('Review added')
     } catch {
       toast.error('Failed to add review')
@@ -262,6 +303,7 @@ function ReviewsManager({ teacher }: { teacher: SiteTeacher }) {
           </select>
         </div>
         <Textarea placeholder="Review text" rows={2} value={draft.text} onChange={(e) => setDraft((p) => ({ ...p, text: e.target.value }))} />
+        <Textarea placeholder="Review (French) — optional 🇫🇷" rows={2} value={draft.text_fr} onChange={(e) => setDraft((p) => ({ ...p, text_fr: e.target.value }))} />
         <Button type="button" size="sm" variant="outline" onClick={add} disabled={create.isPending}>
           <Plus className="size-4" /> Add review
         </Button>

@@ -11,11 +11,14 @@ import { TestimonialsMarquee } from '@/components/home/TestimonialsMarquee'
 import { TeachersSection } from '@/components/home/TeachersSection'
 import { TrialBookingForm } from '@/components/conversion/TrialBookingForm'
 import { whatsappLink } from '@/config/site'
-import { homeContent } from '@/content/home'
-import { stats } from '@/content/stats'
+import { getHomeContent } from '@/content/home'
+import { getStats } from '@/content/stats'
 import Image from 'next/image'
-import { courses } from '@/content/courses'
-import { testimonials } from '@/content/testimonials'
+import { getCourses } from '@/content/courses'
+import { getTestimonials } from '@/content/testimonials'
+import { getLocale } from '@/i18n/getLocale'
+import { getT } from '@/i18n/getDictionary'
+import { localizedHref } from '@/i18n/href'
 import {
   BookOpen,
   Users,
@@ -28,12 +31,16 @@ import {
 } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
 
-export const metadata: Metadata = buildMetadata({
-  title: 'Online Quran Academy | 1-on-1 Classes | Zad Academy',
-  description:
-    'Learn Quran online with certified teachers from Al-Azhar. 1-on-1 Tajweed, Hifz, Arabic, and Islamic studies classes. Free trial available worldwide.',
-  path: '/',
-})
+export async function generateMetadata(): Promise<Metadata> {
+  const locale = await getLocale()
+  const t = getT(locale)
+  return buildMetadata({
+    title: t('meta.homeTitle'),
+    description: t('meta.homeDescription'),
+    path: '/',
+    locale,
+  })
+}
 
 const iconMap: Record<string, LucideIcon> = {
   Users,
@@ -45,7 +52,13 @@ const iconMap: Record<string, LucideIcon> = {
   Clock,
 }
 
-export default function HomePage() {
+export default async function HomePage() {
+  const locale = await getLocale()
+  const t = getT(locale)
+  const homeContent = getHomeContent(locale)
+  const stats = getStats(locale)
+  const courses = getCourses(locale)
+  const testimonials = getTestimonials(locale)
   return (
     <>
       <script
@@ -58,13 +71,13 @@ export default function HomePage() {
 
 
       {/* ── Trust Strip ── */}
-      <section className="bg-cream py-10 md:py-12" aria-label="Why choose Zad Academy">
+      <section className="bg-cream py-10 md:py-12" aria-label={t('home.whyChooseAria')}>
         <Container>
           <div className="flex items-center justify-center gap-3 sm:gap-4 mb-7">
             <span className="h-px w-10 sm:w-16 bg-gradient-to-r from-transparent to-accent/60" aria-hidden="true" />
             <span className="size-1.5 rotate-45 rounded-[1px] bg-accent" aria-hidden="true" />
             <p className="text-secondary text-sm font-semibold uppercase tracking-[0.2em] text-center">
-              Why Zad Academy
+              {homeContent.whyUs.eyebrow}
             </p>
             <span className="size-1.5 rotate-45 rounded-[1px] bg-accent" aria-hidden="true" />
             <span className="h-px w-10 sm:w-16 bg-gradient-to-l from-transparent to-accent/60" aria-hidden="true" />
@@ -72,13 +85,10 @@ export default function HomePage() {
           <ul className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4" role="list">
             {homeContent.trustBadges.map(({ icon, label }, idx) => {
               const Icon = iconMap[icon] ?? BookOpen
-              const subtext: Record<string, string> = {
-                'Users':         'Every student, one teacher',
-                'ShieldCheck':   'No credit card needed',
-                'Heart':         'Sister teachers on request',
-                'Globe':         'Egyptian & Levantine accents',
-                'GraduationCap': 'Al-Azhar graduates',
-              }
+              // t() echoes the key back when a lookup misses — treat that as "no subtext".
+              const subtextKey = `home.trustSubtext.${icon}`
+              const resolved = t(subtextKey)
+              const subtext = resolved === subtextKey ? '' : resolved
               const iconStyle: Record<string, { wrap: string; icon: string }> = {
                 'Users':         { wrap: 'bg-secondary/12', icon: 'text-secondary' },
                 'ShieldCheck':   { wrap: 'bg-accent/12',    icon: 'text-accent'    },
@@ -99,7 +109,7 @@ export default function HomePage() {
                   </div>
                   <div>
                     <p className="font-semibold text-primary text-sm leading-snug">{label}</p>
-                    <p className="text-muted-text text-xs mt-1 leading-snug">{subtext[icon] ?? ''}</p>
+                    <p className="text-muted-text text-xs mt-1 leading-snug">{subtext}</p>
                   </div>
                 </li>
               )
@@ -112,7 +122,7 @@ export default function HomePage() {
       <StatsSection stats={stats} />
 
       {/* ── Testimonials (directly below stats) ── */}
-      <TestimonialsMarquee items={testimonials} />
+      <TestimonialsMarquee items={testimonials} locale={locale} />
 
       {/* ── How It Works ── */}
       <section className="relative overflow-hidden bg-navy-soft py-12 sm:py-14" aria-labelledby="how-heading">
@@ -145,15 +155,15 @@ export default function HomePage() {
         <Container className="relative">
           <SectionDivider tone="dark" className="mb-6 -mt-2" />
           <div className="text-center mb-6">
-            <p className="text-accent text-sm font-semibold uppercase tracking-wider mb-3">Simple Process</p>
+            <p className="text-accent text-sm font-semibold uppercase tracking-wider mb-3">{t('home.simpleProcess')}</p>
             <h2 id="how-heading" className="heading-xl font-heading text-white">
-              Start in 3 Easy Steps
+              {t('home.startSteps')}
             </h2>
           </div>
           <div className="flex justify-center">
             <Image
               src="/images/contact-trial-steps.png"
-              alt="Step 1: Book your free trial. Step 2: Get matched and schedule. Step 3: Start your first lesson."
+              alt={t('home.stepsAlt')}
               width={900}
               height={320}
               className="w-full max-w-3xl h-auto rounded-2xl"
@@ -163,13 +173,13 @@ export default function HomePage() {
       </section>
 
       {/* ── Courses ── */}
-      <CoursesGrid courses={courses} />
+      <CoursesGrid courses={courses} locale={locale} />
 
       {/* ── Teachers ── */}
       <TeachersSection />
 
       {/* ── Book a Free Trial ── */}
-      <section id="book" className="bg-navy-soft py-16 sm:py-20 scroll-mt-24" aria-label="Book a free trial lesson">
+      <section id="book" className="bg-navy-soft py-16 sm:py-20 scroll-mt-24" aria-label={t('home.bookTrialAria')}>
         <Container>
           <SectionDivider tone="dark" className="mb-10 -mt-4" />
           <TrialBookingForm />
@@ -205,7 +215,7 @@ export default function HomePage() {
               {homeContent.cta.subheading}
             </p>
             <div className="flex flex-wrap justify-center gap-4">
-              <LinkButton href="/contact" size="lg" variant="gold">
+              <LinkButton href={localizedHref('/contact', locale)} size="lg" variant="gold">
                 {homeContent.cta.ctaPrimary}
               </LinkButton>
               <a

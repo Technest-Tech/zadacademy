@@ -2,12 +2,16 @@ import Link from 'next/link'
 import { Star, Sparkles, ArrowRight } from 'lucide-react'
 import { SectionDivider } from '@/components/layout/SectionDivider'
 import type { Testimonial } from '@/content/testimonials'
+import type { Locale } from '@/i18n/config'
+import type { TranslateFn } from '@/i18n/translate'
+import { getT } from '@/i18n/getDictionary'
+import { localizedHref } from '@/i18n/href'
 
-function Card({ t }: { t: Testimonial }) {
+function Card({ t, tr }: { t: Testimonial; tr: TranslateFn }) {
   return (
     <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-5 backdrop-blur-sm select-none transition-colors hover:border-accent/40 hover:bg-white/[0.06]">
       {/* Stars */}
-      <div className="flex gap-0.5 mb-3" aria-label={`${t.rating} out of 5 stars`}>
+      <div className="flex gap-0.5 mb-3" aria-label={tr('common.ratingAria', { rating: t.rating })}>
         {Array.from({ length: t.rating }).map((_, i) => (
           <Star key={i} className="size-3.5 fill-accent text-accent" aria-hidden="true" />
         ))}
@@ -39,9 +43,11 @@ function Card({ t }: { t: Testimonial }) {
 function Column({
   items,
   direction,
+  tr,
 }: {
   items: Testimonial[]
   direction: 'up' | 'down'
+  tr: TranslateFn
 }) {
   const anim = direction === 'up' ? 'animate-marquee-up' : 'animate-marquee-down'
   return (
@@ -52,22 +58,23 @@ function Column({
 
       <div className={`flex flex-col gap-4 ${anim} group-hover:[animation-play-state:paused]`}>
         {[...items, ...items].map((t, i) => (
-          <Card key={`${direction}-${t.id}-${i}`} t={t} />
+          <Card key={`${direction}-${t.id}-${i}`} t={t} tr={tr} />
         ))}
       </div>
     </div>
   )
 }
 
-export function TestimonialsMarquee({ items }: { items: Testimonial[] }) {
+export function TestimonialsMarquee({ items, locale }: { items: Testimonial[]; locale: Locale }) {
+  const tr = getT(locale)
   const third = Math.ceil(items.length / 3)
   const colLeft = items.slice(0, third * 2)
   const colRight = items.slice(third)
 
   const stats = [
-    { value: '4.9', label: 'Average Rating' },
-    { value: '10,000+', label: 'Happy Students' },
-    { value: '2,000+', label: 'Verified Reviews' },
+    { value: tr('testimonialsMarquee.statRatingValue'), label: tr('testimonialsMarquee.statRatingLabel') },
+    { value: tr('testimonialsMarquee.statStudentsValue'), label: tr('testimonialsMarquee.statStudentsLabel') },
+    { value: tr('testimonialsMarquee.statReviewsValue'), label: tr('testimonialsMarquee.statReviewsLabel') },
   ]
 
   return (
@@ -92,7 +99,7 @@ export function TestimonialsMarquee({ items }: { items: Testimonial[] }) {
         <div className="grid items-center gap-8 lg:grid-cols-3 lg:gap-6">
           {/* Left column — scrolls up (hidden on mobile) */}
           <div className="hidden lg:block">
-            <Column items={colLeft} direction="up" />
+            <Column items={colLeft} direction="up" tr={tr} />
           </div>
 
           {/* Center — header, stats, CTA */}
@@ -102,18 +109,17 @@ export function TestimonialsMarquee({ items }: { items: Testimonial[] }) {
             </div>
 
             <p className="mb-4 text-sm font-semibold uppercase tracking-[0.25em] text-accent">
-              Testimonials
+              {tr('testimonialsMarquee.eyebrow')}
             </p>
 
             <h2 id="testimonials-heading" className="heading-xl font-heading text-white">
-              What Our
+              {tr('testimonialsMarquee.headingLead')}
               <br />
-              <span className="text-accent">Students Say</span>
+              <span className="text-accent">{tr('testimonialsMarquee.headingAccent')}</span>
             </h2>
 
             <p className="mx-auto mt-5 max-w-md text-base leading-relaxed text-white/60">
-              Thousands of families around the world trust us to teach their
-              children the Quran and Arabic — with patience, care, and Ijazah.
+              {tr('testimonialsMarquee.subheading')}
             </p>
 
             {/* Stats row */}
@@ -132,23 +138,23 @@ export function TestimonialsMarquee({ items }: { items: Testimonial[] }) {
 
             {/* CTA */}
             <Link
-              href="/contact"
+              href={localizedHref('/contact', locale)}
               className="group mt-10 inline-flex items-center gap-2.5 rounded-full border border-accent/50 px-7 py-3.5 font-medium text-accent transition-colors hover:bg-accent hover:text-primary"
             >
-              Join Our Students
+              {tr('testimonialsMarquee.cta')}
               <ArrowRight className="size-4 transition-transform group-hover:translate-x-1" aria-hidden="true" />
             </Link>
           </div>
 
           {/* Right column — scrolls down (hidden on mobile) */}
           <div className="hidden lg:block">
-            <Column items={colRight} direction="down" />
+            <Column items={colRight} direction="down" tr={tr} />
           </div>
         </div>
 
         {/* Mobile — single scrolling column */}
         <div className="mt-10 lg:hidden">
-          <Column items={colLeft} direction="up" />
+          <Column items={colLeft} direction="up" tr={tr} />
         </div>
       </div>
     </section>

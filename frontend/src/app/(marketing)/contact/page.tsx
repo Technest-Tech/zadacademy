@@ -7,18 +7,27 @@ import { LinkButton } from '@/components/ui/link-button'
 import { whatsappLink } from '@/config/site'
 import { TrialBookingForm } from '@/components/conversion/TrialBookingForm'
 import { ContactSidebar } from '@/components/conversion/ContactSidebar'
+import { getLocale } from '@/i18n/getLocale'
+import { getT } from '@/i18n/getDictionary'
+import { localizedHref } from '@/i18n/href'
 
-export const metadata: Metadata = buildMetadata({
-  title: 'Book a Free Trial Quran Class | Contact Zad Academy',
-  description:
-    'Book your free first Quran class. Fill out the form and we will match you with a certified teacher within 24 hours. No credit card required.',
-  path: '/contact',
-})
+export async function generateMetadata(): Promise<Metadata> {
+  const locale = await getLocale()
+  const t = getT(locale)
+  return buildMetadata({
+    title: t('meta.contactTitle'),
+    description: t('meta.contactDescription'),
+    path: '/contact',
+    locale,
+  })
+}
 
-export default function ContactPage() {
+export default async function ContactPage() {
+  const locale = await getLocale()
+  const t = getT(locale)
   const crumbs = breadcrumbSchema([
-    { name: 'Home', href: '/' },
-    { name: 'Contact', href: '/contact' },
+    { name: t('nav.home'), href: localizedHref('/', locale) },
+    { name: t('footer.contact'), href: localizedHref('/contact', locale) },
   ])
 
   return (
@@ -43,17 +52,16 @@ export default function ContactPage() {
         />
         <Container className="relative text-center">
           <p className="text-accent text-sm font-semibold uppercase tracking-widest mb-4">
-            Book Your Free Trial
+            {t('contactPage.eyebrow')}
           </p>
           <h1
             id="contact-heading"
             className="heading-display font-display text-white text-balance mb-6 max-w-3xl mx-auto"
           >
-            Start Your Quran Journey Today
+            {t('contactPage.heading')}
           </h1>
           <p className="text-white/70 text-xl leading-relaxed max-w-2xl mx-auto">
-            Fill out the form below. We&rsquo;ll match you with a certified teacher and confirm
-            your first free class within 24 hours.
+            {t('contactPage.subheading')}
           </p>
         </Container>
       </section>
@@ -81,18 +89,17 @@ export default function ContactPage() {
               خَيْرُكُمْ مَنْ تَعَلَّمَ الْقُرْآنَ وَعَلَّمَهُ
             </p>
             <p className="text-white/60 text-sm italic mb-8">
-              &ldquo;The best of you are those who learn the Quran and teach it.&rdquo; &mdash; Prophet
-              Muhammad ﷺ
+              {t('coursesIndex.hadith')}
             </p>
             <h2 className="heading-xl font-display text-white mb-4">
-              Prefer to Chat First?
+              {t('contactPage.chatHeading')}
             </h2>
             <p className="text-white/70 text-lg mb-10">
-              Our team is on WhatsApp 7 days a week and typically replies within minutes.
+              {t('contactPage.chatSub')}
             </p>
             <div className="flex flex-wrap justify-center gap-4">
-              <LinkButton href="/faq" size="lg" variant="outline">
-                Read the FAQ
+              <LinkButton href={localizedHref('/faq', locale)} size="lg" variant="outline">
+                {t('contactPage.readFaq')}
               </LinkButton>
               <a
                 href={whatsappLink()}
@@ -100,7 +107,7 @@ export default function ContactPage() {
                 rel="noopener noreferrer"
                 className="flex items-center gap-2.5 h-14 px-7 rounded-xl border border-white/30 text-white font-medium hover:border-accent hover:text-accent transition-colors"
               >
-                Chat on WhatsApp
+                {t('nav.chatWhatsapp')}
               </a>
             </div>
           </div>

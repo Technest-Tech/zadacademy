@@ -1,12 +1,14 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { ArrowRight, Baby, Check, Loader2, Lock, User } from 'lucide-react'
 import { SuccessState } from './SuccessState'
-import { courses } from '@/content/courses'
+import { courses, getCourses } from '@/content/courses'
+import { useT } from '@/i18n/MarketingI18nProvider'
+import type { TranslateFn } from '@/i18n/translate'
 
 /** Dial-code picker options for the WhatsApp field. */
 const PHONE_COUNTRIES = [
@@ -33,34 +35,40 @@ const PHONE_COUNTRIES = [
   { code: 'ZA', dial: '+27', flag: '🇿🇦', name: 'South Africa' },
 ] as const
 
-const BENEFITS = [
-  '100% Free Trial Lesson',
-  'Professors with degrees from Al-Azhar',
-  'Flexible hours 7 days a week',
-  'Certificate of completion',
-  'Personalized tracking',
+// Ordered translation keys for the benefits list (free-trial highlight first).
+const BENEFIT_KEYS = [
+  'trialForm.benefit5',
+  'trialForm.benefit1',
+  'trialForm.benefit2',
+  'trialForm.benefit3',
+  'trialForm.benefit4',
 ] as const
 
-const schema = z.object({
-  name: z.string().min(2, 'Please enter your full name'),
-  email: z.string().email('Please enter a valid email'),
-  phoneCountry: z.string().min(1),
-  phone: z.string().min(4, 'Please enter your phone number'),
-  courseInterest: z.string().min(1, 'Please select a course'),
-  audience: z.enum(['adult', 'child'], { error: 'Please choose who this is for' }),
-})
+const makeSchema = (t: TranslateFn) =>
+  z.object({
+    name: z.string().min(2, t('trialForm.nameRequired')),
+    email: z.string().email(t('trialForm.emailInvalid')),
+    phoneCountry: z.string().min(1),
+    phone: z.string().min(4, t('trialForm.phoneRequired')),
+    courseInterest: z.string().min(1, t('trialForm.courseRequired')),
+    audience: z.enum(['adult', 'child'], { error: t('trialForm.audienceRequired') }),
+  })
 
-type FormValues = z.infer<typeof schema>
+type FormValues = z.infer<ReturnType<typeof makeSchema>>
 
 type Status = 'idle' | 'loading' | 'success' | 'error'
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:8000'
 
 export function TrialBookingForm() {
+  const { t, locale } = useT()
   const [status, setStatus] = useState<Status>('idle')
   const [reference, setReference] = useState('')
   const [errorMsg, setErrorMsg] = useState('')
   const [timezone, setTimezone] = useState('')
+
+  const schema = useMemo(() => makeSchema(t), [locale])
+  const localizedCourses = useMemo(() => getCourses(locale), [locale])
 
   const {
     register,
@@ -112,14 +120,14 @@ export function TrialBookingForm() {
       })
       if (!res.ok) {
         const err = await res.json().catch(() => ({}))
-        throw new Error((err as { message?: string }).message ?? 'Submission failed')
+        throw new Error((err as { message?: string }).message ?? t('trialForm.errorGeneric'))
       }
       const json = (await res.json()) as { reference: string }
       setReference(json.reference)
       setStatus('success')
     } catch (e) {
       setStatus('error')
-      setErrorMsg(e instanceof Error ? e.message : 'Something went wrong. Please try again.')
+      setErrorMsg(e instanceof Error ? e.message : t('trialForm.errorGeneric'))
     }
   }
 
@@ -148,20 +156,21 @@ export function TrialBookingForm() {
         {/* ── Left: pitch + benefits ── */}
         <div>
           <h2 className="font-display text-3xl font-bold leading-tight text-white sm:text-4xl">
-            Book your <span className="text-accent">free trial lesson</span> now!
+            {t('trialForm.heading1')}
+            <span className="text-accent">{t('trialForm.headingAccent')}</span>
+            {t('trialForm.heading2')}
           </h2>
           <p className="mt-4 max-w-md text-sm leading-relaxed text-white/60">
-            Discover our unique teaching method and begin your journey towards Quranic and
-            linguistic excellence.
+            {t('trialForm.subheading')}
           </p>
 
           <ul className="mt-7 space-y-3.5">
-            {BENEFITS.map((benefit) => (
-              <li key={benefit} className="flex items-center gap-3 text-sm text-white/85">
+            {BENEFIT_KEYS.map((key) => (
+              <li key={key} className="flex items-center gap-3 text-sm text-white/85">
                 <span className="flex size-5 shrink-0 items-center justify-center rounded-full bg-teal-500/90">
                   <Check className="size-3 text-white" strokeWidth={3} aria-hidden="true" />
                 </span>
-                {benefit}
+                {t(key)}
               </li>
             ))}
           </ul>
@@ -169,18 +178,18 @@ export function TrialBookingForm() {
 
         {/* ── Right: register form ── */}
         <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-6 sm:p-7">
-          <h3 className="mb-6 text-center text-lg font-semibold text-white">Register now</h3>
+          <h3 className="mb-6 text-center text-lg font-semibold text-white">{t('trialForm.registerNow')}</h3>
 
           <form onSubmit={handleSubmit(onSubmit)} noValidate className="space-y-4">
             {/* Full name */}
             <div>
               <label htmlFor="name" className={labelClass}>
-                Full name
+                {t('trialForm.nameLabel')}
               </label>
               <input
                 id="name"
                 type="text"
-                placeholder="Your name"
+                placeholder={t('trialForm.namePlaceholder')}
                 autoComplete="name"
                 disabled={isLoading}
                 aria-invalid={!!errors.name}
@@ -197,12 +206,12 @@ export function TrialBookingForm() {
             {/* Email */}
             <div>
               <label htmlFor="email" className={labelClass}>
-                E-mail
+                {t('trialForm.emailLabel')}
               </label>
               <input
                 id="email"
                 type="email"
-                placeholder="your@email.com"
+                placeholder={t('trialForm.emailPlaceholder')}
                 autoComplete="email"
                 disabled={isLoading}
                 aria-invalid={!!errors.email}
@@ -219,11 +228,11 @@ export function TrialBookingForm() {
             {/* Phone (WhatsApp) */}
             <div>
               <label htmlFor="phone" className={labelClass}>
-                Phone (WhatsApp)
+                {t('trialForm.phoneLabel')}
               </label>
               <div className="flex gap-2">
                 <select
-                  aria-label="Country dial code"
+                  aria-label={t('trialForm.dialCodeAria')}
                   disabled={isLoading}
                   className="shrink-0 rounded-lg border border-white/15 bg-[#0a2a29] px-2 py-2.5 text-sm text-white outline-none transition-colors focus:border-teal-400/70 focus:ring-2 focus:ring-teal-400/20 disabled:opacity-50"
                   {...register('phoneCountry')}
@@ -237,7 +246,7 @@ export function TrialBookingForm() {
                 <input
                   id="phone"
                   type="tel"
-                  placeholder="6 XX XX XX XX"
+                  placeholder={t('trialForm.phonePlaceholder')}
                   autoComplete="tel"
                   disabled={isLoading}
                   aria-invalid={!!errors.phone}
@@ -255,7 +264,7 @@ export function TrialBookingForm() {
             {/* Desired course */}
             <div>
               <label htmlFor="courseInterest" className={labelClass}>
-                Desired course
+                {t('trialForm.courseLabel')}
               </label>
               <select
                 id="courseInterest"
@@ -266,11 +275,11 @@ export function TrialBookingForm() {
                 {...register('courseInterest')}
               >
                 <option value="" disabled className="text-black">
-                  Select a course
+                  {t('trialForm.selectCourse')}
                 </option>
-                {courses.map((c) => (
+                {courses.map((c, i) => (
                   <option key={c.slug} value={c.title} className="text-black">
-                    {c.title}
+                    {localizedCourses[i].title}
                   </option>
                 ))}
               </select>
@@ -283,11 +292,11 @@ export function TrialBookingForm() {
 
             {/* This course is for */}
             <div>
-              <span className={labelClass}>This course is for</span>
+              <span className={labelClass}>{t('trialForm.audienceLabel')}</span>
               <div className="grid grid-cols-2 gap-3">
                 {[
-                  { value: 'adult' as const, label: 'Adult', Icon: User },
-                  { value: 'child' as const, label: 'Child', Icon: Baby },
+                  { value: 'adult' as const, label: t('trialForm.audienceAdult'), Icon: User },
+                  { value: 'child' as const, label: t('trialForm.audienceChild'), Icon: Baby },
                 ].map(({ value, label, Icon }) => {
                   const selected = audience === value
                   return (
@@ -343,11 +352,11 @@ export function TrialBookingForm() {
               {isLoading ? (
                 <>
                   <Loader2 className="size-4 animate-spin" aria-hidden="true" />
-                  Booking…
+                  {t('trialForm.booking')}
                 </>
               ) : (
                 <>
-                  Book my free course
+                  {t('trialForm.submit')}
                   <ArrowRight className="size-4" aria-hidden="true" />
                 </>
               )}
@@ -355,7 +364,7 @@ export function TrialBookingForm() {
 
             <p className="flex items-center justify-center gap-1.5 text-[11px] text-white/45">
               <Lock className="size-3" aria-hidden="true" />
-              Your data is secure and will never be shared
+              {t('trialForm.secureNote')}
             </p>
           </form>
         </div>

@@ -1,6 +1,8 @@
 import type { Metadata } from 'next'
 import { Suspense } from 'react'
 import { buildMetadata } from '@/lib/seo'
+import { getLocale } from '@/i18n/getLocale'
+import { getT } from '@/i18n/getDictionary'
 import { breadcrumbSchema } from '@/lib/schema'
 import { Section } from '@/components/layout/Section'
 import { Container } from '@/components/layout/Container'
@@ -13,12 +15,16 @@ import type { BlogPost } from '@/content/blog'
 
 export const revalidate = 3600
 
-export const metadata: Metadata = buildMetadata({
-  title: 'Blog — Quran Learning Tips & Guides | Zad Academy',
-  description:
-    'Articles on Tajweed, Hifz, online Quran learning, and Islamic education from certified teachers at Zad Academy.',
-  path: '/blog',
-})
+export async function generateMetadata(): Promise<Metadata> {
+  const locale = await getLocale()
+  const t = getT(locale)
+  return buildMetadata({
+    title: t('meta.blogTitle'),
+    description: t('meta.blogDescription'),
+    path: '/blog',
+    locale,
+  })
+}
 
 type ApiResponse = {
   data: BlogPost[]
