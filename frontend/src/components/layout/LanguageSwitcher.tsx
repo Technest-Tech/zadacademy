@@ -1,7 +1,7 @@
 'use client'
 
-import { useRouter, usePathname } from 'next/navigation'
-import { useTransition } from 'react'
+import { usePathname } from 'next/navigation'
+import { useState } from 'react'
 import { cn } from '@/lib/utils'
 import { useT } from '@/i18n/MarketingI18nProvider'
 import { switchLocalePath } from '@/i18n/href'
@@ -12,6 +12,13 @@ const LABELS: Record<Locale, string> = { en: 'EN', fr: 'FR' }
 /**
  * Modern EN | FR segmented toggle. The URL is the single source of truth for
  * locale, so switching just navigates to the same path in the other language.
+ *
+ * We deliberately use a full-page navigation (not `router.push`) here. The proxy
+ * rewrites `/fr` → `/` (see src/proxy.ts), so the EN and FR URLs resolve to the
+ * *same* internal route under the same `(marketing)` layout. A client-side push
+ * therefore reuses the cached layout — it never re-runs `getLocale()` — so the
+ * dictionary never swaps and the toggle appears to do nothing. A real navigation
+ * re-runs the proxy → `x-locale` → server render in the target language.
  */
 export function LanguageSwitcher({
   className,
@@ -21,14 +28,14 @@ export function LanguageSwitcher({
   /** `light` = for dark/transparent backgrounds; `dark` = for light backgrounds. */
   variant?: 'light' | 'dark'
 }) {
-  const router = useRouter()
   const pathname = usePathname()
   const { locale, t } = useT()
-  const [isPending, startTransition] = useTransition()
+  const [isPending, setIsPending] = useState(false)
 
   const go = (target: Locale) => {
     if (target === locale) return
-    startTransition(() => router.push(switchLocalePath(pathname, target)))
+    setIsPending(true)
+    window.location.assign(switchLocalePath(pathname, target))
   }
 
   const isLight = variant === 'light'
