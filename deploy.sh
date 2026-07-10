@@ -34,6 +34,8 @@ pnpm install --frozen-lockfile || echo "pnpm install exit $? (ignored-builds war
 # Build via the Next binary directly — `pnpm build` runs a deps-status pre-check
 # that also trips on the ignored-builds warning and never reaches next build.
 node node_modules/next/dist/bin/next build
-pm2 restart zad-web --update-env
+# startOrReload re-reads ecosystem.config.js so bind/arg changes take effect
+# (a plain `pm2 restart zad-web` keeps the args the process was first started with).
+pm2 startOrReload "$REPO/ecosystem.config.js" --update-env
 
 echo "✓ Deploy complete."
