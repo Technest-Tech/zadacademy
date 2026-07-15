@@ -23,7 +23,6 @@ export async function generateMetadata(): Promise<Metadata> {
     },
     twitter: {
       card: 'summary_large_image',
-      site: '@alrayanacademy',
     },
     robots: {
       index: true,
