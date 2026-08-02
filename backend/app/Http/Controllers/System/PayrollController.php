@@ -60,6 +60,10 @@ class PayrollController extends Controller
         return response()->json([
             'total_sessions'        => $comp->totalSessions,
             'total_minutes'         => $comp->totalMinutes,
+            'total_hours'           => $comp->totalHours,
+            'hourly_rate_minor'     => $comp->hourlyRateMinor,
+            'tier_index'            => $comp->tierIndex,
+            'currency'              => $comp->currency,
             'breakdown_by_duration' => $comp->breakdownByDuration,
             'base_salary_minor'     => $comp->baseSalaryMinor,
             'rate_snapshot'         => $comp->rateSnapshot,
@@ -141,9 +145,9 @@ class PayrollController extends Controller
         $stmt = $builder->forTeacher($teacher, $request->integer('year') ?: null, $request->integer('month') ?: null);
         return response()->json([
             'teacher' => [
-                'id'             => $stmt->teacher->id,
-                'name'           => $stmt->teacher->user->name,
-                'payment_method' => $stmt->teacher->payment_method,
+                'id'             => $stmt->teacher?->id,
+                'name'           => $stmt->teacher?->user?->name,
+                'payment_method' => $stmt->teacher?->payment_method,
             ],
             'current' => $stmt->current ? new PayrollDetailResource($stmt->current) : null,
             'history' => PayrollResource::collection($stmt->history),

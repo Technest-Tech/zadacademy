@@ -1,8 +1,11 @@
 'use client'
 import { useRef, useState } from 'react'
-import { Mic, Upload, GraduationCap, BookOpen, BookMarked, Smile, Gamepad2, Brain } from 'lucide-react'
+import { Mic, Upload, GraduationCap, BookOpen, BookMarked, Smile, Gamepad2, Brain, Download } from 'lucide-react'
 import { SearchableSelect } from './SearchableSelect'
 import { toast } from 'sonner'
+import { ApiError } from '@/lib/system/api'
+import { uploadFile } from '@/lib/system/upload'
+import { downloadLessonReport } from '@/lib/system/reports'
 import { useLessonSubjects, useLessonEvaluations, useCreateLesson, useUpdateLesson } from '@/hooks/system/useLessons'
 import { useTeachers } from '@/hooks/system/useTeachers'
 import { useStudents } from '@/hooks/system/useStudents'
@@ -171,7 +174,7 @@ export function LessonForm({ initialValues, prefill, onSuccess, onCancel }: Prop
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   /* ── Form state ─────────────────────────────────────────── */
-  const [status,       setStatus]       = useState<LessonStatus>(initialValues?.status ?? 'scheduled')
+  const [status,       setStatus]       = useState<LessonStatus>(initialValues?.status ?? 'attended')
   const [evaluationId, setEvaluationId] = useState(initialValues?.evaluation_id ? String(initialValues.evaluation_id) : '')
   const [subjectId,    setSubjectId]    = useState(initialValues?.subject_id ? String(initialValues.subject_id) : '')
 
@@ -191,6 +194,8 @@ export function LessonForm({ initialValues, prefill, onSuccess, onCancel }: Prop
   const [notes,          setNotes]          = useState(initialValues?.notes    ?? '')
   const [homework,       setHomework]       = useState(initialValues?.homework ?? '')
   const [souvenirImage,  setSouvenirImage]  = useState<File | null>(null)
+  /** The souvenir already on the lesson. Kept as-is unless a new file replaces it or it is removed. */
+  const [souvenirUrl,    setSouvenirUrl]    = useState<string | null>(initialValues?.souvenir_image ?? null)
   const [subjectDetails, setSubjectDetails] = useState<Record<string, string>>(initialValues?.subject_details ?? {})
   const [trial,          setTrial]          = useState<TrialEvaluation>(initialValues?.trial_evaluation ?? {})
 
@@ -198,9 +203,11 @@ export function LessonForm({ initialValues, prefill, onSuccess, onCancel }: Prop
   const setTrialField = <K extends keyof TrialEvaluation>(k: K, v: TrialEvaluation[K]) =>
     setTrial(p => ({ ...p, [k]: v }))
 
+  /* Which button is mid-flight — drives the two buttons' labels and disabled state. */
+  const [pending, setPending] = useState<'save' | 'download' | null>(null)
+
   /* ── Submit ─────────────────────────────────────────────── */
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault()
+  async function save(downloadReport: boolean) {
     if (!teacherId || !studentId || !scheduledAt) {
       toast.error(t('lessons.form.toastRequiredFields'))
       return
@@ -208,39 +215,74 @@ export function LessonForm({ initialValues, prefill, onSuccess, onCancel }: Prop
     const durationMinutes = durationH * 60 + durationM
     if (durationMinutes === 0) { toast.error(t('lessons.form.toastDurationPositive')); return }
 
-    const payload: StoreLessonPayload = {
-      teacher_id:      Number(teacherId),
-      student_id:      Number(studentId),
-      scheduled_at:    new Date(scheduledAt).toISOString(),
-      duration_minutes: durationMinutes,
-      status,
-      subject_id:      subjectId      ? Number(subjectId)      : null,
-      evaluation_id:   evaluationId   ? Number(evaluationId)   : null,
-      content:         content        || undefined,
-      notes:           notes          || undefined,
-      homework:        homework       || undefined,
-      subject_details: Object.keys(subjectDetails).length ? subjectDetails : undefined,
-      trial_evaluation: status === 'trial' && Object.keys(trial).length ? trial : undefined,
-    }
-
+    setPending(downloadReport ? 'download' : 'save')
     try {
+      // A freshly picked file must be uploaded first — the lesson stores the
+      // resulting public URL, not the File itself. With no new file we send back
+      // whatever souvenir the lesson already had, or null once it was removed.
+      const souvenir = souvenirImage ? await uploadFile(souvenirImage, 'photos') : souvenirUrl
+
+      // Every report field goes out as null rather than undefined when empty, so
+      // correcting a mistake by clearing the box actually erases it — an omitted
+      // key would leave the wrong text on the lesson. The report is downloaded and
+      // shared by hand now, so we never dispatch it over WhatsApp.
+      const payload: StoreLessonPayload = {
+        teacher_id:      Number(teacherId),
+        student_id:      Number(studentId),
+        scheduled_at:    new Date(scheduledAt).toISOString(),
+        duration_minutes: durationMinutes,
+        status,
+        subject_id:      subjectId      ? Number(subjectId)      : null,
+        evaluation_id:   evaluationId   ? Number(evaluationId)   : null,
+        content:         content        || null,
+        notes:           notes          || null,
+        homework:        homework       || null,
+        subject_details: Object.keys(subjectDetails).length ? subjectDetails : null,
+        trial_evaluation: status === 'trial' && Object.keys(trial).length ? trial : null,
+        souvenir_image:  souvenir,
+        send_report:     false,
+      }
+
+      let lessonId: number
       if (isEdit) {
         await updateLesson.mutateAsync({ id: initialValues.id, ...payload })
-        toast.success(t('lessons.form.toastUpdated'))
+        lessonId = initialValues.id
       } else {
-        await createLesson.mutateAsync(payload)
-        toast.success(t('lessons.form.toastCreated'))
+        // A single resource comes back wrapped as { data: {...} }.
+        const created = await createLesson.mutateAsync(payload) as unknown as { data: Lesson }
+        lessonId = created.data.id
       }
-      // Trial lessons send an evaluation report to the student's WhatsApp + email.
-      // TODO: wire to the messaging integration; stubbed for now.
-      if (status === 'trial') toast.info(t('lessons.form.trial.reportQueued'))
+
+      // Render the report on the server (post-rebuild, so progress is settled) and
+      // hand the PNG straight to the browser for the teacher to forward manually.
+      if (downloadReport) {
+        const studentName = students.find(s => String(s.id) === studentId)?.name
+        const fileStem = `report-${studentName ?? 'lesson'}-${scheduledAt.slice(0, 10)}`.replace(/\s+/g, '-')
+        await downloadLessonReport(lessonId, fileStem)
+      }
+
+      toast.success(
+        downloadReport ? t('lessons.form.toastReportDownloaded')
+        : isEdit        ? t('lessons.form.toastUpdated')
+        :                 t('lessons.form.toastCreated'),
+      )
       onSuccess?.()
-    } catch {
-      toast.error(t('lessons.form.toastError'))
+    } catch (err) {
+      // The backend explains a 422 (e.g. a lesson with no student to report on) —
+      // surface that instead of a generic failure.
+      const unreachable = err instanceof ApiError && err.status === 422
+      toast.error(unreachable ? err.message : t('lessons.form.toastError'))
+    } finally {
+      setPending(null)
     }
   }
 
-  const isPending = createLesson.isPending || updateLesson.isPending
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault()
+    await save(false)
+  }
+
+  const isPending = pending !== null
 
   /* ── Render ─────────────────────────────────────────────── */
   return (
@@ -538,7 +580,7 @@ export function LessonForm({ initialValues, prefill, onSuccess, onCancel }: Prop
           <div
             className="rounded-2xl border-2 border-dashed p-8 text-center cursor-pointer transition-colors hover:border-[#0d9488] group"
             style={{
-              borderColor:  souvenirImage ? TEAL_600 : TEAL_100,
+              borderColor:  souvenirImage || souvenirUrl ? TEAL_600 : TEAL_100,
               background:   'rgba(255,255,255,0.7)',
             }}
             onClick={() => fileInputRef.current?.click()}
@@ -560,6 +602,20 @@ export function LessonForm({ initialValues, prefill, onSuccess, onCancel }: Prop
                   className="text-xs underline"
                   style={{ color: MUTED }}
                   onClick={e => { e.stopPropagation(); setSouvenirImage(null) }}
+                >
+                  {t('lessons.form.remove')}
+                </button>
+              </div>
+            ) : souvenirUrl ? (
+              /* The souvenir already sent with this lesson — click to replace, or remove it. */
+              <div className="flex flex-col items-center gap-2">
+                <img src={souvenirUrl} alt={t('lessons.form.souvenirImage')} className="rounded-xl max-h-32 object-cover" />
+                <p className="text-xs" style={{ color: MUTED }}>{t('lessons.form.clickOrDrag')}</p>
+                <button
+                  type="button"
+                  className="text-xs underline"
+                  style={{ color: MUTED }}
+                  onClick={e => { e.stopPropagation(); setSouvenirUrl(null) }}
                 >
                   {t('lessons.form.remove')}
                 </button>
@@ -603,10 +659,22 @@ export function LessonForm({ initialValues, prefill, onSuccess, onCancel }: Prop
         <button
           type="submit"
           disabled={isPending}
-          className="flex-1 py-2.5 rounded-xl text-sm font-semibold text-white transition-opacity hover:opacity-90 disabled:opacity-50"
+          className="flex-1 py-2.5 rounded-xl text-sm font-semibold border bg-white transition-colors hover:bg-black/5 disabled:opacity-50"
+          style={{ borderColor: TEAL_600, color: TEAL_600 }}
+        >
+          {pending === 'save' ? t('common.saving') : isEdit ? t('lessons.form.updateLesson') : t('lessons.form.createLesson')}
+        </button>
+        <button
+          type="button"
+          onClick={() => save(true)}
+          disabled={isPending}
+          className="flex-1 py-2.5 rounded-xl text-sm font-semibold text-white flex items-center justify-center gap-2 transition-opacity hover:opacity-90 disabled:opacity-50"
           style={{ background: TEAL_600 }}
         >
-          {isPending ? t('common.saving') : isEdit ? t('lessons.form.updateLesson') : t('lessons.form.createLesson')}
+          <Download size={15} />
+          {pending === 'download' ? t('lessons.form.downloadingReport')
+            : isEdit ? t('lessons.form.updateAndDownload')
+            : t('lessons.form.createAndDownload')}
         </button>
       </div>
     </form>

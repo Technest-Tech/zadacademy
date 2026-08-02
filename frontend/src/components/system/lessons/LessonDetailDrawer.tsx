@@ -1,11 +1,12 @@
 'use client'
 import { useState } from 'react'
-import { X, Pencil, Trash2, User, GraduationCap, Clock, CalendarDays, BookOpen, ChevronRight } from 'lucide-react'
-import type { Lesson } from '@/types/system/lesson'
-import { useDeleteLesson } from '@/hooks/system/useLessons'
+import { X, Pencil, Trash2, User, GraduationCap, Clock, CalendarDays, BookOpen, ChevronRight, Loader2 } from 'lucide-react'
+import type { Lesson, LessonStatus } from '@/types/system/lesson'
+import { useDeleteLesson, useLesson, useUpdateLesson } from '@/hooks/system/useLessons'
 import { LessonForm } from './LessonForm'
-import { STATUS_PILL, STATUS_LABEL } from '@/lib/system/lessonStatus'
+import { STATUS_PILL, STATUS_LABEL, LESSON_STATUSES } from '@/lib/system/lessonStatus'
 import { useI18n } from '@/lib/system/i18n'
+import { useUser } from '@/lib/system/auth'
 
 /* Map lesson-status enum values → i18n keys (labels in lessonStatus.ts are not translated). */
 const STATUS_KEY: Record<string, string> = {
@@ -42,17 +43,6 @@ function formatMinutes(min: number) {
   return `${h}h ${m}m`
 }
 
-function Pill({ status }: { status: string }) {
-  const { t } = useI18n()
-  const s = STATUS_PILL[status as keyof typeof STATUS_PILL] ?? { bg: '#F3F4F6', color: '#6B7280' }
-  const label = STATUS_KEY[status] ? t(STATUS_KEY[status]) : (STATUS_LABEL[status as keyof typeof STATUS_LABEL] ?? status)
-  return (
-    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium" style={{ background: s.bg, color: s.color }}>
-      {label}
-    </span>
-  )
-}
-
 function InfoRow({ icon, label, value }: { icon: React.ReactNode; label: string; value: React.ReactNode }) {
   return (
     <div className="flex items-start gap-3 py-2.5" style={{ borderBottom: `1px solid ${BORDER}` }}>
@@ -86,10 +76,21 @@ interface Props {
   onUpdate?: () => void
 }
 
-export function LessonDetailDrawer({ lesson, open, onClose, onUpdate }: Props) {
+export function LessonDetailDrawer({ lesson: selected, open, onClose, onUpdate }: Props) {
   const { t } = useI18n()
+  const { data: me } = useUser()
+  // Pricing (package tariff) is finance-only — teachers must never see student prices.
+  // Hidden until the user is loaded AND confirmed to be a non-teacher role.
+  const canSeePricing = !!me && me.role !== 'teacher'
   const [editing, setEditing] = useState(false)
   const deleteLesson = useDeleteLesson()
+  const updateLesson = useUpdateLesson()
+
+  // The prop is a snapshot taken when the row was clicked, so an edit saved from
+  // this drawer would leave it showing the pre-edit report. Re-read the lesson —
+  // saving invalidates this exact key, so the view lands on the new values.
+  const { data: fresh } = useLesson(open && selected ? selected.id : null)
+  const lesson = fresh ?? selected
 
   async function handleDelete() {
     if (!lesson) return
@@ -97,6 +98,14 @@ export function LessonDetailDrawer({ lesson, open, onClose, onUpdate }: Props) {
     await deleteLesson.mutateAsync(lesson.id)
     onUpdate?.()
     onClose()
+  }
+
+  // Quick status change — the server re-runs the package consumption engine, and
+  // invalidating the lesson/packages/analytics queries reflects it everywhere.
+  async function handleStatusChange(status: LessonStatus) {
+    if (!lesson || status === lesson.status) return
+    await updateLesson.mutateAsync({ id: lesson.id, status })
+    onUpdate?.()
   }
 
   return (
@@ -123,7 +132,7 @@ export function LessonDetailDrawer({ lesson, open, onClose, onUpdate }: Props) {
               <h2 className="text-base font-semibold" style={{ color: NAVY }}>{t('lessons.detail.title')}</h2>
               {lesson && (
                 <p className="text-sm mt-0.5" style={{ color: MUTED }}>
-                  {lesson.student.name} — {lesson.teacher.name}
+                  {lesson.student?.name ?? '—'} — {lesson.teacher?.name ?? '—'}
                 </p>
               )}
             </div>
@@ -142,8 +151,8 @@ export function LessonDetailDrawer({ lesson, open, onClose, onUpdate }: Props) {
           <div className="flex-1 overflow-y-auto px-5 pb-6">
             {/* Participants */}
             <SectionTitle>{t('lessons.form.sectionParticipants')}</SectionTitle>
-            <InfoRow icon={<User size={14} />} label={t('lessons.form.fieldStudent')} value={lesson.student.name} />
-            <InfoRow icon={<GraduationCap size={14} />} label={t('common.teacher')} value={lesson.teacher.name} />
+            <InfoRow icon={<User size={14} />} label={t('lessons.form.fieldStudent')} value={lesson.student?.name ?? '—'} />
+            <InfoRow icon={<GraduationCap size={14} />} label={t('common.teacher')} value={lesson.teacher?.name ?? '—'} />
             <InfoRow icon={<CalendarDays size={14} />} label={t('common.date')} value={formatDate(lesson.scheduled_at)} />
             <InfoRow icon={<Clock size={14} />} label={t('common.duration')} value={formatMinutes(lesson.duration_minutes)} />
             {lesson.added_by_name && (
@@ -152,8 +161,35 @@ export function LessonDetailDrawer({ lesson, open, onClose, onUpdate }: Props) {
 
             {/* Package Progress */}
             <SectionTitle>{t('lessons.detail.packageProgress')}</SectionTitle>
+
+            {/* Quick status editor — saves immediately and re-runs the package engine. */}
+            <div className="mb-3">
+              <p className="text-xs font-medium mb-1.5" style={{ color: MUTED }}>{t('common.status')}</p>
+              <div className="relative">
+                <select
+                  value={lesson.status}
+                  disabled={updateLesson.isPending}
+                  onChange={e => handleStatusChange(e.target.value as LessonStatus)}
+                  className="w-full appearance-none px-3 py-2.5 pr-9 rounded-xl border text-sm font-medium outline-none focus:ring-2 focus:ring-[#0d9488] disabled:opacity-60 cursor-pointer"
+                  style={{
+                    borderColor: BORDER,
+                    background: (STATUS_PILL[lesson.status]?.bg ?? '#fff'),
+                    color:      (STATUS_PILL[lesson.status]?.color ?? NAVY),
+                  }}
+                >
+                  {LESSON_STATUSES.map(s => (
+                    <option key={s.value} value={s.value} style={{ color: NAVY, background: '#fff' }}>
+                      {STATUS_KEY[s.value] ? t(STATUS_KEY[s.value]) : (STATUS_LABEL[s.value] ?? s.label)}
+                    </option>
+                  ))}
+                </select>
+                <span className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" style={{ color: MUTED }}>
+                  {updateLesson.isPending ? <Loader2 size={14} className="animate-spin" /> : <ChevronRight size={14} className="rotate-90" />}
+                </span>
+              </div>
+            </div>
+
             <div className="flex flex-wrap gap-2 mb-3">
-              <Pill status={lesson.status} />
               {lesson.evaluation && (
                 <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-50 text-purple-700">
                   {lesson.evaluation.label}
@@ -201,17 +237,19 @@ export function LessonDetailDrawer({ lesson, open, onClose, onUpdate }: Props) {
                 </div>
               </div>
 
-              {/* Admin config row */}
-              <div className="pt-1">
-                <div className="flex items-center justify-between text-xs" style={{ color: MUTED }}>
-                  <span className="font-semibold uppercase tracking-wider">{t('lessons.detail.packageConfig')}</span>
-                  <ChevronRight size={12} />
+              {/* Admin config row — pricing is finance-only, hidden from teachers */}
+              {canSeePricing && (
+                <div className="pt-1">
+                  <div className="flex items-center justify-between text-xs" style={{ color: MUTED }}>
+                    <span className="font-semibold uppercase tracking-wider">{t('lessons.detail.packageConfig')}</span>
+                    <ChevronRight size={12} />
+                  </div>
+                  <div className="mt-2 flex gap-4 text-xs">
+                    <span style={{ color: MUTED }}>{t('lessons.detail.tariff')}: <strong style={{ color: NAVY }}>{lesson.package.tariff_at_time / 100} {lesson.package.currency}</strong></span>
+                    <span style={{ color: MUTED }}>{t('lessons.detail.hours')}: <strong style={{ color: NAVY }}>{lesson.package.package_hours}h</strong></span>
+                  </div>
                 </div>
-                <div className="mt-2 flex gap-4 text-xs">
-                  <span style={{ color: MUTED }}>{t('lessons.detail.tariff')}: <strong style={{ color: NAVY }}>{lesson.package.tariff_at_time / 100} {lesson.package.currency}</strong></span>
-                  <span style={{ color: MUTED }}>{t('lessons.detail.hours')}: <strong style={{ color: NAVY }}>{lesson.package.package_hours}h</strong></span>
-                </div>
-              </div>
+              )}
             </div>
 
             {/* Subject */}
@@ -244,6 +282,12 @@ export function LessonDetailDrawer({ lesson, open, onClose, onUpdate }: Props) {
             {(lesson.content || lesson.notes || lesson.homework || lesson.souvenir_image) && (
               <>
                 <SectionTitle>{t('lessons.form.sectionReport')}</SectionTitle>
+                {lesson.content && (
+                  <div className="mb-3">
+                    <p className="text-xs font-medium mb-1.5" style={{ color: MUTED }}>{t('lessons.form.fieldContent')}</p>
+                    <p className="text-sm p-3 rounded-xl whitespace-pre-wrap" style={{ background: TEAL_50, color: NAVY, border: `1px solid ${TEAL_100}` }}>{lesson.content}</p>
+                  </div>
+                )}
                 {lesson.notes && (
                   <div className="mb-3">
                     <p className="text-xs font-medium mb-1.5" style={{ color: MUTED }}>{t('common.notes')}</p>

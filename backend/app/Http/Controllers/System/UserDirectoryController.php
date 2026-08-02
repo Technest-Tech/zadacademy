@@ -7,12 +7,15 @@ use App\Http\Requests\System\Users\StoreUserRequest;
 use App\Http\Requests\System\Users\UpdateUserDirectoryRequest;
 use App\Http\Resources\System\UserDirectoryResource;
 use App\Models\System\Guardian;
+use App\Models\System\Student;
+use App\Models\System\Teacher;
 use App\Models\User;
 use App\Notifications\System\SystemUserInvitedNotification;
 use App\Services\System\AuditLog;
 use App\Services\System\StudentCreator;
 use App\Services\System\TeacherCreator;
 use App\Services\System\UserProvisioner;
+use Illuminate\Database\QueryException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
@@ -150,7 +153,27 @@ class UserDirectoryController extends Controller
 
     /**
      * Persist role-specific profile changes (student / teacher) on edit.
+     *
+     * sys_students and sys_guardians keep their own copy of the person's name and
+     * contacts — the WhatsApp report and the billing exports read those, not the
+     * users row — so an identity edit has to be mirrored onto them as well.
+     *
+     * @return array<string,mixed>
      */
+    private function identityMirror(User $user, array $data, array $keys): array
+    {
+        $mirror = [
+            'name'     => $user->name,
+            'email'    => $user->email,
+            'whatsapp' => $user->whatsapp,
+        ];
+
+        // Only mirror what the request actually touched — `email` and `whatsapp`
+        // are absent on a partial patch, and copying a null over a good number
+        // would silently cut the student off from their reports.
+        return array_intersect_key($mirror, array_flip(array_intersect($keys, array_keys($data))));
+    }
+
     private function updateProfile(User $user, array $data): void
     {
         if ($user->role === 'student' && $user->studentProfile) {
@@ -159,8 +182,31 @@ class UserDirectoryController extends Controller
                 'sessions_per_month', 'session_duration_min', 'currency', 'monthly_price_minor',
                 'package_hours_default', 'hourly_rate_minor', 'source', 'guardian_id',
             ]));
+            $fields += $this->identityMirror($user, $data, ['name', 'email', 'whatsapp']);
+
+            // An empty tariff / session box posts null, but these columns are NOT NULL
+            // with a 0 default — without this the whole save dies on a constraint
+            // violation. Cleared means zero, which is what the default already says.
+            foreach (['sessions_per_month', 'monthly_price_minor', 'hourly_rate_minor', 'package_hours_default'] as $counter) {
+                if (array_key_exists($counter, $fields) && $fields[$counter] === null) {
+                    $fields[$counter] = 0;
+                }
+            }
+
             if ($fields) {
                 $user->studentProfile->update($fields);
+            }
+        }
+
+        if ($user->role === 'parent' && $user->guardianProfile) {
+            // sys_guardians holds no email, and its whatsapp is NOT NULL — mirror
+            // only the columns that exist, and never blank the number.
+            $fields = array_filter(
+                $this->identityMirror($user, $data, ['name', 'whatsapp']),
+                fn ($value) => $value !== null,
+            );
+            if ($fields) {
+                $user->guardianProfile->update($fields);
             }
         }
 
@@ -232,12 +278,14 @@ class UserDirectoryController extends Controller
             return response()->json(['message' => 'You cannot delete your own account.'], 422);
         }
 
-        $user = User::with(['teacherProfile', 'studentProfile', 'guardianProfile'])->findOrFail($id);
+        $user = User::with(['studentProfile', 'guardianProfile'])->findOrFail($id);
 
-        if ($user->teacherProfile && $user->teacherProfile->students()->exists()) {
-            return response()->json([
-                'message' => 'Cannot delete a teacher with assigned students. Reassign their students first.',
-            ], 422);
+        // withTrashed: a soft-deleted teacher row still exists, and sys_teachers.user_id
+        // cascades off users.id — deleting the user would silently take it (and its
+        // sessions/reports/reviews/schedules) with it.
+        $teacher = Teacher::withTrashed()->where('user_id', $user->id)->first();
+        if ($teacher) {
+            return $this->destroyTeacher($user, $teacher);
         }
 
         DB::transaction(function () use ($user) {
@@ -251,6 +299,49 @@ class UserDirectoryController extends Controller
         });
 
         return response()->json(['deleted' => true]);
+    }
+
+    /**
+     * Permanently remove a teacher — and only the teacher.
+     *
+     * sys_lessons, sys_sessions, sys_session_reports, sys_lesson_schedules and sys_payrolls all
+     * hold teacher_id nullOnDelete, so those records survive and simply lose their link. The
+     * cascade takes only what belongs to the teacher: their quality reviews, availability, notes
+     * and leaves. Students are unassigned, never deleted, and their packages are untouched —
+     * consumption is derived from lessons, and the lessons stay.
+     */
+    private function destroyTeacher(User $user, Teacher $teacher): JsonResponse
+    {
+        try {
+            $unassigned = DB::transaction(function () use ($user, $teacher) {
+                $unassigned = $this->unassignStudents($teacher);
+
+                AuditLog::record('users.deleted', $user, [
+                    'role'                => $user->role,
+                    'students_unassigned' => $unassigned,
+                ]);
+
+                // Cascades sys_teachers off users.id; every other FK nulls out.
+                $user->delete();
+
+                return $unassigned;
+            });
+        } catch (QueryException $e) {
+            // Something still holds a hard reference. Say what, instead of a bare 500.
+            return response()->json([
+                'deleted' => false,
+                'message' => 'Could not delete this teacher — another record still references them: '
+                    . $e->getMessage(),
+            ], 409);
+        }
+
+        return response()->json(['deleted' => true, 'students_unassigned' => $unassigned]);
+    }
+
+    private function unassignStudents(Teacher $teacher): int
+    {
+        return Student::where('assigned_teacher_id', $teacher->id)
+            ->update(['assigned_teacher_id' => null]);
     }
 
     private function createParent(array $data, UserProvisioner $provisioner): User
@@ -273,10 +364,13 @@ class UserDirectoryController extends Controller
     {
         $user = $provisioner->create($data, $role);
 
-        // Invite flow: send a password-set link.
-        $token = Password::createToken($user);
-        $url   = config('system.frontend_url') . '/reset-password/' . $token . '?email=' . urlencode($user->email);
-        $user->notify(new SystemUserInvitedNotification($url, auth()->user()));
+        // Staff normally get their password at creation. Only fall back to an invite link
+        // when none was supplied — mail is disabled here, so that link goes nowhere.
+        if (empty($data['password'])) {
+            $token = Password::createToken($user);
+            $url   = config('system.frontend_url') . '/reset-password/' . $token . '?email=' . urlencode($user->email);
+            $user->notify(new SystemUserInvitedNotification($url, auth()->user()));
+        }
 
         return $user;
     }

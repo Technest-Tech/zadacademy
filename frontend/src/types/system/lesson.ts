@@ -75,8 +75,9 @@ export interface Lesson {
   subject_details: Record<string, string> | null
   trial_evaluation: TrialEvaluation | null
   added_by_name: string | null
-  teacher: LessonTeacher
-  student: LessonStudent
+  // Null once the profile is hard-deleted — the API nulls these rather than omitting them.
+  teacher: LessonTeacher | null
+  student: LessonStudent | null
   subject: LessonSubject | null
   evaluation: LessonEvaluation | null
   package: StudentPackage
@@ -98,8 +99,9 @@ export interface LessonSchedule {
   recurrence: 'none' | 'weekly' | 'biweekly' | 'every_4_weeks' | 'custom'
   start_date: string
   is_active: boolean
-  teacher: LessonTeacher
-  student: LessonStudent
+  // Null once the profile is hard-deleted — the API nulls these rather than omitting them.
+  teacher: LessonTeacher | null
+  student: LessonStudent | null
   subject: LessonSubject | null
   slots: ScheduleSlot[]
 }
@@ -117,11 +119,16 @@ export interface StoreLessonPayload {
   subject_id?: number | null
   evaluation_id?: number | null
   status?: LessonStatus
-  content?: string
-  notes?: string
-  homework?: string
-  subject_details?: Record<string, string>
-  trial_evaluation?: TrialEvaluation
+  /** Report fields are sent as null, not omitted, so clearing one on an edit erases it. */
+  content?: string | null
+  notes?: string | null
+  homework?: string | null
+  subject_details?: Record<string, string> | null
+  trial_evaluation?: TrialEvaluation | null
+  /** Public URL of the uploaded souvenir image, as returned by the /uploads endpoint. */
+  souvenir_image?: string | null
+  /** Queues the rendered report image to the student's (or their guardian's) WhatsApp. */
+  send_report?: boolean
 }
 
 /** Trial-lesson assessment captured when a lesson's status is `trial`. */

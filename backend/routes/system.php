@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\System\AccountingController;
 use App\Http\Controllers\System\AcademyInfoController;
+use App\Http\Controllers\System\AnalyticsController;
 use App\Http\Controllers\System\SectionsController;
 use App\Http\Controllers\System\AuditLogController;
 use App\Http\Controllers\System\AuthController;
@@ -28,12 +29,20 @@ use App\Http\Controllers\System\PaymentController;
 use App\Http\Controllers\System\PaymobIntegrationController;
 use App\Http\Controllers\System\PaymobWebhookController;
 use App\Http\Controllers\System\PricingSettingsController;
+use App\Http\Controllers\System\QcAssignmentController;
+use App\Http\Controllers\System\QcCategoryController;
+use App\Http\Controllers\System\QcCategoryItemController;
+use App\Http\Controllers\System\QcConfigController;
+use App\Http\Controllers\System\QcDashboardController;
+use App\Http\Controllers\System\QcEvaluationController;
+use App\Http\Controllers\System\QcSpecialRuleController;
 use App\Http\Controllers\System\SavedViewController;
 use App\Http\Controllers\System\SchedulePatternController;
 use App\Http\Controllers\System\SessionController;
 use App\Http\Controllers\System\SessionReportController;
 use App\Http\Controllers\System\GuardianController;
 use App\Http\Controllers\System\StudentController;
+use App\Http\Controllers\System\StudentAnalyticsController;
 use App\Http\Controllers\System\StudentFamilyController;
 use App\Http\Controllers\System\StudentNoteController;
 use App\Http\Controllers\System\StudentTransitionController;
@@ -51,9 +60,11 @@ use App\Http\Controllers\System\RoleController;
 use App\Http\Controllers\System\WalletController;
 use App\Http\Controllers\System\WassenderIntegrationController;
 use App\Http\Controllers\System\WassenderLogController;
+use App\Http\Controllers\System\WhatsAppSendLogController;
 use App\Http\Controllers\System\WhatsAppGroupController;
 use App\Http\Controllers\System\CalendarController;
 use App\Http\Controllers\System\LessonController;
+use App\Http\Controllers\System\LessonReportController;
 use App\Http\Controllers\System\LessonScheduleController;
 use App\Http\Controllers\System\StudentPackageController;
 use App\Http\Controllers\System\LessonSubjectController;
@@ -77,6 +88,18 @@ Route::prefix('system')->name('system.')->group(function () {
 
         // Dashboard
         Route::get('/dashboard', [DashboardController::class, 'show'])->name('dashboard');
+
+        // Analytics — teacher hours / rates / earnings (payroll-sensitive).
+        Route::middleware('system.can:payroll.view_any')->group(function () {
+            Route::get('/analytics',                          [AnalyticsController::class, 'index'])->name('analytics.index');
+            Route::get('/analytics/fx-rates',                 [AnalyticsController::class, 'fxRates'])->name('analytics.fx-rates');
+            Route::get('/analytics/teachers/{teacher}',       [AnalyticsController::class, 'teacher'])->name('analytics.teacher');
+
+            // Salary tiers — the hour ladder salaries are paid on, + who sits where.
+            Route::get('/salary-tiers', [\App\Http\Controllers\System\SalaryTierController::class, 'index'])->name('salary-tiers.index');
+        });
+        Route::middleware('system.can:teachers.edit')
+            ->patch('/analytics/teachers/{teacher}/exclusion', [AnalyticsController::class, 'setExclusion'])->name('analytics.teacher.exclusion');
 
         // Generic file upload (photos / documents) for forms.
         Route::post('/uploads', [\App\Http\Controllers\System\UploadController::class, 'store'])->name('uploads.store');
@@ -156,6 +179,7 @@ Route::prefix('system')->name('system.')->group(function () {
         Route::get('/teachers/me/profile',          [TeacherSelfController::class, 'profile'])->name('teachers.me.profile');
         Route::patch('/teachers/me/profile',        [TeacherSelfController::class, 'updateProfile'])->name('teachers.me.profile.update');
         Route::get('/teachers/me/salary-statement', [TeacherSelfController::class, 'salaryStatement'])->name('teachers.me.salary-statement');
+        Route::get('/teachers/me/salary-tier',      [TeacherSelfController::class, 'salaryTier'])->name('teachers.me.salary-tier');
 
         Route::middleware('system.can:teachers.view')->group(function () {
             Route::get('/teachers',      [TeacherController::class, 'index'])->name('teachers.index');
@@ -189,6 +213,7 @@ Route::prefix('system')->name('system.')->group(function () {
 
         // Students
         Route::middleware('system.can:students.view')->group(function () {
+            Route::get('/students/analytics', StudentAnalyticsController::class)->name('students.analytics');
             Route::get('/students',           [StudentController::class, 'index'])->name('students.index');
             Route::get('/students/{student}', [StudentController::class, 'show'])->name('students.show');
             Route::get('/students/{student}/notes', [StudentNoteController::class, 'index'])->name('students.notes.index');
@@ -413,6 +438,44 @@ Route::prefix('system')->name('system.')->group(function () {
         Route::middleware('system.can:tasks.delete')
             ->delete('/tasks/{task}', [TaskController::class, 'destroy'])->name('tasks.destroy');
 
+        // ── QC: Quality Control (lesson evaluations) ─────────────────────────────
+        Route::prefix('quality-control')->name('qc.')->group(function () {
+            // Dashboard + checklist template + evaluations (read)
+            Route::middleware('system.can:qc.view')->group(function () {
+                Route::get('/dashboard',              [QcDashboardController::class, 'stats'])->name('dashboard');
+                Route::get('/config',                 [QcConfigController::class, 'show'])->name('config');
+                Route::get('/evaluations',            [QcEvaluationController::class, 'index'])->name('evaluations.index');
+                Route::get('/evaluations/{qcEvaluation}', [QcEvaluationController::class, 'show'])->name('evaluations.show');
+            });
+            Route::middleware('system.can:qc.create')
+                ->post('/evaluations',                [QcEvaluationController::class, 'store'])->name('evaluations.store');
+            Route::middleware('system.can:qc.edit')
+                ->patch('/evaluations/{qcEvaluation}', [QcEvaluationController::class, 'update'])->name('evaluations.update');
+            Route::middleware('system.can:qc.delete')
+                ->delete('/evaluations/{qcEvaluation}', [QcEvaluationController::class, 'destroy'])->name('evaluations.destroy');
+
+            // Settings — categories, sub-items, special rules, assignments
+            Route::middleware('system.can:qc.manage_settings')->group(function () {
+                Route::get('/categories',                             [QcCategoryController::class, 'index'])->name('categories.index');
+                Route::post('/categories',                            [QcCategoryController::class, 'store'])->name('categories.store');
+                Route::patch('/categories/{qcCategory}',              [QcCategoryController::class, 'update'])->name('categories.update');
+                Route::delete('/categories/{qcCategory}',             [QcCategoryController::class, 'destroy'])->name('categories.destroy');
+
+                Route::post('/categories/{qcCategory}/items',         [QcCategoryItemController::class, 'store'])->name('category-items.store');
+                Route::patch('/category-items/{qcCategoryItem}',      [QcCategoryItemController::class, 'update'])->name('category-items.update');
+                Route::delete('/category-items/{qcCategoryItem}',     [QcCategoryItemController::class, 'destroy'])->name('category-items.destroy');
+
+                Route::get('/special-rules',                          [QcSpecialRuleController::class, 'index'])->name('special-rules.index');
+                Route::post('/special-rules',                         [QcSpecialRuleController::class, 'store'])->name('special-rules.store');
+                Route::patch('/special-rules/{qcSpecialRule}',        [QcSpecialRuleController::class, 'update'])->name('special-rules.update');
+                Route::delete('/special-rules/{qcSpecialRule}',       [QcSpecialRuleController::class, 'destroy'])->name('special-rules.destroy');
+
+                Route::get('/assignments',                            [QcAssignmentController::class, 'index'])->name('assignments.index');
+                Route::post('/assignments',                           [QcAssignmentController::class, 'store'])->name('assignments.store');
+                Route::delete('/assignments/{qcAssignment}',          [QcAssignmentController::class, 'destroy'])->name('assignments.destroy');
+            });
+        });
+
         // WhatsApp groups
         Route::middleware('system.can:whatsapp.view')->group(function () {
             Route::get('/whatsapp-groups',                           [WhatsAppGroupController::class, 'index'])->name('whatsapp-groups.index');
@@ -441,6 +504,14 @@ Route::prefix('system')->name('system.')->group(function () {
             Route::get('/wassender-logs',                            [WassenderLogController::class, 'index'])->name('wassender-logs.index');
             Route::get('/wassender-logs/{wassenderLog}',             [WassenderLogController::class, 'show'])->name('wassender-logs.show');
             Route::post('/wassender-logs/{wassenderLog}/retry',      [WassenderLogController::class, 'retry'])->name('wassender-logs.retry');
+        });
+
+        // Acadmyq WhatsApp send logs
+        Route::middleware('system.can:notifications.view_delivery_log')->group(function () {
+            Route::get('/whatsapp/status',                           [WhatsAppSendLogController::class, 'status'])->name('whatsapp.status');
+            Route::get('/whatsapp/logs',                             [WhatsAppSendLogController::class, 'index'])->name('whatsapp.logs.index');
+            Route::get('/whatsapp/logs/{whatsappSendLog}',           [WhatsAppSendLogController::class, 'show'])->name('whatsapp.logs.show');
+            Route::post('/whatsapp/logs/{whatsappSendLog}/resend',   [WhatsAppSendLogController::class, 'resend'])->name('whatsapp.logs.resend');
         });
 
         // Notification preferences
@@ -568,6 +639,8 @@ Route::prefix('system')->name('system.')->group(function () {
         Route::middleware('system.can:lessons.edit')->group(function () {
             Route::put('/lessons/{lesson}',                              [LessonController::class,         'update'])->name('lessons.update');
             Route::patch('/lessons/{lesson}',                            [LessonController::class,         'update']);
+            Route::post('/lessons/{lesson}/report',                      [LessonReportController::class,   'store'])->name('lessons.report.store');
+            Route::get('/lessons/{lesson}/report/download',              [LessonReportController::class,   'download'])->name('lessons.report.download');
             Route::put('/lesson-schedules/{lessonSchedule}',             [LessonScheduleController::class, 'update'])->name('lesson-schedules.update');
             Route::patch('/student-packages/{studentPackage}',           [StudentPackageController::class, 'update'])->name('student-packages.update');
             Route::post('/student-packages/{studentPackage}/confirm',    [StudentPackageController::class, 'confirm'])->name('student-packages.confirm');

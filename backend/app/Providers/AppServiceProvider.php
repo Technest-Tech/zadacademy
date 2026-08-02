@@ -40,6 +40,7 @@ use App\Models\System\MakeupRequest;
 use App\Models\System\MessageTemplate;
 use App\Models\System\Payroll;
 use App\Models\System\Payment;
+use App\Models\System\QcEvaluation;
 use App\Models\System\QualityReview;
 use App\Models\System\SchedulePattern;
 use App\Models\System\Session;
@@ -64,6 +65,7 @@ use App\Policies\System\MakeupRequestPolicy;
 use App\Policies\System\MessageTemplatePolicy;
 use App\Policies\System\PaymentPolicy;
 use App\Policies\System\PayrollPolicy;
+use App\Policies\System\QcEvaluationPolicy;
 use App\Policies\System\QualityReviewPolicy;
 use App\Policies\System\SchedulePatternPolicy;
 use App\Policies\System\SessionPolicy;
@@ -76,12 +78,17 @@ use App\Policies\System\TeacherNotePolicy;
 use App\Policies\System\TeacherPolicy;
 use App\Policies\System\WhatsAppGroupPolicy;
 use App\Services\BookingReferenceGenerator;
+use App\Services\Integrations\Acadmyq\AcadmyqClient;
+use App\Services\Integrations\Acadmyq\FakeAcadmyqClient;
 use App\Services\Integrations\Paymob\FakePaymobClient;
 use App\Services\Integrations\Paymob\PaymobClient;
 use App\Services\Integrations\Wassender\FakeWassenderClient;
 use App\Services\Integrations\Wassender\WassenderClient;
 use App\Services\Integrations\Zoom\FakeZoomClient;
 use App\Services\Integrations\Zoom\ZoomClient;
+use App\Services\System\Reports\FakeLessonReportRenderer;
+use App\Services\System\Reports\LessonReportData;
+use App\Services\System\Reports\LessonReportRenderer;
 use App\Support\System\Setting;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Contracts\Cache\Repository as CacheRepository;
@@ -129,6 +136,25 @@ class AppServiceProvider extends ServiceProvider
             }
             return new FakeWassenderClient();
         });
+
+        // Acadmyq WhatsApp: real client when configured, fake otherwise
+        $this->app->bind(AcadmyqClient::class, function ($app) {
+            $apiKey = config('whatsapp.api_key', '');
+            if ($apiKey && config('whatsapp.enabled', false)) {
+                return new AcadmyqClient(
+                    baseUrl: config('whatsapp.base_url'),
+                    apiKey:  $apiKey,
+                    http:    $app->make(HttpClient::class),
+                    timeout: config('whatsapp.timeout'),
+                );
+            }
+            return new FakeAcadmyqClient();
+        });
+
+        // Lesson report images: Chromium when available, fake otherwise
+        $this->app->bind(LessonReportRenderer::class, fn ($app) => config('reports.renderer') === 'browsershot'
+            ? new LessonReportRenderer($app->make(LessonReportData::class))
+            : new FakeLessonReportRenderer($app->make(LessonReportData::class)));
     }
 
     public function boot(): void
@@ -168,6 +194,9 @@ class AppServiceProvider extends ServiceProvider
 
         // Policies — SYS-10 (Tasks)
         Gate::policy(Task::class, TaskPolicy::class);
+
+        // Policies — QC (Quality Control / lesson evaluations)
+        Gate::policy(QcEvaluation::class, QcEvaluationPolicy::class);
 
         // Observers — SYS-04
         Session::observe(SessionObserver::class);

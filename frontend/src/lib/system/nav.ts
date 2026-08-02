@@ -1,8 +1,9 @@
 import {
   LayoutDashboard, UsersRound, CalendarDays,
-  Award, DollarSign, Wallet, BarChart3,
+  Award, DollarSign, Wallet, BarChart3, TrendingUp,
   Bell, Settings, ScrollText, UserCheck, CreditCard, ListChecks,
-  GraduationCap, Globe,
+  GraduationCap, Globe, MessageSquare, ClipboardCheck,
+  BadgeDollarSign, ChartNoAxesCombined,
 } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
 
@@ -27,6 +28,7 @@ export const SYSTEM_NAV: readonly NavSection[] = [
       { label: 'nav.leads',        href: '/leads',              icon: UserCheck,       perm: 'leads.view' },
       { label: 'nav.tasks',        href: '/tasks',              icon: ListChecks,      perm: 'tasks.view' },
       { label: 'nav.calendar',     href: '/calendar',           icon: CalendarDays,    perm: 'lessons.view' },
+      { label: 'nav.quality',      href: '/quality',            icon: ClipboardCheck,  perm: 'qc.view' },
       { label: 'nav.certificates', href: '/certificates',       icon: Award,           perm: 'certificates.view' },
     ],
   },
@@ -36,13 +38,17 @@ export const SYSTEM_NAV: readonly NavSection[] = [
       { label: 'nav.payments',   href: '/payments',           icon: CreditCard, perm: 'lessons.view'  },
       { label: 'nav.billing',    href: '/billing/invoices',   icon: DollarSign, perm: 'invoices.view' },
       { label: 'nav.payroll',    href: '/payroll',            icon: Wallet,     perm: 'payroll.view' },
+      { label: 'nav.salaryTiers', href: '/salary-tiers',       icon: BadgeDollarSign, perm: 'payroll.view_any' },
       { label: 'nav.accounting', href: '/accounting/revenue', icon: BarChart3,  perm: 'accounting.view' },
+      { label: 'nav.analytics',  href: '/analytics',          icon: TrendingUp, perm: 'payroll.view_any' },
+      { label: 'nav.studentAnalytics', href: '/students/analytics', icon: ChartNoAxesCombined, perm: 'students.view' },
     ],
   },
   {
     label: 'nav.sections.communications',
     items: [
       { label: 'nav.notifications', href: '/notifications', icon: Bell, perm: 'notifications.view' },
+      { label: 'nav.whatsappLogs', href: '/whatsapp/logs', icon: MessageSquare, perm: 'notifications.view_delivery_log' },
     ],
   },
   {
@@ -75,6 +81,7 @@ export const TEACHER_NAV: readonly NavSection[] = [
       { label: 'nav.dashboard',  href: '/dashboard',        icon: LayoutDashboard, perm: null },
       { label: 'nav.myStudents', href: '/teacher/students', icon: GraduationCap,   perm: null },
       { label: 'nav.calendar',   href: '/calendar',         icon: CalendarDays,    perm: null },
+      { label: 'nav.mySalary',   href: '/teacher/salary',   icon: Wallet,          perm: null },
     ],
   },
   {

@@ -392,6 +392,41 @@ class CalendarLessonEndpointsTest extends SystemTestCase
         $this->assertDatabaseHas('sys_lessons', ['id' => $lesson->id, 'status' => 'attended']);
     }
 
+    /**
+     * The whole point of editing: a report went out with the wrong text, and the
+     * correction — including emptying a field outright — has to stick.
+     */
+    public function test_admin_can_correct_a_report_on_an_existing_lesson(): void
+    {
+        $teacher = Teacher::factory()->create();
+        $student = $this->lessonStudent();
+        $package = $this->makePackage($student);
+        $lesson  = $this->makeLesson($student, $teacher, $package, [
+            'content'        => 'Wrong surah',
+            'notes'          => 'Typo in the notes',
+            'homework'       => 'Page 12',
+            'souvenir_image' => 'https://cdn.example.com/old.png',
+        ]);
+
+        $this->actingAs($this->adminUser(), 'sanctum')
+            ->putJson("/api/system/lessons/{$lesson->id}", [
+                'content'        => 'Surah Al-Fatiha',
+                'notes'          => 'Corrected notes',
+                'homework'       => null,
+                'souvenir_image' => 'https://cdn.example.com/new.png',
+            ])
+            ->assertOk()
+            ->assertJsonPath('data.content', 'Surah Al-Fatiha')
+            ->assertJsonPath('data.notes', 'Corrected notes')
+            ->assertJsonPath('data.homework', null);
+
+        $lesson->refresh();
+        $this->assertSame('Surah Al-Fatiha', $lesson->content);
+        $this->assertSame('Corrected notes', $lesson->notes);
+        $this->assertNull($lesson->homework);
+        $this->assertSame('https://cdn.example.com/new.png', $lesson->souvenir_image);
+    }
+
     public function test_update_rejects_invalid_status(): void
     {
         $teacher = Teacher::factory()->create();
@@ -436,5 +471,28 @@ class CalendarLessonEndpointsTest extends SystemTestCase
 
         // l2 becomes the only lesson -> cumulative 1.0
         $this->assertEquals(1.0, $l2->fresh()->session_number_hours);
+    }
+
+    /* ────────────────  Archived teacher / student still label lessons  ──────────────── */
+
+    public function test_lessons_index_still_names_an_archived_teacher_and_student(): void
+    {
+        $student = $this->lessonStudent();
+        $teacher = Teacher::factory()->create();
+        $this->makeLesson($student, $teacher, $this->makePackage($student));
+
+        // Archiving soft-deletes the profiles; the lesson must keep its labels.
+        $teacher->delete();
+        $student->delete();
+
+        $row = $this->actingAs($this->adminUser(), 'sanctum')
+            ->getJson('/api/system/lessons')
+            ->assertOk()
+            ->json('data.0');
+
+        $this->assertNotNull($row['teacher'], 'archived teacher still resolves');
+        $this->assertNotNull($row['student'], 'archived student still resolves');
+        $this->assertSame($teacher->user->name, $row['teacher']['name']);
+        $this->assertSame($student->name, $row['student']['name']);
     }
 }

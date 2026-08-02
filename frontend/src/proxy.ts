@@ -27,8 +27,8 @@ const SYSTEM_PATHS = [
   '/dashboard', '/students', '/teachers', '/leads',
   '/calendar', '/payments', '/quality',
   '/billing', '/payroll', '/accounting', '/certificates',
-  '/notifications', '/whatsapp-groups', '/settings', '/audit-log',
-  '/users', '/teacher',
+  '/notifications', '/whatsapp-groups', '/whatsapp', '/settings', '/audit-log',
+  '/users', '/teacher', '/analytics', '/salary-tiers', '/site',
 ]
 
 /** Forward the request to `pathname`, tagging it with the active locale. */
