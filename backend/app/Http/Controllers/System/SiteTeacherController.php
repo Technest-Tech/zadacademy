@@ -7,6 +7,7 @@ use App\Models\Teacher;
 use App\Models\TeacherReview;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 
@@ -32,6 +33,17 @@ class SiteTeacherController extends Controller
         $data = $this->validated($request);
         $data['slug'] = $this->uniqueSlug($data['slug'] ?? $data['name']);
 
+        // These columns are NOT NULL with no database default, but none of them
+        // is something an admin must fill in to publish a profile. Supply the
+        // empty value so an omitted optional field is a blank profile section
+        // rather than a 500.
+        $data += [
+            'name_arabic' => '',
+            'credentials' => '',
+            'specialties' => [],
+            'languages'   => [],
+        ];
+
         $teacher = Teacher::create($data);
 
         return response()->json(['data' => $teacher->load('reviews')], 201);
@@ -54,6 +66,29 @@ class SiteTeacherController extends Controller
         $teacher->delete();
 
         return response()->json(null, 204);
+    }
+
+    /**
+     * Persist a new display order for the public teachers list.
+     *
+     * The whole ordered list of ids is sent at once rather than a moved-from/to
+     * pair, so the result cannot drift out of step with what the admin sees
+     * after a drag.
+     */
+    public function reorder(Request $request): JsonResponse
+    {
+        $data = $request->validate([
+            'ids'   => ['required', 'array', 'min:1'],
+            'ids.*' => ['integer', 'exists:teachers,id'],
+        ]);
+
+        DB::transaction(function () use ($data) {
+            foreach ($data['ids'] as $position => $id) {
+                Teacher::where('id', $id)->update(['sort_order' => $position]);
+            }
+        });
+
+        return response()->json(['data' => Teacher::withCount('reviews')->orderBy('sort_order')->get()]);
     }
 
     // ── Reviews ──

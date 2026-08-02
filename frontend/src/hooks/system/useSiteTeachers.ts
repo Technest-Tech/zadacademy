@@ -38,11 +38,51 @@ export function useUpdateSiteTeacher(slug: string) {
   })
 }
 
+/**
+ * Patch any teacher, naming the slug at call time.
+ *
+ * `useUpdateSiteTeacher` binds one slug at render, which a list of rows cannot
+ * do — hooks can't be called per row. This is the variant the table uses for
+ * its inline toggles.
+ */
+export function usePatchSiteTeacher() {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: ({ slug, ...data }: Record<string, unknown> & { slug: string }) =>
+      api<{ data: SiteTeacher }>(`/site/teachers/${slug}`, {
+        method: 'PATCH',
+        body: JSON.stringify(data),
+      }).then((r) => r.data),
+    onSuccess: () => qc.invalidateQueries({ queryKey: KEY }),
+  })
+}
+
 export function useDeleteSiteTeacher() {
   const qc = useQueryClient()
   return useMutation({
     mutationFn: (slug: string) => api<null>(`/site/teachers/${slug}`, { method: 'DELETE' }),
     onSuccess: () => qc.invalidateQueries({ queryKey: KEY }),
+  })
+}
+
+/**
+ * Save a new display order for the public teachers list.
+ *
+ * Takes the ids in their final order; the server writes each one's position.
+ */
+export function useReorderSiteTeachers() {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: (ids: number[]) =>
+      api<{ data: SiteTeacher[] }>('/site/teachers/reorder', {
+        method: 'POST',
+        body: JSON.stringify({ ids }),
+      }).then((r) => r.data),
+    onSuccess: (teachers) => {
+      // The response is the freshly ordered list, so seed the cache with it
+      // rather than making the table flash through a refetch.
+      qc.setQueryData(KEY, teachers)
+    },
   })
 }
 

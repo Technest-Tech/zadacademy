@@ -34,6 +34,15 @@ Route::prefix('v1')
         Route::post('/contacts',       [ContactController::class, 'store']);
     });
 
+// Tracking beacon for the public site. No auth and no Turnstile — it fires on
+// every page view — but throttled per IP so it cannot be used to flood the
+// table. See App\Services\Site\VisitRecorder for what is (and is not) stored.
+Route::prefix('v1')
+    ->middleware('throttle:beacon')
+    ->group(function () {
+        Route::post('/site-visits', [\App\Http\Controllers\Api\V1\SiteVisitController::class, 'store']);
+    });
+
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
