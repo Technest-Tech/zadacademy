@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Api\V1;
 
 use App\Events\TrialBookingCreated;
 use App\Http\Controllers\Controller;
-use App\Mail\TrialBookingAdminNotification;
 use App\Mail\TrialBookingConfirmation;
 use App\Models\System\Lead;
 use App\Models\TrialBooking;
@@ -74,8 +73,8 @@ class TrialBookingController extends Controller
 
         TrialBookingCreated::dispatch($booking);
 
-        Mail::to(config('mail.admin_address', 'info@zadacademiq.com'))
-            ->queue(new TrialBookingAdminNotification($booking));
+        // The website sends the admin notification through Web3Forms after
+        // this response confirms the booking was saved successfully.
         Mail::to($booking->email)
             ->queue(new TrialBookingConfirmation($booking));
 

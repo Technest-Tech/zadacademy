@@ -9,6 +9,9 @@ import { StatsSection } from '@/components/home/StatsSection'
 import { CoursesGrid } from '@/components/home/CoursesGrid'
 import { TestimonialsMarquee } from '@/components/home/TestimonialsMarquee'
 import { TeachersSection } from '@/components/home/TeachersSection'
+import { CourseFinderQuest } from '@/components/home/CourseFinderQuest'
+import { MobileJourney } from '@/components/home/MobileJourney'
+import { TrustStrip } from '@/components/home/TrustStrip'
 import { TrialBookingForm } from '@/components/conversion/TrialBookingForm'
 import { whatsappLink } from '@/config/site'
 import { getHomeContent } from '@/content/home'
@@ -19,17 +22,6 @@ import { getTestimonials } from '@/content/testimonials'
 import { getLocale } from '@/i18n/getLocale'
 import { getT } from '@/i18n/getDictionary'
 import { localizedHref } from '@/i18n/href'
-import {
-  BookOpen,
-  Users,
-  Globe,
-  Star,
-  ShieldCheck,
-  GraduationCap,
-  Heart,
-  Clock,
-} from 'lucide-react'
-import type { LucideIcon } from 'lucide-react'
 
 export async function generateMetadata(): Promise<Metadata> {
   const locale = await getLocale()
@@ -40,16 +32,6 @@ export async function generateMetadata(): Promise<Metadata> {
     path: '/',
     locale,
   })
-}
-
-const iconMap: Record<string, LucideIcon> = {
-  Users,
-  Globe,
-  Heart,
-  GraduationCap,
-  ShieldCheck,
-  BookOpen,
-  Clock,
 }
 
 export default async function HomePage() {
@@ -71,52 +53,15 @@ export default async function HomePage() {
 
 
       {/* ── Trust Strip ── */}
-      <section className="bg-cream py-10 md:py-12" aria-label={t('home.whyChooseAria')}>
-        <Container>
-          <div className="flex items-center justify-center gap-3 sm:gap-4 mb-7">
-            <span className="h-px w-10 sm:w-16 bg-gradient-to-r from-transparent to-accent/60" aria-hidden="true" />
-            <span className="size-1.5 rotate-45 rounded-[1px] bg-accent" aria-hidden="true" />
-            <p className="text-secondary text-sm font-semibold uppercase tracking-[0.2em] text-center">
-              {homeContent.whyUs.eyebrow}
-            </p>
-            <span className="size-1.5 rotate-45 rounded-[1px] bg-accent" aria-hidden="true" />
-            <span className="h-px w-10 sm:w-16 bg-gradient-to-l from-transparent to-accent/60" aria-hidden="true" />
-          </div>
-          <ul className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4" role="list">
-            {homeContent.trustBadges.map(({ icon, label }, idx) => {
-              const Icon = iconMap[icon] ?? BookOpen
-              // t() echoes the key back when a lookup misses — treat that as "no subtext".
-              const subtextKey = `home.trustSubtext.${icon}`
-              const resolved = t(subtextKey)
-              const subtext = resolved === subtextKey ? '' : resolved
-              const iconStyle: Record<string, { wrap: string; icon: string }> = {
-                'Users':         { wrap: 'bg-secondary/12', icon: 'text-secondary' },
-                'ShieldCheck':   { wrap: 'bg-accent/12',    icon: 'text-accent'    },
-                'Heart':         { wrap: 'bg-secondary/12', icon: 'text-secondary' },
-                'Globe':         { wrap: 'bg-accent/12',    icon: 'text-accent'    },
-                'GraduationCap': { wrap: 'bg-secondary/12', icon: 'text-secondary' },
-              }
-              const { wrap, icon: iconCls } = iconStyle[icon] ?? { wrap: 'bg-secondary/12', icon: 'text-secondary' }
-              const isLastOrphan =
-                idx === homeContent.trustBadges.length - 1 && homeContent.trustBadges.length % 2 !== 0
-              return (
-                <li
-                  key={label}
-                  className={`group flex flex-col items-center text-center gap-3.5 rounded-2xl border border-border-soft bg-white px-4 py-7 shadow-[0_2px_12px_rgba(11,31,58,0.05)] transition-all duration-200 hover:-translate-y-1 hover:border-accent/40 hover:shadow-[0_14px_32px_rgba(11,31,58,0.10)] ${isLastOrphan ? 'col-span-2 sm:col-span-1' : ''}`}
-                >
-                  <div className={`shrink-0 size-12 rounded-xl flex items-center justify-center transition-transform duration-200 group-hover:scale-110 ${wrap}`}>
-                    <Icon className={`size-6 ${iconCls}`} aria-hidden="true" />
-                  </div>
-                  <div>
-                    <p className="font-semibold text-primary text-sm leading-snug">{label}</p>
-                    <p className="text-muted-text text-xs mt-1 leading-snug">{subtext}</p>
-                  </div>
-                </li>
-              )
-            })}
-          </ul>
-        </Container>
-      </section>
+      <TrustStrip
+        ariaLabel={t('home.whyChooseAria')}
+        eyebrow={homeContent.whyUs.eyebrow}
+        badges={homeContent.trustBadges}
+        locale={locale}
+      />
+
+      {/* ── Interactive course finder ── */}
+      <CourseFinderQuest />
 
       {/* ── Stats (client component — scroll-animated counters) ── */}
       <StatsSection stats={stats} />
@@ -160,7 +105,8 @@ export default async function HomePage() {
               {t('home.startSteps')}
             </h2>
           </div>
-          <div className="flex justify-center">
+          <MobileJourney locale={locale} />
+          <div className="hidden justify-center md:flex">
             <Image
               src="/images/contact-trial-steps.png"
               alt={t('home.stepsAlt')}
@@ -172,11 +118,11 @@ export default async function HomePage() {
         </Container>
       </section>
 
-      {/* ── Courses ── */}
-      <CoursesGrid courses={courses} locale={locale} />
-
       {/* ── Teachers ── */}
       <TeachersSection />
+
+      {/* ── Courses ── */}
+      <CoursesGrid courses={courses} locale={locale} />
 
       {/* ── Book a Free Trial ── */}
       <section id="book" className="bg-navy-soft py-16 sm:py-20 scroll-mt-24" aria-label={t('home.bookTrialAria')}>
@@ -214,15 +160,20 @@ export default async function HomePage() {
             <p className="text-white/70 text-lg mb-10">
               {homeContent.cta.subheading}
             </p>
-            <div className="flex flex-wrap justify-center gap-4">
-              <LinkButton href={localizedHref('/contact', locale)} size="lg" variant="gold">
+            <div className="flex flex-col justify-center gap-3 sm:flex-row sm:flex-wrap sm:gap-4">
+              <LinkButton
+                href={localizedHref('/contact', locale)}
+                size="lg"
+                variant="gold"
+                className="w-full justify-center sm:w-auto"
+              >
                 {homeContent.cta.ctaPrimary}
               </LinkButton>
               <a
                 href={whatsappLink()}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center gap-2.5 h-14 px-7 rounded-xl border border-white/30 text-white font-medium hover:border-accent hover:text-accent transition-colors"
+                className="flex h-14 w-full items-center justify-center gap-2.5 rounded-xl border border-white/30 px-7 font-medium text-white transition-colors hover:border-accent hover:text-accent sm:w-auto"
               >
                 {homeContent.cta.ctaSecondary}
               </a>

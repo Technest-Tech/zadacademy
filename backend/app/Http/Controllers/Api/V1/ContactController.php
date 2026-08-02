@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
 use App\Mail\ContactConfirmation;
-use App\Mail\ContactReceived;
 use App\Models\ContactMessage;
 use App\Models\System\Lead;
 use App\Services\BookingReferenceGenerator;
@@ -45,8 +44,8 @@ class ContactController extends Controller
             Log::warning('Failed to create lead from contact message', ['contact' => $contact->id, 'error' => $e->getMessage()]);
         }
 
-        Mail::to(config('mail.admin_address', 'info@zadacademiq.com'))
-            ->queue(new ContactReceived($contact));
+        // The website sends the admin notification through Web3Forms after
+        // this response confirms the message was saved successfully.
         Mail::to($contact->email)
             ->queue(new ContactConfirmation($contact));
 

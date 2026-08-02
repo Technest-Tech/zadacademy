@@ -3,11 +3,12 @@ import Image from 'next/image'
 import { Star, MapPin, ArrowRight, Award, Baby } from 'lucide-react'
 import type { Teacher } from '@/content/teachers'
 import type { Locale } from '@/i18n/config'
-import { getT } from '@/i18n/getDictionary'
 import { localizedHref } from '@/i18n/href'
+import { dictionaries, translate } from '@/i18n/translate'
 
 export function TeacherCard({ t, locale }: { t: Teacher; locale: Locale }) {
-  const tr = getT(locale)
+  const tr = (key: string, vars?: Record<string, string | number>) =>
+    translate(dictionaries[locale], key, vars)
   return (
     <Link
       href={localizedHref(`/our-teachers/${t.id}`, locale)}

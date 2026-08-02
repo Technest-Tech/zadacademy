@@ -2,6 +2,7 @@ import Image from 'next/image'
 import { Star, ArrowRight } from 'lucide-react'
 import { LinkButton } from '@/components/ui/link-button'
 import { Container } from '@/components/layout/Container'
+import { HeroInteractiveBackground } from '@/components/home/HeroInteractiveBackground'
 import { whatsappLink } from '@/config/site'
 import { getHomeContent } from '@/content/home'
 import { getLocale } from '@/i18n/getLocale'
@@ -24,6 +25,9 @@ export async function Hero() {
   const locale = await getLocale()
   const t = getT(locale)
   const homeContent = getHomeContent(locale)
+  const [subheadingBeforeAlAzhar, subheadingAfterAlAzhar] =
+    homeContent.hero.subheading.split('Al-Azhar')
+
   return (
     <section
       className="relative min-h-screen flex items-center overflow-hidden"
@@ -68,6 +72,8 @@ export async function Hero() {
         style={{ background: 'radial-gradient(ellipse 70% 90% at 0% 50%, rgba(11,31,58,0.85) 0%, rgba(11,31,58,0.35) 45%, transparent 70%)' }}
       />
 
+      <HeroInteractiveBackground />
+
       {/* ── Content ── */}
       <Container className="relative z-10 pt-28 pb-16 sm:pt-32 sm:pb-20 lg:py-28">
         <div className="grid lg:grid-cols-2 gap-12 lg:gap-10 items-center">
@@ -89,7 +95,7 @@ export async function Hero() {
 
             <h1 id="hero-heading" className="heading-display font-display text-white text-balance mb-6">
               {homeContent.hero.headingStart}{' '}
-              <em className="text-accent not-italic relative inline-block">
+              <em className="relative inline-block whitespace-nowrap text-accent not-italic">
                 {homeContent.hero.headingEmphasis}
                 <span
                   className="absolute -bottom-1 left-0 right-0 h-[2px] rounded-full bg-accent/40"
@@ -100,7 +106,11 @@ export async function Hero() {
             </h1>
 
             <p className="text-white/75 text-lg sm:text-xl leading-relaxed mb-7 sm:mb-10 max-w-xl">
-              {homeContent.hero.subheading}
+              {subheadingBeforeAlAzhar}
+              <strong className="whitespace-nowrap rounded-md border border-accent/40 bg-accent/15 px-1.5 py-0.5 font-bold text-accent shadow-[0_0_20px_rgba(201,162,75,0.2)]">
+                Al-Azhar
+              </strong>
+              {subheadingAfterAlAzhar}
             </p>
 
             {/* CTAs */}
@@ -131,7 +141,7 @@ export async function Hero() {
             </p>
 
             {/* Social proof strip */}
-            <div className="flex items-center gap-3 sm:gap-5">
+            <div className="flex items-center gap-3 pr-12 sm:gap-5 sm:pr-0">
               <div className="flex -space-x-2.5" aria-hidden="true">
                 {(
                   [

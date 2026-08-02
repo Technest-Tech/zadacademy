@@ -214,20 +214,30 @@ export function Navbar() {
             </LinkButton>
           </div>
 
-          {/* Mobile hamburger */}
-          <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
-            <SheetTrigger
-              className={cn(
-                'lg:hidden p-2 rounded-lg transition-colors',
-                useLightText ? 'text-white hover:bg-white/10' : 'text-primary hover:bg-cream',
-              )}
-              aria-label={t('nav.openMenu')}
+          {/* Mobile actions */}
+          <div className="flex items-center gap-2 lg:hidden">
+            <Link
+              href={href('/contact')}
+              className="inline-flex h-9 items-center rounded-full bg-accent px-3.5 text-xs font-bold text-primary shadow-[0_7px_22px_rgba(201,162,75,0.24)] active:scale-[0.98]"
             >
-              <Menu className="size-6" aria-hidden="true" />
-            </SheetTrigger>
+              {t('nav.freeTrial')}
+            </Link>
 
-            <SheetContent side="right" className="w-80 p-0 bg-white" showCloseButton={false}>
-              <div className="flex flex-col h-full">
+            <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
+              <SheetTrigger
+                className={cn(
+                  'flex size-10 items-center justify-center rounded-full border transition-colors',
+                  useLightText
+                    ? 'border-white/15 bg-white/5 text-white hover:bg-white/10'
+                    : 'border-border-soft bg-white text-primary hover:bg-cream',
+                )}
+                aria-label={t('nav.openMenu')}
+              >
+                <Menu className="size-5" aria-hidden="true" />
+              </SheetTrigger>
+
+              <SheetContent side="right" className="w-[88vw] max-w-sm p-0 bg-white" showCloseButton={false}>
+                <div className="flex flex-col h-full">
                 {/* Mobile header */}
                 <div className="flex items-center justify-between p-5 border-b border-border-soft">
                   <Link href={href('/')} aria-label={t('nav.homeAria')} onClick={() => setMobileOpen(false)} className="flex items-center leading-none">
@@ -281,9 +291,10 @@ export function Navbar() {
                     {t('nav.chatWhatsapp')}
                   </a>
                 </div>
-              </div>
-            </SheetContent>
-          </Sheet>
+                </div>
+              </SheetContent>
+            </Sheet>
+          </div>
         </nav>
       </header>
     </>

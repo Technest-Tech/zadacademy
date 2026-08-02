@@ -3,7 +3,6 @@
 namespace Tests\Feature\Api\V1;
 
 use App\Mail\ContactConfirmation;
-use App\Mail\ContactReceived;
 use App\Models\ContactMessage;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Http;
@@ -68,12 +67,11 @@ class ContactTest extends TestCase
           ->assertJsonValidationErrors(['email']);
     }
 
-    public function test_queues_two_emails_on_success(): void
+    public function test_queues_visitor_confirmation_on_success(): void
     {
         $this->postJson('/api/v1/contacts', $this->validPayload())
             ->assertStatus(201);
 
-        Mail::assertQueued(ContactReceived::class, 1);
         Mail::assertQueued(ContactConfirmation::class, 1);
     }
 

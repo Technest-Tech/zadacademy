@@ -110,10 +110,12 @@ export const fr: Messages = {
     courseLabel: 'Cours souhaité',
     submit: 'Réserver mon cours d’essai gratuit',
     submitting: 'Envoi…',
+    retryEmail: 'Renvoyer la notification par e-mail',
     nameRequired: 'Veuillez saisir votre nom.',
     emailInvalid: 'Veuillez saisir une adresse e-mail valide.',
     phoneRequired: 'Veuillez saisir un numéro de téléphone.',
     errorGeneric: 'Une erreur est survenue. Veuillez réessayer ou nous contacter sur WhatsApp.',
+    emailRetry: 'Votre réservation est enregistrée dans notre système, mais la notification par e-mail n’a pas été envoyée. Appuyez à nouveau sur le bouton pour réessayer.',
   },
 
   contactForm: {
@@ -127,6 +129,7 @@ export const fr: Messages = {
     messagePlaceholder: 'Écrivez votre message ici…',
     submit: 'Envoyer le message',
     submitting: 'Envoi…',
+    retryEmail: 'Renvoyer la notification par e-mail',
     captchaRequired: 'Veuillez compléter la vérification de sécurité.',
     nameRequired: 'Veuillez saisir votre nom.',
     emailInvalid: 'Veuillez saisir une adresse e-mail valide.',
@@ -134,6 +137,7 @@ export const fr: Messages = {
     subjectRequired: 'Veuillez saisir un sujet.',
     messageMin: 'Veuillez écrire au moins 10 caractères.',
     errorGeneric: 'Une erreur est survenue. Veuillez réessayer ou nous contacter sur WhatsApp.',
+    emailRetry: 'Votre message est enregistré dans notre système, mais la notification par e-mail n’a pas été envoyée. Appuyez à nouveau sur le bouton pour réessayer.',
   },
 
   contactSidebar: {
@@ -153,7 +157,10 @@ export const fr: Messages = {
     contactBody: 'Merci de nous avoir contactés. Nous avons bien reçu votre message et vous répondrons dans les plus brefs délais, généralement sous un jour ouvré.',
     titleTrial: 'Cours d’essai réservé !',
     titleContact: 'Message bien reçu !',
+    statusBadge: 'Envoi réussi',
     referenceLabel: 'Votre numéro de référence :',
+    savedStatus: 'Enregistré dans notre système',
+    emailedStatus: 'E-mail envoyé à notre équipe',
     bodyTrial: 'Vérifiez votre boîte de réception — un e-mail de confirmation est en route. Nous vous contacterons sous 24 heures pour confirmer votre enseignant et votre créneau.',
     bodyContact: 'Nous avons bien reçu votre message et vous répondrons sous 24 heures. Vérifiez votre e-mail pour une confirmation.',
     continueWhatsapp: 'Continuer sur WhatsApp',
@@ -212,6 +219,7 @@ export const fr: Messages = {
     headingLead: 'Nos enseignants',
     headingAccent: 'experts',
     subheading: 'Des enseignants diplômés d’Al-Azhar, dévoués à votre réussite — chacun choisi pour son excellence et ses qualités pédagogiques.',
+    carouselLabel: 'Enseignants à la une',
   },
 
   coursesIndex: {
@@ -399,6 +407,7 @@ export const fr: Messages = {
     subheading: 'Des programmes adaptés à tous les niveaux et à tous les âges.',
     discover: 'Découvrir',
     viewAll: 'Voir tous les cours',
+    carouselLabel: 'Cours à la une',
   },
 
   coursesCarousel: {

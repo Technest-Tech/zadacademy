@@ -5,7 +5,7 @@ export const homeContent = {
     arabicVerse: 'بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ',
     arabicVerseLabel: 'In the name of Allah, the Most Gracious, the Most Merciful',
     headingStart: 'Learn',
-    headingEmphasis: 'Quran Online',
+    headingEmphasis: 'Arabic & Quran',
     headingEnd: 'with Certified Teachers',
     subheading:
       'Premium 1-on-1 classes in Quran, Tajweed, Hifz, Arabic, and Islamic Studies. Certified teachers from Al-Azhar. Students in 50+ countries.',
@@ -62,8 +62,8 @@ export const homeContentFr: typeof homeContent = {
   hero: {
     arabicVerse: 'بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ',
     arabicVerseLabel: 'Au nom d’Allah, le Tout Miséricordieux, le Très Miséricordieux',
-    headingStart: 'Apprenez le',
-    headingEmphasis: 'Coran en ligne',
+    headingStart: 'Apprenez',
+    headingEmphasis: 'l’arabe et le Coran',
     headingEnd: 'avec des enseignants certifiés',
     subheading:
       'Cours particuliers haut de gamme de Coran, Tajwid, Hifz, arabe et sciences islamiques. Enseignants certifiés d’Al-Azhar. Des élèves dans plus de 50 pays.',

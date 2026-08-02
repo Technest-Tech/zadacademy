@@ -63,11 +63,14 @@ export function StatsSection({ stats }: { stats: Stat[] }) {
         </svg>
       </div>
 
-      <Container className="relative pt-2">
+      <Container className="relative py-3 sm:pt-2 sm:pb-0">
         <SectionDivider tone="dark" className="mb-2" />
-        <dl className="flex flex-col sm:flex-row divide-y sm:divide-y-0 sm:divide-x divide-white/10">
+        <dl className="grid grid-cols-2 sm:flex sm:flex-row">
           {stats.map((stat) => (
-            <div key={stat.label} className="flex-1">
+            <div
+              key={stat.label}
+              className="flex-1 border-white/10 odd:border-r nth-[n+3]:border-t sm:border-r sm:border-t-0 sm:last:border-r-0"
+            >
               <StatItem {...stat} />
             </div>
           ))}

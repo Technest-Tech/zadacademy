@@ -9,6 +9,10 @@ import { SuccessState } from './SuccessState'
 import { courses, getCourses } from '@/content/courses'
 import { useT } from '@/i18n/MarketingI18nProvider'
 import type { TranslateFn } from '@/i18n/translate'
+import {
+  sendWeb3FormsNotification,
+  type Web3FormsFields,
+} from '@/lib/web3forms'
 
 /** Dial-code picker options for the WhatsApp field. */
 const PHONE_COUNTRIES = [
@@ -66,8 +70,11 @@ export function TrialBookingForm() {
   const [reference, setReference] = useState('')
   const [errorMsg, setErrorMsg] = useState('')
   const [timezone, setTimezone] = useState('')
+  const [pendingNotification, setPendingNotification] = useState<Web3FormsFields | null>(
+    null,
+  )
 
-  const schema = useMemo(() => makeSchema(t), [locale])
+  const schema = useMemo(() => makeSchema(t), [t])
   const localizedCourses = useMemo(() => getCourses(locale), [locale])
 
   const {
@@ -95,6 +102,7 @@ export function TrialBookingForm() {
   const onSubmit = async (data: FormValues) => {
     setStatus('loading')
     setErrorMsg('')
+    let savedInBackend = pendingNotification !== null
 
     const country =
       PHONE_COUNTRIES.find((c) => c.code === data.phoneCountry) ?? PHONE_COUNTRIES[0]
@@ -113,21 +121,69 @@ export function TrialBookingForm() {
     }
 
     try {
-      const res = await fetch(`${API_URL}/api/v1/trial-bookings`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
-        body: JSON.stringify(payload),
-      })
-      if (!res.ok) {
-        const err = await res.json().catch(() => ({}))
-        throw new Error((err as { message?: string }).message ?? t('trialForm.errorGeneric'))
+      let notification = pendingNotification
+
+      if (!notification) {
+        const res = await fetch(`${API_URL}/api/v1/trial-bookings`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+          body: JSON.stringify(payload),
+        })
+        if (!res.ok) {
+          const err = await res.json().catch(() => ({}))
+          throw new Error(
+            (err as { message?: string }).message ?? t('trialForm.errorGeneric'),
+          )
+        }
+
+        const json = (await res.json()) as { reference: string }
+        setReference(json.reference)
+        savedInBackend = true
+
+        notification = {
+          subject: `[Free Trial Booking] ${data.name}`,
+          form_name: 'Free trial booking form',
+          reference: json.reference,
+          name: data.name,
+          email: data.email,
+          phone: payload.phone,
+          country: country.name,
+          audience: data.audience === 'adult' ? 'Adult' : 'Child',
+          course: data.courseInterest,
+          preferred_time: payload.preferredTime,
+          timezone: payload.timezone,
+          language: locale.toUpperCase(),
+          page_url: window.location.href,
+        }
+        setPendingNotification(notification)
       }
-      const json = (await res.json()) as { reference: string }
-      setReference(json.reference)
+
+      await sendWeb3FormsNotification(notification)
       setStatus('success')
     } catch (e) {
       setStatus('error')
-      setErrorMsg(e instanceof Error ? e.message : t('trialForm.errorGeneric'))
+      setErrorMsg(
+        savedInBackend
+          ? t('trialForm.emailRetry')
+          : e instanceof Error
+            ? e.message
+            : t('trialForm.errorGeneric'),
+      )
+    }
+  }
+
+  const retryEmailNotification = async () => {
+    if (!pendingNotification) return
+
+    setStatus('loading')
+    setErrorMsg('')
+
+    try {
+      await sendWeb3FormsNotification(pendingNotification)
+      setStatus('success')
+    } catch {
+      setStatus('error')
+      setErrorMsg(t('trialForm.emailRetry'))
     }
   }
 
@@ -136,6 +192,7 @@ export function TrialBookingForm() {
   }
 
   const isLoading = status === 'loading'
+  const fieldsDisabled = isLoading || pendingNotification !== null
 
   const fieldClass =
     'w-full rounded-lg border border-white/15 bg-[#0a2a29] px-3.5 py-2.5 text-sm text-white placeholder:text-white/35 outline-none transition-colors focus:border-teal-400/70 focus:ring-2 focus:ring-teal-400/20 disabled:opacity-50'
@@ -191,7 +248,7 @@ export function TrialBookingForm() {
                 type="text"
                 placeholder={t('trialForm.namePlaceholder')}
                 autoComplete="name"
-                disabled={isLoading}
+                disabled={fieldsDisabled}
                 aria-invalid={!!errors.name}
                 className={fieldClass}
                 {...register('name')}
@@ -213,7 +270,7 @@ export function TrialBookingForm() {
                 type="email"
                 placeholder={t('trialForm.emailPlaceholder')}
                 autoComplete="email"
-                disabled={isLoading}
+                disabled={fieldsDisabled}
                 aria-invalid={!!errors.email}
                 className={fieldClass}
                 {...register('email')}
@@ -233,7 +290,7 @@ export function TrialBookingForm() {
               <div className="flex gap-2">
                 <select
                   aria-label={t('trialForm.dialCodeAria')}
-                  disabled={isLoading}
+                  disabled={fieldsDisabled}
                   className="shrink-0 rounded-lg border border-white/15 bg-[#0a2a29] px-2 py-2.5 text-sm text-white outline-none transition-colors focus:border-teal-400/70 focus:ring-2 focus:ring-teal-400/20 disabled:opacity-50"
                   {...register('phoneCountry')}
                 >
@@ -248,7 +305,7 @@ export function TrialBookingForm() {
                   type="tel"
                   placeholder={t('trialForm.phonePlaceholder')}
                   autoComplete="tel"
-                  disabled={isLoading}
+                  disabled={fieldsDisabled}
                   aria-invalid={!!errors.phone}
                   className={fieldClass}
                   {...register('phone')}
@@ -268,7 +325,7 @@ export function TrialBookingForm() {
               </label>
               <select
                 id="courseInterest"
-                disabled={isLoading}
+                disabled={fieldsDisabled}
                 aria-invalid={!!errors.courseInterest}
                 defaultValue=""
                 className={`${fieldClass} border-teal-400/40`}
@@ -303,7 +360,7 @@ export function TrialBookingForm() {
                     <button
                       key={value}
                       type="button"
-                      disabled={isLoading}
+                      disabled={fieldsDisabled}
                       onClick={() =>
                         setValue('audience', value, { shouldValidate: true })
                       }
@@ -345,8 +402,9 @@ export function TrialBookingForm() {
 
             {/* Submit */}
             <button
-              type="submit"
+              type={pendingNotification ? 'button' : 'submit'}
               disabled={isLoading}
+              onClick={pendingNotification ? retryEmailNotification : undefined}
               className="flex w-full items-center justify-center gap-2 rounded-lg bg-gradient-to-r from-[#17a398] to-[#0e8a7e] px-4 py-3 text-sm font-semibold text-white shadow-lg shadow-teal-900/40 transition-all hover:from-[#1cb3a7] hover:to-[#10998c] disabled:cursor-not-allowed disabled:opacity-60"
             >
               {isLoading ? (
@@ -356,7 +414,7 @@ export function TrialBookingForm() {
                 </>
               ) : (
                 <>
-                  {t('trialForm.submit')}
+                  {pendingNotification ? t('trialForm.retryEmail') : t('trialForm.submit')}
                   <ArrowRight className="size-4" aria-hidden="true" />
                 </>
               )}

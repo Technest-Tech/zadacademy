@@ -1,5 +1,5 @@
 import { Award } from 'lucide-react'
-import { TeacherCard } from '@/components/teachers/TeacherCard'
+import { TeachersCarousel } from '@/components/home/TeachersCarousel'
 import { SectionDivider } from '@/components/layout/SectionDivider'
 import { fetchTeachers } from '@/content/teachersApi'
 import { getLocale } from '@/i18n/getLocale'
@@ -46,12 +46,7 @@ export async function TeachersSection() {
           </p>
         </div>
 
-        {/* Cards */}
-        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-          {teachers.map((t) => (
-            <TeacherCard key={t.id} t={t} locale={locale} />
-          ))}
-        </div>
+        <TeachersCarousel teachers={teachers} locale={locale} />
       </div>
     </section>
   )

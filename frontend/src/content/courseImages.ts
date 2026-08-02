@@ -1,25 +1,20 @@
-import { courses } from './courses'
-
 /**
- * Topical demo thumbnails pulled from the web (loremflickr, keyword + stable lock).
- * Swap these for real branded course thumbnails when available.
+ * Branded illustrated thumbnails shared by the home carousel and course pages.
  */
-const IMAGE_KEYWORDS: Record<string, string> = {
-  'noorani-qaida': 'quran,arabic,book',
-  'quran-classes-for-kids': 'child,quran',
-  'quran-classes-for-adults': 'quran,reading',
-  'tajweed-course': 'quran,mosque',
-  'hifz-memorization': 'quran,book',
-  'ijazah-program': 'quran,calligraphy',
-  'arabic-for-non-arabs': 'arabic,calligraphy',
-  'tafseer-course': 'quran,study',
-  'islamic-studies': 'mosque,islamic',
-  'ten-qiraat': 'quran,recitation',
-  'female-quran-teachers': 'hijab,book',
+const COURSE_IMAGES: Record<string, string> = {
+  'noorani-qaida': '/images/courses/noorani-qaida.webp',
+  'quran-classes-for-kids': '/images/courses/quran-classes-for-kids.webp',
+  'quran-classes-for-adults': '/images/courses/quran-classes-for-adults.webp',
+  'tajweed-course': '/images/courses/tajweed-course.webp',
+  'hifz-memorization': '/images/courses/hifz-memorization.webp',
+  'ijazah-program': '/images/courses/ijazah-program.webp',
+  'arabic-for-non-arabs': '/images/courses/arabic-for-non-arabs.webp',
+  'tafseer-course': '/images/courses/tafseer-course.webp',
+  'islamic-studies': '/images/courses/islamic-studies.webp',
+  'ten-qiraat': '/images/courses/ten-qiraat.webp',
+  'female-quran-teachers': '/images/courses/female-quran-teachers.webp',
 }
 
 export function courseImage(slug: string): string {
-  const kw = IMAGE_KEYWORDS[slug] ?? 'quran,islamic'
-  const idx = Math.max(0, courses.findIndex((c) => c.slug === slug))
-  return `https://loremflickr.com/800/520/${kw}?lock=${100 + idx}`
+  return COURSE_IMAGES[slug] ?? COURSE_IMAGES['islamic-studies']
 }

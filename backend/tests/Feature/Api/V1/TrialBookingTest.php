@@ -2,7 +2,6 @@
 
 namespace Tests\Feature\Api\V1;
 
-use App\Mail\TrialBookingAdminNotification;
 use App\Mail\TrialBookingConfirmation;
 use App\Models\TrialBooking;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -87,12 +86,11 @@ class TrialBookingTest extends TestCase
             ->assertJsonValidationErrors(['ageGroup']);
     }
 
-    public function test_queues_two_emails_on_success(): void
+    public function test_queues_visitor_confirmation_on_success(): void
     {
         $this->postJson('/api/v1/trial-bookings', $this->validPayload())
             ->assertStatus(201);
 
-        Mail::assertQueued(TrialBookingAdminNotification::class, 1);
         Mail::assertQueued(TrialBookingConfirmation::class, 1);
     }
 

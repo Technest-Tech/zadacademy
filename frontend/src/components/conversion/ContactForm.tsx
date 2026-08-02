@@ -11,6 +11,10 @@ import { SuccessState } from './SuccessState'
 import { TurnstileWidget } from './TurnstileWidget'
 import { useT } from '@/i18n/MarketingI18nProvider'
 import type { TranslateFn } from '@/i18n/translate'
+import {
+  sendWeb3FormsNotification,
+  type Web3FormsFields,
+} from '@/lib/web3forms'
 
 // Cloudflare Turnstile is optional: the captcha only appears (and is required)
 // when a site key is configured. Without one, the form submits without it and
@@ -47,8 +51,11 @@ export function ContactForm() {
   const [status, setStatus] = useState<Status>('idle')
   const [reference, setReference] = useState('')
   const [errorMsg, setErrorMsg] = useState('')
+  const [pendingNotification, setPendingNotification] = useState<Web3FormsFields | null>(
+    null,
+  )
 
-  const schema = useMemo(() => makeSchema(t), [locale])
+  const schema = useMemo(() => makeSchema(t), [t])
 
   const {
     register,
@@ -67,22 +74,68 @@ export function ContactForm() {
   const onSubmit = async (data: FormValues) => {
     setStatus('loading')
     setErrorMsg('')
+    let savedInBackend = pendingNotification !== null
+
     try {
-      const res = await fetch(`${API_URL}/api/v1/contacts`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
-        body: JSON.stringify(data),
-      })
-      if (!res.ok) {
-        const err = await res.json().catch(() => ({}))
-        throw new Error((err as { message?: string }).message ?? t('contactForm.errorGeneric'))
+      let notification = pendingNotification
+
+      if (!notification) {
+        const res = await fetch(`${API_URL}/api/v1/contacts`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+          body: JSON.stringify(data),
+        })
+        if (!res.ok) {
+          const err = await res.json().catch(() => ({}))
+          throw new Error(
+            (err as { message?: string }).message ?? t('contactForm.errorGeneric'),
+          )
+        }
+
+        const json = (await res.json()) as { reference: string }
+        setReference(json.reference)
+        savedInBackend = true
+
+        notification = {
+          subject: `[Website Contact] ${data.subject}`,
+          form_name: 'General contact form',
+          reference: json.reference,
+          name: data.name,
+          email: data.email,
+          inquiry_subject: data.subject,
+          message: data.message,
+          language: locale.toUpperCase(),
+          page_url: window.location.href,
+        }
+        setPendingNotification(notification)
       }
-      const json = (await res.json()) as { reference: string }
-      setReference(json.reference)
+
+      await sendWeb3FormsNotification(notification)
       setStatus('success')
     } catch (e) {
       setStatus('error')
-      setErrorMsg(e instanceof Error ? e.message : t('contactForm.errorGeneric'))
+      setErrorMsg(
+        savedInBackend
+          ? t('contactForm.emailRetry')
+          : e instanceof Error
+            ? e.message
+            : t('contactForm.errorGeneric'),
+      )
+    }
+  }
+
+  const retryEmailNotification = async () => {
+    if (!pendingNotification) return
+
+    setStatus('loading')
+    setErrorMsg('')
+
+    try {
+      await sendWeb3FormsNotification(pendingNotification)
+      setStatus('success')
+    } catch {
+      setStatus('error')
+      setErrorMsg(t('contactForm.emailRetry'))
     }
   }
 
@@ -91,6 +144,7 @@ export function ContactForm() {
   }
 
   const isLoading = status === 'loading'
+  const fieldsDisabled = isLoading || pendingNotification !== null
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} noValidate className="space-y-4">
@@ -101,7 +155,7 @@ export function ContactForm() {
           required
           placeholder={t('contactForm.namePlaceholder')}
           error={errors.name?.message}
-          disabled={isLoading}
+          disabled={fieldsDisabled}
           {...register('name')}
         />
         <FormField
@@ -111,7 +165,7 @@ export function ContactForm() {
           required
           placeholder={t('contactForm.emailPlaceholder')}
           error={errors.email?.message}
-          disabled={isLoading}
+          disabled={fieldsDisabled}
           {...register('email')}
         />
       </div>
@@ -122,7 +176,7 @@ export function ContactForm() {
         required
         placeholder={t('contactForm.subjectPlaceholder')}
         error={errors.subject?.message}
-        disabled={isLoading}
+        disabled={fieldsDisabled}
         {...register('subject')}
       />
 
@@ -134,7 +188,7 @@ export function ContactForm() {
         placeholder={t('contactForm.messagePlaceholder')}
         rows={4}
         error={errors.message?.message}
-        disabled={isLoading}
+        disabled={fieldsDisabled}
         {...register('message')}
       />
 
@@ -159,10 +213,11 @@ export function ContactForm() {
       )}
 
       <Button
-        type="submit"
+        type={pendingNotification ? 'button' : 'submit'}
         size="default"
         className="w-full justify-center"
         disabled={isLoading}
+        onClick={pendingNotification ? retryEmailNotification : undefined}
       >
         {isLoading ? (
           <>
@@ -170,7 +225,7 @@ export function ContactForm() {
             {t('contactForm.submitting')}
           </>
         ) : (
-          t('contactForm.submit')
+          pendingNotification ? t('contactForm.retryEmail') : t('contactForm.submit')
         )}
       </Button>
     </form>

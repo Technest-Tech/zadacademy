@@ -1,68 +1,11 @@
-import Link from 'next/link'
 import Image from 'next/image'
-import { ArrowRight } from 'lucide-react'
 import { LinkButton } from '@/components/ui/link-button'
 import { SectionDivider } from '@/components/layout/SectionDivider'
-import { courseImage } from '@/content/courseImages'
+import { CoursesCarousel } from '@/components/home/CoursesCarousel'
 import type { Course } from '@/content/courses'
 import type { Locale } from '@/i18n/config'
 import { getT } from '@/i18n/getDictionary'
 import { localizedHref } from '@/i18n/href'
-
-function CourseCard({ course, locale }: { course: Course; locale: Locale }) {
-  const t = getT(locale)
-  return (
-    <Link
-      href={localizedHref(`/courses/${course.slug}`, locale)}
-      className="group flex flex-col overflow-hidden rounded-2xl border border-white/10 bg-white/[0.03] transition-all duration-200 hover:-translate-y-1 hover:border-accent/40 hover:shadow-[0_18px_40px_rgba(0,0,0,0.45)]"
-    >
-      {/* Image */}
-      <div className="relative aspect-[16/10] overflow-hidden">
-        <Image
-          src={courseImage(course.slug)}
-          alt={course.title}
-          fill
-          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
-          className="object-cover transition-transform duration-500 group-hover:scale-105"
-        />
-        {/* Bottom scrim for tag legibility */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" aria-hidden="true" />
-
-        {/* Gold corner triangle */}
-        <span
-          className="absolute right-0 top-0 border-l-[38px] border-t-[38px] border-l-transparent border-t-accent"
-          aria-hidden="true"
-        />
-
-        {/* Tag pills */}
-        <div className="absolute inset-x-3 bottom-3 flex flex-wrap gap-1.5">
-          {course.specialtyTags.slice(0, 3).map((tag) => (
-            <span
-              key={tag}
-              className="rounded-full bg-black/45 px-2.5 py-1 text-[11px] font-medium text-white/90 backdrop-blur-sm"
-            >
-              {tag}
-            </span>
-          ))}
-        </div>
-      </div>
-
-      {/* Body */}
-      <div className="flex flex-1 flex-col p-5">
-        <h3 className="font-heading text-lg font-bold leading-snug text-white transition-colors group-hover:text-accent">
-          {course.title}
-        </h3>
-        <p className="mt-2 line-clamp-2 flex-1 text-sm leading-relaxed text-white/55">
-          {course.shortDescription}
-        </p>
-        <span className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-emerald-300">
-          {t('coursesGrid.discover')}
-          <ArrowRight className="size-3.5 transition-transform group-hover:translate-x-1" aria-hidden="true" />
-        </span>
-      </div>
-    </Link>
-  )
-}
 
 export function CoursesGrid({ courses, locale }: { courses: Course[]; locale: Locale }) {
   const t = getT(locale)
@@ -103,16 +46,16 @@ export function CoursesGrid({ courses, locale }: { courses: Course[]; locale: Lo
           </p>
         </div>
 
-        {/* Grid */}
-        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-          {featured.map((course) => (
-            <CourseCard key={course.slug} course={course} locale={locale} />
-          ))}
-        </div>
+        <CoursesCarousel courses={featured} locale={locale} />
 
         {/* Footer CTA */}
-        <div className="mt-12 text-center">
-          <LinkButton href={localizedHref('/courses', locale)} variant="gold" size="lg">
+        <div className="mt-7 text-center sm:mt-12">
+          <LinkButton
+            href={localizedHref('/courses', locale)}
+            variant="gold"
+            size="lg"
+            className="w-full justify-center sm:w-auto"
+          >
             {t('coursesGrid.viewAll')}
           </LinkButton>
         </div>

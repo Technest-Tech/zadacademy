@@ -112,10 +112,12 @@ export const en = {
     courseLabel: 'Course of interest',
     submit: 'Book my free trial class',
     submitting: 'Sending…',
+    retryEmail: 'Retry email notification',
     nameRequired: 'Please enter your name.',
     emailInvalid: 'Please enter a valid email address.',
     phoneRequired: 'Please enter a phone number.',
     errorGeneric: 'Something went wrong. Please try again or contact us on WhatsApp.',
+    emailRetry: 'Your booking is saved in our system, but the email notification was not delivered. Please press the button again to retry the email.',
   },
 
   contactForm: {
@@ -129,6 +131,7 @@ export const en = {
     messagePlaceholder: 'Write your message here…',
     submit: 'Send message',
     submitting: 'Sending…',
+    retryEmail: 'Retry email notification',
     captchaRequired: 'Please complete the security check.',
     nameRequired: 'Please enter your name.',
     emailInvalid: 'Please enter a valid email address.',
@@ -136,6 +139,7 @@ export const en = {
     subjectRequired: 'Please enter a subject.',
     messageMin: 'Please write at least 10 characters.',
     errorGeneric: 'Something went wrong. Please try again or contact us on WhatsApp.',
+    emailRetry: 'Your message is saved in our system, but the email notification was not delivered. Please press the button again to retry the email.',
   },
 
   contactSidebar: {
@@ -155,7 +159,10 @@ export const en = {
     contactBody: 'Thank you for reaching out. We have received your message and will reply as soon as possible, usually within one business day.',
     titleTrial: 'Trial Class Booked!',
     titleContact: 'Message Received!',
+    statusBadge: 'Successfully submitted',
     referenceLabel: 'Your reference number:',
+    savedStatus: 'Saved in our system',
+    emailedStatus: 'Email sent to our team',
     bodyTrial: 'Check your inbox — a confirmation email is on its way. We will be in touch within 24 hours to confirm your teacher and time slot.',
     bodyContact: 'We have received your message and will reply within 24 hours. Check your email for a confirmation.',
     continueWhatsapp: 'Continue on WhatsApp',
@@ -214,6 +221,7 @@ export const en = {
     headingLead: 'Our Expert',
     headingAccent: 'Teachers',
     subheading: 'Al-Azhar graduate teachers, dedicated to your success — each chosen for their excellence and teaching skill.',
+    carouselLabel: 'Featured teachers',
   },
 
   coursesIndex: {
@@ -401,6 +409,7 @@ export const en = {
     subheading: 'Programs adapted to all levels and all ages.',
     discover: 'Discover',
     viewAll: 'View All Courses',
+    carouselLabel: 'Featured courses',
   },
 
   coursesCarousel: {

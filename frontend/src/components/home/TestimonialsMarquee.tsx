@@ -39,6 +39,28 @@ function Card({ t, tr }: { t: Testimonial; tr: TranslateFn }) {
   )
 }
 
+function MobileRow({ items, tr }: { items: Testimonial[]; tr: TranslateFn }) {
+  return (
+    <div className="relative overflow-hidden">
+      <div
+        className="pointer-events-none absolute inset-y-0 left-0 z-10 w-8 bg-gradient-to-r from-primary to-transparent"
+        aria-hidden="true"
+      />
+      <div
+        className="pointer-events-none absolute inset-y-0 right-0 z-10 w-8 bg-gradient-to-l from-primary to-transparent"
+        aria-hidden="true"
+      />
+      <div className="flex w-max gap-4 animate-marquee hover:[animation-play-state:paused]">
+        {[...items, ...items].map((item, index) => (
+          <div key={`mobile-${item.id}-${index}`} className="w-[78vw] max-w-[310px] shrink-0">
+            <Card t={item} tr={tr} />
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}
+
 /** A vertically scrolling column (content duplicated for a seamless loop). */
 function Column({
   items,
@@ -154,7 +176,7 @@ export function TestimonialsMarquee({ items, locale }: { items: Testimonial[]; l
 
         {/* Mobile — single scrolling column */}
         <div className="mt-10 lg:hidden">
-          <Column items={colLeft} direction="up" tr={tr} />
+          <MobileRow items={items} tr={tr} />
         </div>
       </div>
     </section>

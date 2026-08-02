@@ -192,7 +192,7 @@ function mapApiTeacher(a: ApiTeacher, locale: Locale): Teacher {
   const specialties = a.specialties ?? []
   const first = firstName(a.name)
   return {
-    id: a.slug,
+    id: a.slug || String(a.id),
     name: a.name,
     nameArabic: a.name_arabic ?? '',
     role: a.role,
