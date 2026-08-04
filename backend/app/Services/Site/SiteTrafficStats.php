@@ -190,7 +190,11 @@ class SiteTrafficStats
             ->selectRaw("$labelExpression as label", $bindings)
             ->selectRaw('count(*) as pageviews')
             ->selectRaw('count(distinct visitor_hash) as visitors')
-            ->groupByRaw($labelExpression, $bindings)
+            // Group by the output alias, not by a second copy of the expression.
+            // MySQL's only_full_group_by does not treat two parameterised copies
+            // of the same CASE as the same expression, and rejects the query;
+            // the alias is unambiguous to it and to SQLite alike.
+            ->groupBy('label')
             ->orderByDesc('pageviews')
             ->limit(self::TOP_N)
             ->get()
