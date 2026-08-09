@@ -8,7 +8,6 @@ use App\Models\TeacherReview;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 
 class SiteTeacherController extends Controller
@@ -192,13 +191,9 @@ class SiteTeacherController extends Controller
         ]);
     }
 
+    /** Slug generation lives on the model, so every write path shares it. */
     private function uniqueSlug(string $source, ?int $ignoreId = null): string
     {
-        $base = Str::slug($source) ?: 'teacher';
-        $slug = $base;
-        for ($i = 2; Teacher::where('slug', $slug)->when($ignoreId, fn ($q) => $q->where('id', '!=', $ignoreId))->exists(); $i++) {
-            $slug = "{$base}-{$i}";
-        }
-        return $slug;
+        return Teacher::uniqueSlug($source, $ignoreId);
     }
 }

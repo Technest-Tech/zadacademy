@@ -154,4 +154,36 @@ class SiteReviewEndpointsTest extends SystemTestCase
             ->postJson('/api/system/site/teachers/reorder', ['ids' => [9999]])
             ->assertStatus(422);
     }
+
+    /**
+     * A teacher saved without a slug is invisible on the public site: the slug
+     * is the route key, so the site links to a numeric id the API cannot
+     * resolve and the profile 404s. The model fills it in on every write path.
+     */
+    public function test_a_teacher_saved_without_a_slug_still_gets_one(): void
+    {
+        $teacher = $this->teacher(['slug' => null, 'name' => 'Ustadh Bilal']);
+
+        $this->assertSame('ustadh-bilal', $teacher->fresh()->slug);
+    }
+
+    public function test_a_blank_slug_does_not_collide_with_an_existing_one(): void
+    {
+        $this->teacher(['slug' => null, 'name' => 'Ustadh Bilal']);
+        $second = $this->teacher(['slug' => null, 'name' => 'Ustadh Bilal']);
+
+        $this->assertSame('ustadh-bilal-2', $second->fresh()->slug);
+    }
+
+    public function test_creating_a_teacher_through_the_api_without_a_slug_derives_one_from_the_name(): void
+    {
+        $this->asAdmin()
+            ->postJson('/api/system/site/teachers', [
+                'name' => 'Sheikh Anas Yusuf',
+                'role' => 'Quran Teacher',
+                'bio'  => 'Teaches Tajweed.',
+            ])
+            ->assertCreated()
+            ->assertJsonPath('data.slug', 'sheikh-anas-yusuf');
+    }
 }
