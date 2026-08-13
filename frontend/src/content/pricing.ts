@@ -36,13 +36,15 @@ export const currencies: Currency[] = [
   { code: 'EUR', symbol: '€', label: 'EUR' },
 ]
 
-/** Base price for a single lesson, by duration and currency. */
-export const basePricePerLesson: Record<DurationId, Record<CurrencyCode, number>> = {
-  '30': { USD: 5, EUR: 5 },
-  '45': { USD: 7.5, EUR: 7 },
-  '60': { USD: 10, EUR: 9 },
-}
-
+/**
+ * Packages are sold by the hour at a fixed total price, so the figure on the
+ * card is the figure the student pays — no per-lesson arithmetic to second
+ * guess. Lesson length is a scheduling choice, not a pricing one: 16 hours is
+ * 16 sixty-minute lessons or 32 half-hour ones for the same money.
+ *
+ * The per-hour rate falls with every step up, which is the promise the page
+ * makes; `assertDescendingRate` below keeps that true if prices are edited.
+ */
 /** Icon keys map to lucide icons in the PricingPlans component. */
 export type PackageIcon =
   | 'sprout'
@@ -59,11 +61,26 @@ export type PricingPackage = {
   /** short pill shown top-right of the card */
   badge: string
   icon: PackageIcon
-  lessons: number
-  /** volume discount applied to the base price, 0–1 */
-  discount: number
+  /** Hours of tuition included. */
+  hours: number
+  /** Fixed total price, by currency. */
+  price: Record<CurrencyCode, number>
   featured?: boolean
   ctaLabel: string
+}
+
+/** What one hour costs in a given package — the value story on every card. */
+export function hourlyRate(pkg: PricingPackage, currency: CurrencyCode): number {
+  return pkg.price[currency] / pkg.hours
+}
+
+/**
+ * How many lessons a package becomes at a given lesson length. Not always a
+ * whole number (16 hours in 45-minute lessons is 21⅓), so callers should treat
+ * a non-integer result as approximate.
+ */
+export function lessonCount(pkg: PricingPackage, minutes: number): number {
+  return (pkg.hours * 60) / minutes
 }
 
 export const pricingPackages: PricingPackage[] = [
@@ -73,28 +90,8 @@ export const pricingPackages: PricingPackage[] = [
     tagline: 'Perfect for taking your first steps and discovering our method.',
     badge: 'Starter',
     icon: 'sprout',
-    lessons: 4,
-    discount: 0,
-    ctaLabel: 'Choose this package',
-  },
-  {
-    id: 'hafiz',
-    name: 'Hafiz',
-    tagline: 'To settle into a steady, regular learning rhythm.',
-    badge: 'Regular',
-    icon: 'book',
-    lessons: 8,
-    discount: 0.04,
-    ctaLabel: 'Choose this package',
-  },
-  {
-    id: 'mujtahid',
-    name: 'Mujtahid',
-    tagline: 'Make serious progress at a committed pace.',
-    badge: 'Advance',
-    icon: 'graduation',
-    lessons: 12,
-    discount: 0.08,
+    hours: 16,
+    price: { EUR: 149.99, USD: 161.99 },
     ctaLabel: 'Choose this package',
   },
   {
@@ -103,8 +100,8 @@ export const pricingPackages: PricingPackage[] = [
     tagline: 'Our balanced formula for lasting, consistent results.',
     badge: 'Most chosen',
     icon: 'star',
-    lessons: 24,
-    discount: 0.12,
+    hours: 24,
+    price: { EUR: 219.99, USD: 237.99 },
     featured: true,
     ctaLabel: 'Choose this package',
   },
@@ -114,8 +111,8 @@ export const pricingPackages: PricingPackage[] = [
     tagline: 'An advanced commitment for rapid mastery.',
     badge: 'Best value',
     icon: 'crown',
-    lessons: 48,
-    discount: 0.16,
+    hours: 48,
+    price: { EUR: 419.99, USD: 453.99 },
     ctaLabel: 'Choose this package',
   },
   {
@@ -124,11 +121,34 @@ export const pricingPackages: PricingPackage[] = [
     tagline: 'The ultimate package for complete immersion.',
     badge: 'Immersion',
     icon: 'gem',
-    lessons: 100,
-    discount: 0.2,
+    hours: 100,
+    price: { EUR: 849.99, USD: 917.99 },
     ctaLabel: 'Choose this package',
   },
 ]
+
+/**
+ * Guards the page's core claim — every larger package is cheaper per hour.
+ * Throws in development if an edit breaks the ladder, rather than letting a
+ * card go live promising a saving it does not give.
+ */
+function assertDescendingRate(packages: PricingPackage[]): void {
+  if (process.env.NODE_ENV === 'production') return
+
+  for (const currency of ['EUR', 'USD'] as CurrencyCode[]) {
+    packages.forEach((pkg, i) => {
+      if (i === 0) return
+      const previous = packages[i - 1]
+      if (hourlyRate(pkg, currency) >= hourlyRate(previous, currency)) {
+        throw new Error(
+          `Pricing ladder broken: ${pkg.name} costs more per hour than ${previous.name} in ${currency}.`,
+        )
+      }
+    })
+  }
+}
+
+assertDescendingRate(pricingPackages)
 
 /** Feature icons map to lucide icons in the page component. */
 export type IncludedIcon =
@@ -183,7 +203,7 @@ export type PricingFaqItem = { q: string; a: string }
 export const pricingFaqs: PricingFaqItem[] = [
   {
     q: 'How does package pricing work?',
-    a: 'You buy a package of lessons at a fixed per-lesson price. The more lessons you book at once, the lower the price per lesson — the discount is applied automatically and shown on every card.',
+    a: 'You buy a block of teaching hours at a fixed total price. The more hours you book at once, the lower the price per hour — the rate is shown on every card, and the price you see is the price you pay.',
   },
   {
     q: 'Is the first lesson really free?',
@@ -213,7 +233,7 @@ export const pricingPageContent = {
     heading: 'Clear packages for stress-free learning',
     highlight: 'stress-free learning',
     subheading:
-      'The more lessons you book, the lower the price per lesson. Choose the duration that suits you and start with a free, no-obligation trial.',
+      'The more hours you book, the lower the price per hour. Choose the lesson length that suits you and start with a free, no-obligation trial.',
   },
   included: {
     eyebrow: 'The same guarantees for everyone',
@@ -249,28 +269,8 @@ export const pricingPackagesFr: PricingPackage[] = [
     tagline: 'Parfait pour faire vos premiers pas et découvrir notre méthode.',
     badge: 'Découverte',
     icon: 'sprout',
-    lessons: 4,
-    discount: 0,
-    ctaLabel: 'Choisir ce forfait',
-  },
-  {
-    id: 'hafiz',
-    name: 'Hafiz',
-    tagline: 'Pour installer un rythme d’apprentissage régulier et constant.',
-    badge: 'Régulier',
-    icon: 'book',
-    lessons: 8,
-    discount: 0.04,
-    ctaLabel: 'Choisir ce forfait',
-  },
-  {
-    id: 'mujtahid',
-    name: 'Mujtahid',
-    tagline: 'Progressez sérieusement à un rythme soutenu.',
-    badge: 'Avancé',
-    icon: 'graduation',
-    lessons: 12,
-    discount: 0.08,
+    hours: 16,
+    price: { EUR: 149.99, USD: 161.99 },
     ctaLabel: 'Choisir ce forfait',
   },
   {
@@ -279,8 +279,8 @@ export const pricingPackagesFr: PricingPackage[] = [
     tagline: 'Notre formule équilibrée pour des résultats durables et constants.',
     badge: 'Le plus choisi',
     icon: 'star',
-    lessons: 24,
-    discount: 0.12,
+    hours: 24,
+    price: { EUR: 219.99, USD: 237.99 },
     featured: true,
     ctaLabel: 'Choisir ce forfait',
   },
@@ -290,8 +290,8 @@ export const pricingPackagesFr: PricingPackage[] = [
     tagline: 'Un engagement avancé pour une maîtrise rapide.',
     badge: 'Meilleur rapport qualité-prix',
     icon: 'crown',
-    lessons: 48,
-    discount: 0.16,
+    hours: 48,
+    price: { EUR: 419.99, USD: 453.99 },
     ctaLabel: 'Choisir ce forfait',
   },
   {
@@ -300,11 +300,13 @@ export const pricingPackagesFr: PricingPackage[] = [
     tagline: 'Le forfait ultime pour une immersion complète.',
     badge: 'Immersion',
     icon: 'gem',
-    lessons: 100,
-    discount: 0.2,
+    hours: 100,
+    price: { EUR: 849.99, USD: 917.99 },
     ctaLabel: 'Choisir ce forfait',
   },
 ]
+
+assertDescendingRate(pricingPackagesFr)
 
 export function getPricingPackages(locale: Locale): PricingPackage[] {
   return locale === 'fr' ? pricingPackagesFr : pricingPackages
@@ -350,7 +352,7 @@ export function getIncludedFeatures(locale: Locale): IncludedFeature[] {
 export const pricingFaqsFr: PricingFaqItem[] = [
   {
     q: 'Comment fonctionne la tarification par forfait ?',
-    a: 'Vous achetez un forfait de cours à un prix fixe par cours. Plus vous réservez de cours à la fois, plus le prix par cours est bas — la remise est appliquée automatiquement et affichée sur chaque carte.',
+    a: 'Vous achetez un bloc d’heures de cours à un prix total fixe. Plus vous réservez d’heures à la fois, plus le prix horaire est bas — le tarif est affiché sur chaque carte, et le prix affiché est le prix payé.',
   },
   {
     q: 'Le premier cours est-il vraiment gratuit ?',
@@ -384,7 +386,7 @@ export const pricingPageContentFr: typeof pricingPageContent = {
     heading: 'Des forfaits clairs pour un apprentissage serein',
     highlight: 'un apprentissage serein',
     subheading:
-      'Plus vous réservez de cours, plus le prix par cours est bas. Choisissez la durée qui vous convient et commencez par un essai gratuit et sans engagement.',
+      'Plus vous réservez d’heures, plus le prix horaire est bas. Choisissez la durée de cours qui vous convient et commencez par un essai gratuit et sans engagement.',
   },
   included: {
     eyebrow: 'Les mêmes garanties pour tous',

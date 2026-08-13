@@ -16,8 +16,9 @@ import {
 import {
   durations,
   currencies,
-  basePricePerLesson,
   getPricingPackages,
+  hourlyRate,
+  lessonCount,
   type DurationId,
   type CurrencyCode,
   type PricingPackage,
@@ -96,6 +97,7 @@ function SegmentedControl<T extends string>({
 
 function PackageCard({
   pkg,
+  entry,
   duration,
   currency,
   ctaHref,
@@ -103,6 +105,8 @@ function PackageCard({
   t,
 }: {
   pkg: PricingPackage
+  /** Smallest package — the baseline every saving is measured against. */
+  entry: PricingPackage
   duration: DurationId
   currency: CurrencyCode
   ctaHref: string
@@ -110,15 +114,22 @@ function PackageCard({
   t: TranslateFn
 }) {
   const Icon = ICONS[pkg.icon]
-  const base = basePricePerLesson[duration][currency]
 
-  const full = base * pkg.lessons
-  const price = Math.round(full * (1 - pkg.discount) * 100) / 100
-  const perLesson = price / pkg.lessons
-  const savings = Math.round((full - price) * 100) / 100
+  const price = pkg.price[currency]
+  const rate = hourlyRate(pkg, currency)
+  const minutes = durations.find((d) => d.id === duration)?.minutes ?? 60
+  const lessons = lessonCount(pkg, minutes)
+  // 16 hours in 45-minute lessons is 21⅓ — show such counts as approximate
+  // rather than inventing a precision the schedule does not have.
+  const lessonsExact = Number.isInteger(lessons)
+  const lessonsLabel = lessonsExact ? String(lessons) : `≈ ${Math.round(lessons)}`
+
+  // The saving is measured against the entry package's hourly rate, which is
+  // what "the more you book, the less you pay" actually means here.
+  const entryRate = hourlyRate(entry, currency)
+  const savings = Math.round((entryRate - rate) * pkg.hours * 100) / 100
   const hasDiscount = savings > 0
   const featured = pkg.featured
-  const minutes = durations.find((d) => d.id === duration)?.minutes ?? 0
 
   return (
     <div
@@ -168,11 +179,11 @@ function PackageCard({
             featured ? 'text-accent' : 'text-white',
           ].join(' ')}
         >
-          {pkg.lessons}
+          {pkg.hours}
         </span>
         <div className="text-xs leading-tight text-white/55">
-          <div className="font-semibold uppercase tracking-wide text-white/75">{t('pricingPlans.lessons')}</div>
-          <div>{t('pricingPlans.minEach', { m: minutes })}</div>
+          <div className="font-semibold uppercase tracking-wide text-white/75">{t('pricingPlans.hours')}</div>
+          <div>{t('pricingPlans.asLessons', { n: lessonsLabel, m: minutes })}</div>
         </div>
       </div>
 
@@ -182,16 +193,11 @@ function PackageCard({
           <span className="font-display text-4xl font-semibold text-white">
             {formatMoney(price, currency, locale)}
           </span>
-          {hasDiscount && (
-            <span className="pb-1 text-sm text-white/35 line-through">
-              {formatMoney(full, currency, locale)}
-            </span>
-          )}
         </div>
         <div className="mt-2 flex flex-wrap items-center gap-x-2 gap-y-1 text-sm">
           <span className="text-white/55">
-            {formatMoney(perLesson, currency, locale)}{' '}
-            <span className="text-white/40">{t('pricingPlans.perLesson')}</span>
+            {formatMoney(rate, currency, locale)}{' '}
+            <span className="text-white/40">{t('pricingPlans.perHour')}</span>
           </span>
           {hasDiscount && (
             <span className="inline-flex items-center rounded-full bg-secondary/20 px-2 py-0.5 text-xs font-semibold text-emerald-300 ring-1 ring-inset ring-secondary/30">
@@ -204,7 +210,7 @@ function PackageCard({
       {/* Features */}
       <ul className="mt-6 mb-7 flex-1 space-y-2.5 text-sm">
         {[
-          t('pricingPlans.lessonsFeature', { n: pkg.lessons }),
+          t('pricingPlans.hoursFeature', { n: pkg.hours }),
           t('pricingPlans.minutesFeature', { m: minutes }),
           t('pricingPlans.certifiedTeacher'),
           t('pricingPlans.personalisedFollowUp'),
@@ -278,6 +284,7 @@ export function PricingPlans({ ctaHref = '/contact' }: { ctaHref?: string }) {
           <PackageCard
             key={pkg.id}
             pkg={pkg}
+            entry={pricingPackages[0]}
             duration={duration}
             currency={currency}
             ctaHref={ctaHref}
