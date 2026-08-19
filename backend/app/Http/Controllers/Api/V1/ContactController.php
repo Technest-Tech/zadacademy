@@ -11,6 +11,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Str;
 
 class ContactController extends Controller
 {
@@ -34,7 +35,10 @@ class ContactController extends Controller
                 'name'          => $contact->name,
                 'email'         => $contact->email,
                 'source'        => 'website_form',
-                'source_detail' => 'Contact form · ' . $contact->subject,
+                // sys_leads.source_detail is varchar(255) while a subject may
+                // itself be 255 chars — trim so the insert can't be rejected
+                // and cost us the lead.
+                'source_detail' => Str::limit('Contact form · ' . $contact->subject, 255, ''),
                 'platform'      => 'website',
                 'status'        => 'new_lead',
                 'notes'         => $contact->message,

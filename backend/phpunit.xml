@@ -38,6 +38,10 @@
         <env name="REPORTS_PUBLIC_BASE_URL" value="https://reports.test"/>
         <env name="SESSION_DRIVER" value="array"/>
         <env name="TELESCOPE_ENABLED" value="false"/>
+        <!-- VerifyTurnstileToken skips verification when no secret is set, so
+             without this the captcha tests assert a guard that never runs. The
+             siteverify call itself is faked in the form tests. -->
+        <env name="TURNSTILE_SECRET_KEY" value="1x0000000000000000000000000000000AA" force="true"/>
         <!-- Never let the suite reach the real Acadmyq gateway. -->
         <env name="WHATSAPP_ENABLED" value="false"/>
     </php>
