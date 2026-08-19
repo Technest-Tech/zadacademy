@@ -7,6 +7,7 @@ import { z } from 'zod'
 import { ArrowRight, Baby, Check, Loader2, Lock, User } from 'lucide-react'
 import { SuccessState } from './SuccessState'
 import { courses, getCourses } from '@/content/courses'
+import { navCourseSlugs } from '@/config/nav'
 import { useT } from '@/i18n/MarketingI18nProvider'
 import type { TranslateFn } from '@/i18n/translate'
 import {
@@ -56,6 +57,8 @@ const makeSchema = (t: TranslateFn) =>
     phone: z.string().min(4, t('trialForm.phoneRequired')),
     courseInterest: z.string().min(1, t('trialForm.courseRequired')),
     audience: z.enum(['adult', 'child'], { error: t('trialForm.audienceRequired') }),
+    // Backend caps the message at 500 characters.
+    message: z.string().max(500).optional(),
   })
 
 type FormValues = z.infer<ReturnType<typeof makeSchema>>
@@ -76,6 +79,17 @@ export function TrialBookingForm() {
 
   const schema = useMemo(() => makeSchema(t), [t])
   const localizedCourses = useMemo(() => getCourses(locale), [locale])
+  // Only the three headline courses are offered here; the value posted stays the
+  // English title so leads read the same whichever language the visitor booked in.
+  const courseOptions = useMemo(
+    () =>
+      courses.flatMap((c, i) =>
+        (navCourseSlugs as readonly string[]).includes(c.slug)
+          ? [{ slug: c.slug, value: c.title, label: localizedCourses[i].title }]
+          : [],
+      ),
+    [localizedCourses],
+  )
 
   const {
     register,
@@ -117,7 +131,7 @@ export function TrialBookingForm() {
       courseInterest: data.courseInterest,
       preferredTime: 'flexible',
       timezone: timezone || 'UTC',
-      message: '',
+      message: data.message?.trim() ?? '',
     }
 
     try {
@@ -150,6 +164,7 @@ export function TrialBookingForm() {
           country: country.name,
           audience: data.audience === 'adult' ? 'Adult' : 'Child',
           course: data.courseInterest,
+          message: payload.message,
           preferred_time: payload.preferredTime,
           timezone: payload.timezone,
           language: locale.toUpperCase(),
@@ -334,9 +349,9 @@ export function TrialBookingForm() {
                 <option value="" disabled className="text-black">
                   {t('trialForm.selectCourse')}
                 </option>
-                {courses.map((c, i) => (
-                  <option key={c.slug} value={c.title} className="text-black">
-                    {localizedCourses[i].title}
+                {courseOptions.map((c) => (
+                  <option key={c.slug} value={c.value} className="text-black">
+                    {c.label}
                   </option>
                 ))}
               </select>
@@ -386,6 +401,29 @@ export function TrialBookingForm() {
               {errors.audience && (
                 <p role="alert" className="mt-1 text-xs text-red-400">
                   {errors.audience.message}
+                </p>
+              )}
+            </div>
+
+            {/* Free-text details — lands in the lead's notes in the CRM */}
+            <div>
+              <label htmlFor="message" className={labelClass}>
+                {t('trialForm.messageLabel')}{' '}
+                <span className="text-white/40">({t('trialForm.messageOptional')})</span>
+              </label>
+              <textarea
+                id="message"
+                rows={3}
+                maxLength={500}
+                placeholder={t('trialForm.messagePlaceholder')}
+                disabled={fieldsDisabled}
+                aria-invalid={!!errors.message}
+                className={`${fieldClass} resize-y`}
+                {...register('message')}
+              />
+              {errors.message && (
+                <p role="alert" className="mt-1 text-xs text-red-400">
+                  {errors.message.message}
                 </p>
               )}
             </div>

@@ -24,6 +24,9 @@ export const fr: Messages = {
   },
 
   courseLinks: {
+    'quran': 'Coran',
+    'arabic': 'Arabe',
+    'arabic-and-quran': 'Arabe et Coran',
     'quran-classes-for-kids': 'Coran pour enfants',
     'quran-classes-for-adults': 'Coran pour adultes',
     'tajweed-course': 'Cours de Tajwid',
@@ -242,19 +245,15 @@ export const fr: Messages = {
 
   pricingPlans: {
     perLesson: '/ cours',
-    perHour: '/ heure',
     save: 'Économisez {amount}',
     lessonsFeature: '{n} cours particuliers',
-    hoursFeature: '{n} heures de cours particuliers',
     minutesFeature: 'Séances de {m} minutes',
     certifiedTeacher: 'Enseignant certifié Al-Azhar',
     personalisedFollowUp: 'Suivi personnalisé',
     lessonDuration: 'Durée du cours',
     currency: 'Devise',
     lessons: 'Cours',
-    hours: 'Heures',
     minEach: '{m} min chacun',
-    asLessons: '{n} cours de {m} min',
     waMessage: 'Assalamu alaikum, je souhaiterais un cours d’essai gratuit et des conseils sur le forfait qui me convient.',
   },
 
@@ -350,8 +349,7 @@ export const fr: Messages = {
     pricingHeading: 'Des forfaits de cours simples',
     pricingSub: 'Achetez un forfait de cours — plus vous en réservez, moins vous payez par cours.',
     mostChosen: 'Le plus choisi',
-    lessonsPer: '{n} cours · {price} / cours (30 min)',
-    hoursPer: '{n} heures · {price} / heure',
+    lessonsPer: '{n} cours · {price} / cours',
     seeFullDetails: 'Voir tous les détails →',
     freeFirstEveryPlan: 'Premier cours gratuit sur chaque forfait.',
     viewFullPricing: 'Voir tous les tarifs et la comparaison',

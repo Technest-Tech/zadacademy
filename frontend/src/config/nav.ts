@@ -9,8 +9,12 @@ export type NavItem = {
   children?: NavItem[]
 }
 
-// Course slugs in display order. Labels come from `courseLinks.<slug>`.
+// Every course page, in display order — drives the sitemap. Labels come from
+// `courseLinks.<slug>`.
 export const courseSlugs = [
+  'quran',
+  'arabic',
+  'arabic-and-quran',
   'quran-classes-for-kids',
   'quran-classes-for-adults',
   'tajweed-course',
@@ -24,7 +28,11 @@ export const courseSlugs = [
   'female-quran-teachers',
 ] as const
 
-const courseChildren: NavItem[] = courseSlugs.map((slug) => ({
+// The three headline courses. Only these appear in the header dropdown and the
+// footer; the specialised courses stay reachable from the /courses catalogue.
+export const navCourseSlugs = ['quran', 'arabic', 'arabic-and-quran'] as const
+
+const courseChildren: NavItem[] = navCourseSlugs.map((slug) => ({
   labelKey: `courseLinks.${slug}`,
   href: `/courses/${slug}`,
 }))

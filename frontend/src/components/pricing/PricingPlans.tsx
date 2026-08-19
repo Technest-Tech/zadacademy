@@ -8,6 +8,7 @@ import {
   GraduationCap,
   Star,
   Crown,
+  Trophy,
   Gem,
   Check,
   ArrowRight,
@@ -17,8 +18,7 @@ import {
   durations,
   currencies,
   getPricingPackages,
-  hourlyRate,
-  lessonCount,
+  lessonRate,
   type DurationId,
   type CurrencyCode,
   type PricingPackage,
@@ -34,6 +34,7 @@ const ICONS: Record<PackageIcon, LucideIcon> = {
   graduation: GraduationCap,
   star: Star,
   crown: Crown,
+  trophy: Trophy,
   gem: Gem,
 }
 
@@ -116,25 +117,20 @@ function PackageCard({
   const Icon = ICONS[pkg.icon]
 
   const price = pkg.price[currency]
-  const rate = hourlyRate(pkg, currency)
+  const rate = lessonRate(pkg, currency)
   const minutes = durations.find((d) => d.id === duration)?.minutes ?? 60
-  const lessons = lessonCount(pkg, minutes)
-  // 16 hours in 45-minute lessons is 21⅓ — show such counts as approximate
-  // rather than inventing a precision the schedule does not have.
-  const lessonsExact = Number.isInteger(lessons)
-  const lessonsLabel = lessonsExact ? String(lessons) : `≈ ${Math.round(lessons)}`
 
-  // The saving is measured against the entry package's hourly rate, which is
-  // what "the more you book, the less you pay" actually means here.
-  const entryRate = hourlyRate(entry, currency)
-  const savings = Math.round((entryRate - rate) * pkg.hours * 100) / 100
+  // The saving is measured against the entry package's per-lesson rate, which
+  // is what "the more you book, the less you pay" actually means here.
+  const entryRate = lessonRate(entry, currency)
+  const savings = Math.round((entryRate - rate) * pkg.lessons * 100) / 100
   const hasDiscount = savings > 0
   const featured = pkg.featured
 
   return (
     <div
       className={[
-        'group relative flex flex-col rounded-3xl p-6 sm:p-7 transition-all duration-300',
+        'group relative flex w-full flex-col rounded-3xl p-6 sm:p-7 transition-all duration-300',
         featured
           ? 'bg-gradient-to-b from-accent/[0.14] to-white/[0.02] border border-accent/50 shadow-[0_24px_70px_-24px_rgba(201,162,75,0.55)] lg:-translate-y-3'
           : 'bg-white/[0.03] border border-white/10 hover:border-white/25 hover:bg-white/[0.05]',
@@ -179,11 +175,11 @@ function PackageCard({
             featured ? 'text-accent' : 'text-white',
           ].join(' ')}
         >
-          {pkg.hours}
+          {pkg.lessons}
         </span>
         <div className="text-xs leading-tight text-white/55">
-          <div className="font-semibold uppercase tracking-wide text-white/75">{t('pricingPlans.hours')}</div>
-          <div>{t('pricingPlans.asLessons', { n: lessonsLabel, m: minutes })}</div>
+          <div className="font-semibold uppercase tracking-wide text-white/75">{t('pricingPlans.lessons')}</div>
+          <div>{t('pricingPlans.minEach', { m: minutes })}</div>
         </div>
       </div>
 
@@ -197,7 +193,7 @@ function PackageCard({
         <div className="mt-2 flex flex-wrap items-center gap-x-2 gap-y-1 text-sm">
           <span className="text-white/55">
             {formatMoney(rate, currency, locale)}{' '}
-            <span className="text-white/40">{t('pricingPlans.perHour')}</span>
+            <span className="text-white/40">{t('pricingPlans.perLesson')}</span>
           </span>
           {hasDiscount && (
             <span className="inline-flex items-center rounded-full bg-secondary/20 px-2 py-0.5 text-xs font-semibold text-emerald-300 ring-1 ring-inset ring-secondary/30">
@@ -210,7 +206,7 @@ function PackageCard({
       {/* Features */}
       <ul className="mt-6 mb-7 flex-1 space-y-2.5 text-sm">
         {[
-          t('pricingPlans.hoursFeature', { n: pkg.hours }),
+          t('pricingPlans.lessonsFeature', { n: pkg.lessons }),
           t('pricingPlans.minutesFeature', { m: minutes }),
           t('pricingPlans.certifiedTeacher'),
           t('pricingPlans.personalisedFollowUp'),
@@ -278,19 +274,23 @@ export function PricingPlans({ ctaHref = '/contact' }: { ctaHref?: string }) {
         />
       </div>
 
-      {/* Cards */}
-      <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+      {/* Cards — wrapped rather than gridded so an odd last row stays centred */}
+      <div className="flex flex-wrap justify-center gap-5">
         {pricingPackages.map((pkg) => (
-          <PackageCard
+          <div
             key={pkg.id}
-            pkg={pkg}
-            entry={pricingPackages[0]}
-            duration={duration}
-            currency={currency}
-            ctaHref={ctaHref}
-            locale={locale}
-            t={t}
-          />
+            className="flex w-full sm:w-[calc((100%-1.25rem)/2)] lg:w-[calc((100%-2.5rem)/3)]"
+          >
+            <PackageCard
+              pkg={pkg}
+              entry={pricingPackages[0]}
+              duration={duration}
+              currency={currency}
+              ctaHref={ctaHref}
+              locale={locale}
+              t={t}
+            />
+          </div>
         ))}
       </div>
 

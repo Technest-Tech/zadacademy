@@ -9,7 +9,7 @@ import { LinkButton } from '@/components/ui/link-button'
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion'
 import { whatsappLink } from '@/config/site'
 import { countriesData, getCountriesData } from '@/content/countries'
-import { getPricingPackages, hourlyRate } from '@/content/pricing'
+import { getPricingPackages, lessonRate } from '@/content/pricing'
 import { getLocale } from '@/i18n/getLocale'
 import { getT } from '@/i18n/getDictionary'
 import { localizedHref } from '@/i18n/href'
@@ -234,7 +234,7 @@ export default async function CountryPage({ params }: Props) {
               .filter((pkg) => ['discovery', 'silver', 'diamond'].includes(pkg.id))
               .map((pkg) => {
                 const price = pkg.price.USD
-                const perHour = hourlyRate(pkg, 'USD')
+                const perLesson = lessonRate(pkg, 'USD')
                 return (
                   <li
                     key={pkg.id}
@@ -257,7 +257,7 @@ export default async function CountryPage({ params }: Props) {
                       </span>
                     </div>
                     <p className="text-muted-text text-sm">
-                      {t('countryPage.hoursPer', { n: pkg.hours, price: `$${perHour.toFixed(2)}` })}
+                      {t('countryPage.lessonsPer', { n: pkg.lessons, price: `$${perLesson.toFixed(2)}` })}
                     </p>
                     <Link
                       href={localizedHref('/pricing', locale)}

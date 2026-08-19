@@ -26,6 +26,9 @@ export const en = {
 
   // Course link labels (shared by nav dropdown + footer). Keyed by course slug.
   courseLinks: {
+    'quran': 'Quran',
+    'arabic': 'Arabic',
+    'arabic-and-quran': 'Arabic & Quran',
     'quran-classes-for-kids': 'Quran for Kids',
     'quran-classes-for-adults': 'Quran for Adults',
     'tajweed-course': 'Tajweed Course',
@@ -244,19 +247,15 @@ export const en = {
 
   pricingPlans: {
     perLesson: '/ lesson',
-    perHour: '/ hour',
     save: 'Save {amount}',
     lessonsFeature: '{n} one-to-one lessons',
-    hoursFeature: '{n} hours of one-to-one tuition',
     minutesFeature: '{m}-minute sessions',
     certifiedTeacher: 'Al-Azhar certified teacher',
     personalisedFollowUp: 'Personalised follow-up',
     lessonDuration: 'Lesson duration',
     currency: 'Currency',
     lessons: 'Lessons',
-    hours: 'Hours',
     minEach: '{m} min each',
-    asLessons: '{n} lessons of {m} min',
     waMessage: 'Assalamu alaikum, I would like a free trial lesson and advice on which package suits me.',
   },
 
@@ -352,8 +351,7 @@ export const en = {
     pricingHeading: 'Simple Lesson Packages',
     pricingSub: 'Buy a package of lessons — the more you book, the less you pay per lesson.',
     mostChosen: 'Most Chosen',
-    lessonsPer: '{n} lessons · {price} / lesson (30 min)',
-    hoursPer: '{n} hours · {price} / hour',
+    lessonsPer: '{n} lessons · {price} / lesson',
     seeFullDetails: 'See full details →',
     freeFirstEveryPlan: 'Free first class on every plan.',
     viewFullPricing: 'View Full Pricing & Comparison',
