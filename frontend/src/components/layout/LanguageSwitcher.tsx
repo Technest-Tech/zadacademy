@@ -5,9 +5,28 @@ import { useState } from 'react'
 import { cn } from '@/lib/utils'
 import { useT } from '@/i18n/MarketingI18nProvider'
 import { switchLocalePath } from '@/i18n/href'
-import { locales, type Locale } from '@/i18n/config'
+import { LOCALE_COOKIE, LOCALE_COOKIE_MAX_AGE, locales, type Locale } from '@/i18n/config'
 
 const LABELS: Record<Locale, string> = { en: 'EN', fr: 'FR' }
+
+/**
+ * Record the pick before leaving the page. Without this, choosing English in a
+ * French-speaking country would bounce straight back: the English URL carries no
+ * `/fr` prefix, so the proxy would fall through to country detection and send
+ * the visitor to French again. Writing the cookie first makes the choice the
+ * answer the proxy finds. (The proxy keeps it up to date afterwards; this is
+ * only needed to beat the redirect on this one navigation.)
+ */
+function rememberChoice(locale: Locale) {
+  try {
+    const secure = window.location.protocol === 'https:' ? '; secure' : ''
+    document.cookie =
+      `${LOCALE_COOKIE}=${locale}; path=/; max-age=${LOCALE_COOKIE_MAX_AGE}; samesite=lax${secure}`
+  } catch {
+    // Cookies blocked — the switch still works for this navigation, it just
+    // will not be remembered on the next visit.
+  }
+}
 
 /**
  * Modern EN | FR segmented toggle. The URL is the single source of truth for
@@ -35,6 +54,7 @@ export function LanguageSwitcher({
   const go = (target: Locale) => {
     if (target === locale) return
     setIsPending(true)
+    rememberChoice(target)
     window.location.assign(switchLocalePath(pathname, target))
   }
 
