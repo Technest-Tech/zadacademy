@@ -14,8 +14,11 @@ export function TeacherCard({ t, locale }: { t: Teacher; locale: Locale }) {
       href={localizedHref(`/our-teachers/${t.id}`, locale)}
       className="group relative flex flex-col overflow-hidden rounded-2xl border border-white/10 bg-white/[0.03] transition-all duration-200 hover:-translate-y-1 hover:border-accent/40 hover:bg-white/[0.05] hover:shadow-[0_18px_40px_rgba(0,0,0,0.45)]"
     >
-      {/* Photo — fills the top of the card */}
-      <div className="relative aspect-[4/3] w-full overflow-hidden bg-primary/50">
+      {/* Photo — fills the top of the card.
+          Portrait 4:5, matching the uncropped photo on the teacher's own page:
+          teachers upload phone portraits, and a landscape frame cropped them
+          down to a sliver of forehead. */}
+      <div className="relative aspect-[4/5] w-full overflow-hidden bg-primary/50">
         <Image
           src={t.photo}
           alt={t.name}
@@ -23,9 +26,11 @@ export function TeacherCard({ t, locale }: { t: Teacher; locale: Locale }) {
           sizes="(max-width: 640px) 86vw, (max-width: 1024px) 50vw, 33vw"
           className="object-cover object-top transition-transform duration-500 group-hover:scale-[1.04]"
         />
-        {/* Fade into the card body so the photo and content read as one block */}
+        {/* Fade into the card body so the photo and content read as one block.
+            Held to the bottom quarter so the taller frame stays a photograph
+            rather than a gradient with a face in it. */}
         <div
-          className="absolute inset-0 bg-gradient-to-t from-navy-deep via-navy-deep/25 to-transparent"
+          className="absolute inset-0 bg-gradient-to-t from-navy-deep via-navy-deep/20 via-25% to-transparent"
           aria-hidden="true"
         />
 
