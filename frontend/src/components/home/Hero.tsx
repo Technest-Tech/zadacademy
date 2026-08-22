@@ -95,12 +95,11 @@ export async function Hero() {
 
             <h1 id="hero-heading" className="heading-display font-display text-white text-balance mb-6">
               {homeContent.hero.headingStart}{' '}
-              <em className="relative inline-block whitespace-nowrap text-accent not-italic">
+              {/* Underlined with text-decoration, not an absolutely placed bar: the
+                  French headline is long enough to wrap on a phone, and a bar
+                  pinned to the box would sit under only the last line. */}
+              <em className="text-accent not-italic underline decoration-accent/40 decoration-2 underline-offset-[0.15em]">
                 {homeContent.hero.headingEmphasis}
-                <span
-                  className="absolute -bottom-1 left-0 right-0 h-[2px] rounded-full bg-accent/40"
-                  aria-hidden="true"
-                />
               </em>
               {' '}{homeContent.hero.headingEnd}
             </h1>
