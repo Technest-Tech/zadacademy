@@ -17,8 +17,10 @@ import {
 import {
   durations,
   currencies,
+  BASE_DURATION,
   getPricingPackages,
   lessonRate,
+  packagePrice,
   type DurationId,
   type CurrencyCode,
   type PricingPackage,
@@ -116,13 +118,15 @@ function PackageCard({
 }) {
   const Icon = ICONS[pkg.icon]
 
-  const price = pkg.price[currency]
-  const rate = lessonRate(pkg, currency)
+  // Every figure on the card follows the selected lesson length: the stored
+  // price is the 60-minute one, the rest is derived from it.
+  const price = packagePrice(pkg, currency, duration)
+  const rate = lessonRate(pkg, currency, duration)
   const minutes = durations.find((d) => d.id === duration)?.minutes ?? 60
 
   // The saving is measured against the entry package's per-lesson rate, which
   // is what "the more you book, the less you pay" actually means here.
-  const entryRate = lessonRate(entry, currency)
+  const entryRate = lessonRate(entry, currency, duration)
   const savings = Math.round((entryRate - rate) * pkg.lessons * 100) / 100
   const hasDiscount = savings > 0
   const featured = pkg.featured
@@ -243,7 +247,9 @@ function PackageCard({
 
 export function PricingPlans({ ctaHref = '/contact' }: { ctaHref?: string }) {
   const { locale, t } = useT()
-  const [duration, setDuration] = useState<DurationId>('30')
+  // Opens on the hour — the length the academy's quoted prices are set at,
+  // so the headline figure matches the price list.
+  const [duration, setDuration] = useState<DurationId>(BASE_DURATION)
   const [currency, setCurrency] = useState<CurrencyCode>('USD')
 
   const pricingPackages = useMemo(() => getPricingPackages(locale), [locale])

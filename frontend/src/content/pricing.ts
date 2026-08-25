@@ -4,6 +4,11 @@
    figure on the card is the figure the student pays. The price
    per lesson falls with every step up the ladder, which is the
    promise the page makes.
+
+   Each package stores ONE price: what it costs at the 60-minute
+   lesson length. The 45- and 30-minute prices are derived from it
+   (see `durationPriceFactor`), so there is a single set of numbers
+   to keep in step with what the academy actually charges.
    ============================================================ */
 
 import type { Locale } from '@/i18n/config'
@@ -53,15 +58,55 @@ export type PricingPackage = {
   icon: PackageIcon
   /** One-to-one lessons included. */
   lessons: number
-  /** Fixed total price, by currency. */
+  /**
+   * Fixed total price at the 60-minute lesson length, by currency.
+   * Shorter lessons are derived — read it through `packagePrice`, never
+   * directly, or the duration selector silently stops mattering.
+   */
   price: Record<CurrencyCode, number>
   featured?: boolean
   ctaLabel: string
 }
 
+/** The lesson length every stored `price` is quoted at. */
+export const BASE_DURATION: DurationId = '60'
+
+/**
+ * What a package costs at each lesson length, as a share of its 60-minute
+ * price.
+ *
+ * Deliberately not pro-rata. A 30-minute lesson still costs the teacher the
+ * same scheduling, preparation and follow-up as an hour, so it is priced at
+ * 60% of the hour rather than half — the per-minute rate rises as the lesson
+ * gets shorter, which is how the academy actually sells them.
+ */
+export const durationPriceFactor: Record<DurationId, number> = {
+  '60': 1,
+  '45': 0.8,
+  '30': 0.6,
+}
+
+/** Round to whole cents: a price is money, never a floating-point tail. */
+function toMoney(value: number): number {
+  return Math.round(value * 100) / 100
+}
+
+/** Total price of a package at a given lesson length. */
+export function packagePrice(
+  pkg: PricingPackage,
+  currency: CurrencyCode,
+  duration: DurationId = BASE_DURATION,
+): number {
+  return toMoney(pkg.price[currency] * durationPriceFactor[duration])
+}
+
 /** What one lesson costs in a given package — the value story on every card. */
-export function lessonRate(pkg: PricingPackage, currency: CurrencyCode): number {
-  return pkg.price[currency] / pkg.lessons
+export function lessonRate(
+  pkg: PricingPackage,
+  currency: CurrencyCode,
+  duration: DurationId = BASE_DURATION,
+): number {
+  return packagePrice(pkg, currency, duration) / pkg.lessons
 }
 
 export const pricingPackages: PricingPackage[] = [
@@ -147,15 +192,20 @@ function assertDescendingRate(packages: PricingPackage[]): void {
   if (process.env.NODE_ENV === 'production') return
 
   for (const currency of ['EUR', 'USD'] as CurrencyCode[]) {
-    packages.forEach((pkg, i) => {
-      if (i === 0) return
-      const previous = packages[i - 1]
-      if (lessonRate(pkg, currency) >= lessonRate(previous, currency)) {
-        throw new Error(
-          `Pricing ladder broken: ${pkg.name} costs more per lesson than ${previous.name} in ${currency}.`,
-        )
-      }
-    })
+    // Every lesson length is checked: rounding to cents is applied after
+    // scaling, so a ladder that holds at 60 minutes could in principle
+    // collapse at 30.
+    for (const duration of Object.keys(durationPriceFactor) as DurationId[]) {
+      packages.forEach((pkg, i) => {
+        if (i === 0) return
+        const previous = packages[i - 1]
+        if (lessonRate(pkg, currency, duration) >= lessonRate(previous, currency, duration)) {
+          throw new Error(
+            `Pricing ladder broken: ${pkg.name} costs more per lesson than ${previous.name} in ${currency} at ${duration} min.`,
+          )
+        }
+      })
+    }
   }
 }
 

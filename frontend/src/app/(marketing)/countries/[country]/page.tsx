@@ -9,7 +9,7 @@ import { LinkButton } from '@/components/ui/link-button'
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion'
 import { whatsappLink } from '@/config/site'
 import { countriesData, getCountriesData } from '@/content/countries'
-import { getPricingPackages, lessonRate } from '@/content/pricing'
+import { getPricingPackages, lessonRate, packagePrice } from '@/content/pricing'
 import { getLocale } from '@/i18n/getLocale'
 import { getT } from '@/i18n/getDictionary'
 import { localizedHref } from '@/i18n/href'
@@ -233,7 +233,9 @@ export default async function CountryPage({ params }: Props) {
             {getPricingPackages(locale)
               .filter((pkg) => ['discovery', 'silver', 'diamond'].includes(pkg.id))
               .map((pkg) => {
-                const price = pkg.price.USD
+                // No duration selector on this page — it quotes the hour, the
+                // length the price list is set at.
+                const price = packagePrice(pkg, 'USD')
                 const perLesson = lessonRate(pkg, 'USD')
                 return (
                   <li
