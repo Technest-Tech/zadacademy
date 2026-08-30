@@ -15,11 +15,8 @@ const QUOTED_30: Record<number, [number, number]> = {
   16: [79.99, 87.99],
   24: [110.99, 119.99],
   48: [219.99, 237.99],
-  100: [499.99, 539.99],
+  100: [449.99, 485.99],
 }
-
-/** Mirrors `quotedLadderExceptions` in pricing.ts — see the note there. */
-const LADDER_EXCEPTIONS = new Set(['diamond@30'])
 
 /** The cent the card actually prints, not the full-precision rate behind it. */
 const cents = (n: number) => Math.round(n * 100) / 100
@@ -102,7 +99,7 @@ describe('duration pricing', () => {
         for (const d of Object.keys(durationPriceFactor) as DurationId[]) {
           const rates = set.map(p => cents(lessonRate(p, c, d)))
           rates.forEach((r, i) => {
-            if (!i || LADDER_EXCEPTIONS.has(`${set[i].id}@${d}`)) return
+            if (!i) return
             expect(r).toBeLessThanOrEqual(rates[i - 1])
           })
         }
@@ -116,9 +113,8 @@ describe('duration pricing', () => {
     expect([4, 8, 12, 16].map(rate)).toEqual([5, 5, 5, 5])
     expect(rate(24)).toBe(4.62)
     expect(rate(48)).toBe(4.58)
-    // The client's own price point: 100 lessons at €499.99 is €5.00 a lesson,
-    // so the biggest package saves nothing at this length.
-    expect(rate(100)).toBe(5)
+    // The biggest package is the cheapest per lesson, as the page promises.
+    expect(rate(100)).toBe(4.5)
   })
 
   it('features the 24-lesson package, and only that one', () => {

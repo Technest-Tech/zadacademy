@@ -199,21 +199,10 @@ export const pricingPackages: PricingPackage[] = [
     icon: 'gem',
     lessons: 100,
     price: { EUR: 849.99, USD: 917.99 },
-    quotedPrices: { '30': { EUR: 499.99, USD: 539.99 } },
+    quotedPrices: { '30': { EUR: 449.99, USD: 485.99 } },
     ctaLabel: 'Choose this package',
   },
 ]
-
-/**
- * Steps the academy prices against the ladder deliberately, keyed
- * `packageId@minutes`.
- *
- * `diamond@30`: the 100-lesson package is quoted at €499.99 / $539.99 for
- * half-hour lessons — €5.00 each, above both the 24- and the 48-lesson
- * package. That is the client's own price point, so the Diamond card shows no
- * saving at that length rather than the price being bent to fit the promise.
- */
-const quotedLadderExceptions = new Set<string>(['diamond@30'])
 
 /**
  * Guards the page's core claim — every larger package is cheaper per lesson.
@@ -223,7 +212,7 @@ const quotedLadderExceptions = new Set<string>(['diamond@30'])
  * Rates are compared to the cent, the way the card prints them: the quoted
  * 30-minute prices hold a flat €5.00 a lesson from 4 lessons through 16, and
  * sub-cent drift inside a flat rate is not a broken ladder. Costing a visible
- * cent more per lesson than the package below is.
+ * cent more per lesson than the package below is, at any lesson length.
  */
 function assertDescendingRate(packages: PricingPackage[]): void {
   if (process.env.NODE_ENV === 'production') return
@@ -235,7 +224,6 @@ function assertDescendingRate(packages: PricingPackage[]): void {
     for (const duration of Object.keys(durationPriceFactor) as DurationId[]) {
       packages.forEach((pkg, i) => {
         if (i === 0) return
-        if (quotedLadderExceptions.has(`${pkg.id}@${duration}`)) return
         const previous = packages[i - 1]
         const rate = toMoney(lessonRate(pkg, currency, duration))
         const previousRate = toMoney(lessonRate(previous, currency, duration))
@@ -439,7 +427,7 @@ export const pricingPackagesFr: PricingPackage[] = [
     icon: 'gem',
     lessons: 100,
     price: { EUR: 849.99, USD: 917.99 },
-    quotedPrices: { '30': { EUR: 499.99, USD: 539.99 } },
+    quotedPrices: { '30': { EUR: 449.99, USD: 485.99 } },
     ctaLabel: 'Choisir ce forfait',
   },
 ]
