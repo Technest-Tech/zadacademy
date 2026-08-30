@@ -32,11 +32,15 @@ class TeacherReviewController extends Controller
             'text'   => ['required', 'string', 'max:1000'],
         ]);
 
-        // Newest first. Someone who has just written a review should find it at
-        // the top of the list rather than buried below the curated ones — and
-        // the list on the page is a scroll area, so "appended last" would mean
-        // "not visible" for a well-reviewed teacher.
-        $data['sort_order'] = (int) $teacher->reviews()->min('sort_order') - 1;
+        // Visitor reviews all sit at 0 and are ordered newest-first by the read
+        // query's tiebreaker. Sorting one above the rest with `min - 1` is what
+        // this used to do, and it put -1 into an unsigned column: MySQL rejected
+        // every submission with SQLSTATE[22003] out of range, so the review was
+        // lost and the student got a 500. sqlite accepts a negative there, which
+        // is why the suite went on passing while production could not save a
+        // single review.
+
+        $data['sort_order'] = 0;
 
         // Published on arrival: this is the moderation step being removed.
         $data['approved'] = true;

@@ -98,6 +98,35 @@ class TeacherReviewSubmissionTest extends TestCase
             ->assertJsonPath('data.reviews.1.author', 'Existing');
     }
 
+    public function test_the_stored_sort_order_is_never_negative(): void
+    {
+        // `teacher_reviews.sort_order` is an unsigned column in MySQL, so a
+        // negative value is not merely odd — it is rejected outright and the
+        // submission 500s. sqlite, which this suite runs on, stores a negative
+        // quite happily, so the bug has to be asserted directly rather than
+        // left for the database to catch.
+        $teacher = $this->teacher();
+        $teacher->reviews()->create(['author' => 'Existing', 'rating' => 5, 'text' => 'Older.', 'approved' => true, 'sort_order' => 0]);
+
+        $this->postJson("/api/v1/teachers/{$teacher->slug}/reviews", $this->payload())->assertCreated();
+
+        $this->assertGreaterThanOrEqual(0, $teacher->reviews()->min('sort_order'));
+    }
+
+    public function test_the_first_ever_review_for_a_teacher_saves(): void
+    {
+        // The empty-table case: min('sort_order') is null there, which is where
+        // the out-of-range value came from, and every teacher started empty.
+        $teacher = $this->teacher();
+        $this->assertSame(0, $teacher->reviews()->count());
+
+        $this->postJson("/api/v1/teachers/{$teacher->slug}/reviews", $this->payload(['author' => 'Amina']))
+            ->assertCreated()
+            ->assertJsonPath('data.author', 'Amina');
+
+        $this->assertGreaterThanOrEqual(0, $teacher->reviews()->min('sort_order'));
+    }
+
     public function test_a_deleted_review_disappears_from_the_page(): void
     {
         $teacher = $this->teacher();
