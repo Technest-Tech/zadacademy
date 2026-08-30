@@ -9,6 +9,7 @@ import { fetchTeachers, fetchTeacher } from '@/content/teachersApi'
 import { TeacherCard } from '@/components/teachers/TeacherCard'
 import { ReviewForm } from '@/components/teachers/ReviewForm'
 import { getLocale } from '@/i18n/getLocale'
+import type { Locale } from '@/i18n/config'
 import { getT } from '@/i18n/getDictionary'
 import { localizedHref } from '@/i18n/href'
 import {
@@ -70,6 +71,19 @@ function PanelTitle({ icon: Icon, children }: { icon?: typeof Star; children: Re
       {children}
     </h2>
   )
+}
+
+/** Reviews shown before the list becomes its own scroll area. */
+const REVIEWS_BEFORE_SCROLL = 3
+
+/**
+ * Quotation marks for the active language. English takes curly doubles; French
+ * takes guillemets with the narrow no-break spaces its typography requires
+ * (« comme ceci »), which is what a French reader expects to see.
+ */
+const QUOTE_MARKS: Record<Locale, { open: string; close: string }> = {
+  en: { open: '\u201C', close: '\u201D' },
+  fr: { open: '\u00AB\u202F', close: '\u202F\u00BB' },
 }
 
 function Stars({ rating, label, className = 'size-4' }: { rating: number; label: string; className?: string }) {
@@ -250,7 +264,13 @@ export default async function TeacherPage({ params }: Props) {
             {/* About */}
             <Panel>
               <PanelTitle>{tr('teacherPage.about')}</PanelTitle>
-              <p className="leading-relaxed text-white/70">{t.about}</p>
+              {/* The teacher speaking in their own voice, so it is set as a
+                  quotation rather than body copy. */}
+              <blockquote className="border-l-2 border-accent/40 pl-4 italic leading-relaxed text-white/75">
+                {QUOTE_MARKS[locale].open}
+                {t.about}
+                {QUOTE_MARKS[locale].close}
+              </blockquote>
             </Panel>
 
             {/* Journey */}
@@ -330,23 +350,41 @@ export default async function TeacherPage({ params }: Props) {
                 ))}
               </div>
 
-              {/* Review list */}
-              <ul className="space-y-3">
-                {t.reviews.map((r) => (
-                  <li key={r.id} className="rounded-xl border border-white/10 bg-white/[0.02] p-4">
-                    <div className="flex items-center gap-3">
-                      <div className="flex size-9 items-center justify-center rounded-full bg-gradient-to-br from-secondary to-accent text-sm font-semibold text-white" aria-hidden="true">
-                        {r.author.charAt(0)}
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <span className="font-semibold text-white">{r.author}</span>
-                        <Stars rating={r.rating} label={tr('common.ratingAria', { rating: r.rating })} className="size-3.5" />
-                      </div>
-                    </div>
-                    <p className="mt-2.5 text-sm leading-relaxed text-white/65">{r.text}</p>
-                  </li>
-                ))}
-              </ul>
+              {/* Review list — held to a fixed height once there are more
+                  than a handful, so a well-reviewed teacher does not push the
+                  rest of the page (availability, booking) out of reach. Below
+                  the threshold the list simply renders at its natural height,
+                  with no scrollbar to explain. */}
+              {t.reviews.length === 0 ? (
+                <p className="rounded-xl border border-dashed border-white/15 bg-white/[0.02] px-5 py-8 text-center text-sm text-white/45">
+                  {tr('teacherPage.noReviews')}
+                </p>
+              ) : (
+                <div
+                  className={
+                    t.reviews.length > REVIEWS_BEFORE_SCROLL
+                      ? 'max-h-[28rem] overflow-y-auto pr-2 [scrollbar-color:rgba(255,255,255,0.25)_transparent] [scrollbar-width:thin]'
+                      : undefined
+                  }
+                >
+                  <ul className="space-y-3">
+                    {t.reviews.map((r) => (
+                      <li key={r.id} className="rounded-xl border border-white/10 bg-white/[0.02] p-4">
+                        <div className="flex items-center gap-3">
+                          <div className="flex size-9 items-center justify-center rounded-full bg-gradient-to-br from-secondary to-accent text-sm font-semibold text-white" aria-hidden="true">
+                            {r.author.charAt(0)}
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <span className="font-semibold text-white">{r.author}</span>
+                            <Stars rating={r.rating} label={tr('common.ratingAria', { rating: r.rating })} className="size-3.5" />
+                          </div>
+                        </div>
+                        <p className="mt-2.5 text-sm leading-relaxed text-white/65">{r.text}</p>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
             </Panel>
 
             {/* Leave a review */}

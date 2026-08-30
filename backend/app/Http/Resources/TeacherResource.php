@@ -22,13 +22,22 @@ class TeacherResource extends JsonResource
             ? $this->{$frCol}
             : $this->{$en};
 
+        // `title` is the hook shown under the teacher's name, and it is the one
+        // field an admin routinely saves without a French version. Falling back
+        // to the English string would print English on the French site, so try
+        // the translated role first — that one is always filled. English stays
+        // the last resort rather than the first.
+        $title = $fr && blank($this->title_fr) && filled($this->role_fr)
+            ? $this->role_fr
+            : $t('title', 'title_fr');
+
         return [
             'id'               => $this->id,
             'slug'             => $this->slug,
             'name'             => $this->name,
             'name_arabic'      => $this->name_arabic,
             'role'             => $t('role', 'role_fr'),
-            'title'            => $t('title', 'title_fr'),
+            'title'            => $title,
             'country'          => $t('country', 'country_fr'),
             'bio'              => $t('bio', 'bio_fr'),
             'image'            => $this->image,

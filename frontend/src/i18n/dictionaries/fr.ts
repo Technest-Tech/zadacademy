@@ -321,6 +321,7 @@ export const fr: Messages = {
     perfectForChildren: 'Parfait pour les enfants',
     coursesGiven: 'cours donnés',
     hoursTaught: 'heures enseignées',
+    noReviews: 'Pas encore d’avis — soyez le premier à partager votre expérience.',
     reviewsWord: 'avis',
     iSpeak: 'Je parle',
     native: '· Langue maternelle',

@@ -323,6 +323,7 @@ export const en = {
     perfectForChildren: 'Perfect for children',
     coursesGiven: 'courses given',
     hoursTaught: 'hours taught',
+    noReviews: 'No reviews yet — be the first to share your experience.',
     reviewsWord: 'reviews',
     iSpeak: 'I speak',
     native: '· Native',
