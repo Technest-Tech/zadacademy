@@ -33,7 +33,7 @@ export const fr: Messages = {
     'hifz-memorization': 'Hifz / Mémorisation',
     'noorani-qaida': 'Qaïda Nourania',
     'arabic-for-non-arabs': 'Arabe pour non-arabophones',
-    'islamic-studies': 'Sciences islamiques',
+    'islamic-studies': 'Sciences islamiques pour enfants',
     'ijazah-program': 'Programme d’Ijazah',
     'tafseer-course': 'Tafsir',
     'ten-qiraat': 'Les dix Qira’at',

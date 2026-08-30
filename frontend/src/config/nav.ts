@@ -28,9 +28,11 @@ export const courseSlugs = [
   'female-quran-teachers',
 ] as const
 
-// The three headline courses. Only these appear in the header dropdown and the
-// footer; the specialised courses stay reachable from the /courses catalogue.
-export const navCourseSlugs = ['quran', 'arabic', 'arabic-and-quran'] as const
+// The four courses the academy actually offers. Only these appear in the header
+// dropdown, the footer and the trial-booking form; the specialised pages
+// (Tajweed, Hifz, Ijazah and the rest) stay reachable from the /courses
+// catalogue, where they earn their search traffic.
+export const navCourseSlugs = ['quran', 'arabic', 'arabic-and-quran', 'islamic-studies'] as const
 
 const courseChildren: NavItem[] = navCourseSlugs.map((slug) => ({
   labelKey: `courseLinks.${slug}`,

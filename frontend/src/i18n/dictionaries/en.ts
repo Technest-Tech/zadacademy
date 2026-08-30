@@ -35,7 +35,7 @@ export const en = {
     'hifz-memorization': 'Hifz / Memorization',
     'noorani-qaida': 'Noorani Qaida',
     'arabic-for-non-arabs': 'Arabic for Non-Arabs',
-    'islamic-studies': 'Islamic Studies',
+    'islamic-studies': 'Islamic Studies for Kids',
     'ijazah-program': 'Ijazah Program',
     'tafseer-course': 'Tafseer',
     'ten-qiraat': 'Ten Qiraat',

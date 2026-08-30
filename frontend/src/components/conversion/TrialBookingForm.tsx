@@ -79,7 +79,7 @@ export function TrialBookingForm() {
 
   const schema = useMemo(() => makeSchema(t), [t])
   const localizedCourses = useMemo(() => getCourses(locale), [locale])
-  // Only the three headline courses are offered here; the value posted stays the
+  // Only the four offered courses appear here; the value posted stays the
   // English title so leads read the same whichever language the visitor booked in.
   const courseOptions = useMemo(
     () =>
