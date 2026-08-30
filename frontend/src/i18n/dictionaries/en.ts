@@ -189,7 +189,8 @@ export const en = {
     submitting: 'Sending…',
     thanks: 'Thank you! Your review has been submitted.',
     thanksTitle: 'JazakAllahu khayran!',
-    thanksBody: 'Your review has been received and will appear once approved. Thank you for sharing your experience.',
+    thanksBody: 'Your review is now live on this page. Thank you for sharing your experience.',
+    errorGeneric: 'Your review could not be sent. Please check your connection and try again.',
   },
 
   faqPage: {
@@ -324,6 +325,7 @@ export const en = {
     coursesGiven: 'courses given',
     hoursTaught: 'hours taught',
     noReviews: 'No reviews yet — be the first to share your experience.',
+    reviewWord: 'review',
     reviewsWord: 'reviews',
     iSpeak: 'I speak',
     native: '· Native',

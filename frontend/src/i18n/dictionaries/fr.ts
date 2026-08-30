@@ -187,7 +187,8 @@ export const fr: Messages = {
     submitting: 'Envoi…',
     thanks: 'Merci ! Votre avis a bien été envoyé.',
     thanksTitle: 'JazakAllahu khayran !',
-    thanksBody: 'Votre avis a bien été reçu et apparaîtra après validation. Merci d’avoir partagé votre expérience.',
+    thanksBody: 'Votre avis est désormais publié sur cette page. Merci d’avoir partagé votre expérience.',
+    errorGeneric: 'Votre avis n’a pas pu être envoyé. Vérifiez votre connexion et réessayez.',
   },
 
   faqPage: {
@@ -322,6 +323,7 @@ export const fr: Messages = {
     coursesGiven: 'cours donnés',
     hoursTaught: 'heures enseignées',
     noReviews: 'Pas encore d’avis — soyez le premier à partager votre expérience.',
+    reviewWord: 'avis',
     reviewsWord: 'avis',
     iSpeak: 'Je parle',
     native: '· Langue maternelle',

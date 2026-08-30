@@ -73,6 +73,11 @@ function PanelTitle({ icon: Icon, children }: { icon?: typeof Star; children: Re
   )
 }
 
+/** `reviews` / `review` — French `avis` is invariable, so this reads the count. */
+function reviewsLabel(n: number, tr: (k: string) => string): string {
+  return n === 1 ? tr('teacherPage.reviewWord') : tr('teacherPage.reviewsWord')
+}
+
 /** Reviews shown before the list becomes its own scroll area. */
 const REVIEWS_BEFORE_SCROLL = 3
 
@@ -201,7 +206,7 @@ export default async function TeacherPage({ params }: Props) {
                 <div className="px-4 text-center">
                   <Star className="mx-auto mb-2 size-5 text-emerald-400" aria-hidden="true" />
                   <div className="font-display text-2xl font-bold text-white">{t.rating.toFixed(1)}<span className="text-base text-white/50"> /5</span></div>
-                  <div className="mt-0.5 text-xs text-white/45">{t.reviewsCount} {tr('teacherPage.reviewsWord')}</div>
+                  <div className="mt-0.5 text-xs text-white/45">{t.reviewsCount} {reviewsLabel(t.reviewsCount, tr)}</div>
                 </div>
               </div>
 
@@ -337,7 +342,7 @@ export default async function TeacherPage({ params }: Props) {
             <Panel>
               <div className="mb-5 flex items-center justify-between">
                 <PanelTitle>{tr('teacherPage.reviews')}</PanelTitle>
-                <span className="text-sm text-white/45">{t.reviews.length} {tr('teacherPage.reviewsWord')}</span>
+                <span className="text-sm text-white/45">{t.reviews.length} {reviewsLabel(t.reviews.length, tr)}</span>
               </div>
 
               {/* Breakdown */}
@@ -390,7 +395,7 @@ export default async function TeacherPage({ params }: Props) {
             {/* Leave a review */}
             <Panel>
               <PanelTitle>{tr('teacherPage.leaveReview')}</PanelTitle>
-              <ReviewForm teacherName={t.name} />
+              <ReviewForm teacherName={t.name} teacherSlug={t.id} />
             </Panel>
           </div>
 

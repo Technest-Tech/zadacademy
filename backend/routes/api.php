@@ -4,6 +4,7 @@ use App\Http\Controllers\Api\V1\BlogController;
 use App\Http\Controllers\Api\V1\ContactController;
 use App\Http\Controllers\Api\V1\CourseApiController;
 use App\Http\Controllers\Api\V1\TeacherController;
+use App\Http\Controllers\Api\V1\TeacherReviewController;
 use App\Http\Controllers\Api\V1\TrialBookingController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -32,6 +33,9 @@ Route::prefix('v1')
     ->group(function () {
         Route::post('/trial-bookings', [TrialBookingController::class, 'store']);
         Route::post('/contacts',       [ContactController::class, 'store']);
+        // Student reviews publish straight to the teacher's page, so the
+        // throttle and Turnstile on this group are load-bearing here.
+        Route::post('/teachers/{slug}/reviews', [TeacherReviewController::class, 'store']);
     });
 
 // Tracking beacon for the public site. No auth and no Turnstile — it fires on
