@@ -5,10 +5,11 @@
    per lesson falls with every step up the ladder, which is the
    promise the page makes.
 
-   Each package stores ONE price: what it costs at the 60-minute
-   lesson length. The 45- and 30-minute prices are derived from it
-   (see `durationPriceFactor`), so there is a single set of numbers
-   to keep in step with what the academy actually charges.
+   Each package stores what it costs at the 60-minute lesson length,
+   plus any shorter length the academy quotes a price for directly
+   (`quotedPrices` — today that is every 30-minute price). A length
+   with no quote of its own is derived from the 60-minute figure
+   (see `durationPriceFactor`).
    ============================================================ */
 
 import type { Locale } from '@/i18n/config'
@@ -60,10 +61,16 @@ export type PricingPackage = {
   lessons: number
   /**
    * Fixed total price at the 60-minute lesson length, by currency.
-   * Shorter lessons are derived — read it through `packagePrice`, never
-   * directly, or the duration selector silently stops mattering.
+   * Shorter lessons are derived or quoted — read it through `packagePrice`,
+   * never directly, or the duration selector silently stops mattering.
    */
   price: Record<CurrencyCode, number>
+  /**
+   * Lesson lengths the academy prices itself rather than leaving to the
+   * derivation. A length listed here wins over `durationPriceFactor`;
+   * anything absent is still derived from `price`.
+   */
+  quotedPrices?: Partial<Record<DurationId, Record<CurrencyCode, number>>>
   featured?: boolean
   ctaLabel: string
 }
@@ -73,17 +80,20 @@ export const BASE_DURATION: DurationId = '60'
 
 /**
  * What a package costs at each lesson length, as a share of its 60-minute
- * price.
+ * price — the fallback for any package that does not quote that length in
+ * `quotedPrices`.
  *
- * Deliberately not pro-rata. A 30-minute lesson still costs the teacher the
- * same scheduling, preparation and follow-up as an hour, so it is priced at
- * 60% of the hour rather than half — the per-minute rate rises as the lesson
- * gets shorter, which is how the academy actually sells them.
+ * The 45-minute share is above pro-rata: three quarters of an hour still
+ * costs the teacher the same scheduling, preparation and follow-up, so it is
+ * priced at 80% rather than 75%. The 30-minute share tracks the academy's own
+ * quoted half-hour prices, which are close to half the hour; every package
+ * currently quotes its 30-minute price directly, so this figure only applies
+ * to a package added without one.
  */
 export const durationPriceFactor: Record<DurationId, number> = {
   '60': 1,
   '45': 0.8,
-  '30': 0.6,
+  '30': 0.5,
 }
 
 /** Round to whole cents: a price is money, never a floating-point tail. */
@@ -97,6 +107,10 @@ export function packagePrice(
   currency: CurrencyCode,
   duration: DurationId = BASE_DURATION,
 ): number {
+  // A length the academy quotes itself is used as quoted; only the rest is
+  // scaled off the 60-minute price.
+  const quoted = pkg.quotedPrices?.[duration]
+  if (quoted) return toMoney(quoted[currency])
   return toMoney(pkg.price[currency] * durationPriceFactor[duration])
 }
 
@@ -118,6 +132,7 @@ export const pricingPackages: PricingPackage[] = [
     icon: 'sprout',
     lessons: 4,
     price: { EUR: 39.99, USD: 43.99 },
+    quotedPrices: { '30': { EUR: 19.99, USD: 21.99 } },
     ctaLabel: 'Choose this package',
   },
   {
@@ -128,6 +143,7 @@ export const pricingPackages: PricingPackage[] = [
     icon: 'book',
     lessons: 8,
     price: { EUR: 76.99, USD: 83.99 },
+    quotedPrices: { '30': { EUR: 39.99, USD: 43.99 } },
     ctaLabel: 'Choose this package',
   },
   {
@@ -138,27 +154,30 @@ export const pricingPackages: PricingPackage[] = [
     icon: 'graduation',
     lessons: 12,
     price: { EUR: 109.99, USD: 118.99 },
+    quotedPrices: { '30': { EUR: 59.99, USD: 65.99 } },
     ctaLabel: 'Choose this package',
   },
   {
     id: 'silver',
     name: 'Silver',
     tagline: 'Our balanced formula for lasting, consistent results.',
-    badge: 'Most chosen',
+    badge: 'Balanced',
     icon: 'star',
     lessons: 16,
     price: { EUR: 145.99, USD: 157.99 },
-    featured: true,
+    quotedPrices: { '30': { EUR: 79.99, USD: 87.99 } },
     ctaLabel: 'Choose this package',
   },
   {
     id: 'gold',
     name: 'Gold',
     tagline: 'An advanced commitment for rapid mastery.',
-    badge: 'Best value',
+    badge: 'Most chosen',
     icon: 'crown',
-    lessons: 22,
-    price: { EUR: 199.99, USD: 215.99 },
+    lessons: 24,
+    price: { EUR: 215.99, USD: 232.99 },
+    quotedPrices: { '30': { EUR: 110.99, USD: 119.99 } },
+    featured: true,
     ctaLabel: 'Choose this package',
   },
   {
@@ -169,6 +188,7 @@ export const pricingPackages: PricingPackage[] = [
     icon: 'trophy',
     lessons: 48,
     price: { EUR: 429.99, USD: 464.99 },
+    quotedPrices: { '30': { EUR: 219.99, USD: 237.99 } },
     ctaLabel: 'Choose this package',
   },
   {
@@ -179,27 +199,47 @@ export const pricingPackages: PricingPackage[] = [
     icon: 'gem',
     lessons: 100,
     price: { EUR: 849.99, USD: 917.99 },
+    quotedPrices: { '30': { EUR: 499.99, USD: 539.99 } },
     ctaLabel: 'Choose this package',
   },
 ]
 
 /**
+ * Steps the academy prices against the ladder deliberately, keyed
+ * `packageId@minutes`.
+ *
+ * `diamond@30`: the 100-lesson package is quoted at €499.99 / $539.99 for
+ * half-hour lessons — €5.00 each, above both the 24- and the 48-lesson
+ * package. That is the client's own price point, so the Diamond card shows no
+ * saving at that length rather than the price being bent to fit the promise.
+ */
+const quotedLadderExceptions = new Set<string>(['diamond@30'])
+
+/**
  * Guards the page's core claim — every larger package is cheaper per lesson.
  * Throws in development if an edit breaks the ladder, rather than letting a
  * card go live promising a saving it does not give.
+ *
+ * Rates are compared to the cent, the way the card prints them: the quoted
+ * 30-minute prices hold a flat €5.00 a lesson from 4 lessons through 16, and
+ * sub-cent drift inside a flat rate is not a broken ladder. Costing a visible
+ * cent more per lesson than the package below is.
  */
 function assertDescendingRate(packages: PricingPackage[]): void {
   if (process.env.NODE_ENV === 'production') return
 
   for (const currency of ['EUR', 'USD'] as CurrencyCode[]) {
-    // Every lesson length is checked: rounding to cents is applied after
-    // scaling, so a ladder that holds at 60 minutes could in principle
-    // collapse at 30.
+    // Every lesson length is checked: each is quoted or scaled on its own and
+    // rounded afterwards, so a ladder that holds at 60 minutes could in
+    // principle collapse at 30.
     for (const duration of Object.keys(durationPriceFactor) as DurationId[]) {
       packages.forEach((pkg, i) => {
         if (i === 0) return
+        if (quotedLadderExceptions.has(`${pkg.id}@${duration}`)) return
         const previous = packages[i - 1]
-        if (lessonRate(pkg, currency, duration) >= lessonRate(previous, currency, duration)) {
+        const rate = toMoney(lessonRate(pkg, currency, duration))
+        const previousRate = toMoney(lessonRate(previous, currency, duration))
+        if (rate > previousRate) {
           throw new Error(
             `Pricing ladder broken: ${pkg.name} costs more per lesson than ${previous.name} in ${currency} at ${duration} min.`,
           )
@@ -332,6 +372,7 @@ export const pricingPackagesFr: PricingPackage[] = [
     icon: 'sprout',
     lessons: 4,
     price: { EUR: 39.99, USD: 43.99 },
+    quotedPrices: { '30': { EUR: 19.99, USD: 21.99 } },
     ctaLabel: 'Choisir ce forfait',
   },
   {
@@ -342,6 +383,7 @@ export const pricingPackagesFr: PricingPackage[] = [
     icon: 'book',
     lessons: 8,
     price: { EUR: 76.99, USD: 83.99 },
+    quotedPrices: { '30': { EUR: 39.99, USD: 43.99 } },
     ctaLabel: 'Choisir ce forfait',
   },
   {
@@ -352,27 +394,30 @@ export const pricingPackagesFr: PricingPackage[] = [
     icon: 'graduation',
     lessons: 12,
     price: { EUR: 109.99, USD: 118.99 },
+    quotedPrices: { '30': { EUR: 59.99, USD: 65.99 } },
     ctaLabel: 'Choisir ce forfait',
   },
   {
     id: 'silver',
     name: 'Silver',
     tagline: 'Notre formule équilibrée pour des résultats durables et constants.',
-    badge: 'Le plus choisi',
+    badge: 'Équilibré',
     icon: 'star',
     lessons: 16,
     price: { EUR: 145.99, USD: 157.99 },
-    featured: true,
+    quotedPrices: { '30': { EUR: 79.99, USD: 87.99 } },
     ctaLabel: 'Choisir ce forfait',
   },
   {
     id: 'gold',
     name: 'Gold',
     tagline: 'Un engagement avancé pour une maîtrise rapide.',
-    badge: 'Meilleur rapport qualité-prix',
+    badge: 'Le plus choisi',
     icon: 'crown',
-    lessons: 22,
-    price: { EUR: 199.99, USD: 215.99 },
+    lessons: 24,
+    price: { EUR: 215.99, USD: 232.99 },
+    quotedPrices: { '30': { EUR: 110.99, USD: 119.99 } },
+    featured: true,
     ctaLabel: 'Choisir ce forfait',
   },
   {
@@ -383,6 +428,7 @@ export const pricingPackagesFr: PricingPackage[] = [
     icon: 'trophy',
     lessons: 48,
     price: { EUR: 429.99, USD: 464.99 },
+    quotedPrices: { '30': { EUR: 219.99, USD: 237.99 } },
     ctaLabel: 'Choisir ce forfait',
   },
   {
@@ -393,6 +439,7 @@ export const pricingPackagesFr: PricingPackage[] = [
     icon: 'gem',
     lessons: 100,
     price: { EUR: 849.99, USD: 917.99 },
+    quotedPrices: { '30': { EUR: 499.99, USD: 539.99 } },
     ctaLabel: 'Choisir ce forfait',
   },
 ]
