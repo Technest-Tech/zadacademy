@@ -1,6 +1,6 @@
 import type { Metadata } from 'next'
 import { siteConfig } from '@/config/site'
-import { defaultLocale, ogLocale, type Locale } from '@/i18n/config'
+import { defaultLocale, ogLocale, unprefixedLocale, type Locale } from '@/i18n/config'
 
 type BuildMetadataArgs = {
   title: string
@@ -9,13 +9,13 @@ type BuildMetadataArgs = {
   image?: string
   type?: 'website' | 'article'
   noIndex?: boolean
-  /** Active locale. Defaults to English. */
+  /** Active locale. Defaults to the site's default language. */
   locale?: Locale
 }
 
 /** Absolute URL for a path in a given locale (French pages live under /fr). */
 export function localeUrl(path: string, locale: Locale): string {
-  const prefix = locale === defaultLocale ? '' : `/${locale}`
+  const prefix = locale === unprefixedLocale ? '' : `/${locale}`
   // Normalize the home path so canonicals match the sitemap ("/fr", not "/fr/").
   const suffix = path === '/' ? '' : path
   return `${siteConfig.url}${prefix}${suffix}`
@@ -44,7 +44,7 @@ export function buildMetadata({
       languages: {
         en: localeUrl(path, 'en'),
         fr: localeUrl(path, 'fr'),
-        'x-default': localeUrl(path, 'en'),
+        'x-default': localeUrl(path, defaultLocale),
       },
     },
     openGraph: {

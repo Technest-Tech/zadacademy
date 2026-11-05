@@ -173,7 +173,6 @@ NEXT_PUBLIC_SYSTEM_API_PREFIX=/api/system
 NEXT_PUBLIC_APP_HOST=system.zadacademiq.com
 NEXT_PUBLIC_SITE_HOST=zadacademiq.com
 NEXT_PUBLIC_SITE_URL=https://zadacademiq.com
-NEXT_PUBLIC_WHATSAPP=+201000000000        # replace with the real number
 REVALIDATE_SECRET=<shared-with-backend>
 ```
 

@@ -3,24 +3,21 @@
 import { useCountUp } from '@/hooks/useCountUp'
 import { Container } from '@/components/layout/Container'
 import { SectionDivider } from '@/components/layout/SectionDivider'
-import type { Stat } from '@/content/stats'
-
-function parseStat(value: string): { num: number; suffix: string; decimals: number } {
-  const digits = value.replace(/,/g, '').match(/[\d.]+/)
-  const num = digits ? parseFloat(digits[0]) : 0
-  const suffix = value.replace(/[\d,.]/g, '')
-  const decimals = num % 1 !== 0 ? String(num).split('.')[1]?.length ?? 0 : 0
-  return { num, suffix, decimals }
-}
+import { parseStatValue, type Stat } from '@/content/stats'
+import { useT } from '@/i18n/MarketingI18nProvider'
+import { localeTag } from '@/i18n/config'
 
 function StatItem({ value, label, description }: Stat) {
-  const { num, suffix, decimals } = parseStat(value)
+  const { locale } = useT()
+  const { num, suffix, decimals } = parseStatValue(value)
   const { count, elementRef } = useCountUp(num, { decimals })
 
-  const display =
-    decimals > 0
-      ? count.toFixed(decimals)
-      : count.toLocaleString()
+  // Formatted in the page's language, not the browser's, so a French page
+  // counts up to `1 500` and `4,9` even in an English browser.
+  const display = new Intl.NumberFormat(localeTag[locale], {
+    minimumFractionDigits: decimals,
+    maximumFractionDigits: decimals,
+  }).format(count)
 
   return (
     <div
@@ -28,7 +25,7 @@ function StatItem({ value, label, description }: Stat) {
       className="text-center px-6 py-6"
     >
       <dt
-        className="font-display font-semibold text-accent mb-1"
+        className="font-display font-semibold lining-nums text-accent mb-1"
         style={{ fontSize: 'clamp(1.9rem, 2.8vw, 2.5rem)', lineHeight: 1.05 }}
         aria-label={value}
       >

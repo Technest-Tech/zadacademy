@@ -1,7 +1,6 @@
 'use client'
 
 import { useMemo, useState } from 'react'
-import Link from 'next/link'
 import {
   Sprout,
   BookOpen,
@@ -17,15 +16,18 @@ import {
 import {
   durations,
   currencies,
-  BASE_DURATION,
+  DEFAULT_CURRENCY,
+  DEFAULT_DURATION,
   getPricingPackages,
   lessonRate,
   packagePrice,
+  packageWhatsappMessage,
   type DurationId,
   type CurrencyCode,
   type PricingPackage,
   type PackageIcon,
 } from '@/content/pricing'
+import { whatsappLink } from '@/config/site'
 import { useT } from '@/i18n/MarketingI18nProvider'
 import { localeTag, type Locale } from '@/i18n/config'
 import type { TranslateFn } from '@/i18n/translate'
@@ -103,7 +105,6 @@ function PackageCard({
   entry,
   duration,
   currency,
-  ctaHref,
   locale,
   t,
 }: {
@@ -112,7 +113,6 @@ function PackageCard({
   entry: PricingPackage
   duration: DurationId
   currency: CurrencyCode
-  ctaHref: string
   locale: Locale
   t: TranslateFn
 }) {
@@ -175,7 +175,7 @@ function PackageCard({
       <div className="mt-5 flex items-center gap-3 rounded-2xl bg-white/[0.04] px-4 py-3 ring-1 ring-inset ring-white/5">
         <span
           className={[
-            'font-display text-4xl font-semibold leading-none',
+            'font-display text-4xl font-semibold leading-none lining-nums',
             featured ? 'text-accent' : 'text-white',
           ].join(' ')}
         >
@@ -190,7 +190,7 @@ function PackageCard({
       {/* Price */}
       <div className="mt-5">
         <div className="flex items-end gap-2">
-          <span className="font-display text-4xl font-semibold text-white">
+          <span className="font-display text-4xl font-semibold lining-nums text-white">
             {formatMoney(price, currency, locale)}
           </span>
         </div>
@@ -228,8 +228,10 @@ function PackageCard({
         ))}
       </ul>
 
-      <Link
-        href={ctaHref}
+      <a
+        href={whatsappLink(packageWhatsappMessage(pkg, currency, duration))}
+        target="_blank"
+        rel="noopener noreferrer"
         className={[
           'inline-flex h-12 w-full items-center justify-center gap-2 rounded-xl text-sm font-semibold transition-all duration-200',
           'focus-visible:outline-2 focus-visible:outline-accent focus-visible:outline-offset-2',
@@ -240,17 +242,15 @@ function PackageCard({
       >
         {pkg.ctaLabel}
         <ArrowRight className="size-4" aria-hidden="true" />
-      </Link>
+      </a>
     </div>
   )
 }
 
-export function PricingPlans({ ctaHref = '/contact' }: { ctaHref?: string }) {
+export function PricingPlans() {
   const { locale, t } = useT()
-  // Opens on the hour — the length the academy's quoted prices are set at,
-  // so the headline figure matches the price list.
-  const [duration, setDuration] = useState<DurationId>(BASE_DURATION)
-  const [currency, setCurrency] = useState<CurrencyCode>('USD')
+  const [duration, setDuration] = useState<DurationId>(DEFAULT_DURATION)
+  const [currency, setCurrency] = useState<CurrencyCode>(DEFAULT_CURRENCY)
 
   const pricingPackages = useMemo(() => getPricingPackages(locale), [locale])
   const durationSegments = useMemo(
@@ -292,7 +292,6 @@ export function PricingPlans({ ctaHref = '/contact' }: { ctaHref?: string }) {
               entry={pricingPackages[0]}
               duration={duration}
               currency={currency}
-              ctaHref={ctaHref}
               locale={locale}
               t={t}
             />
@@ -301,9 +300,9 @@ export function PricingPlans({ ctaHref = '/contact' }: { ctaHref?: string }) {
       </div>
 
       <p className="mt-10 text-center text-sm text-white/50">
-        Every package includes a{' '}
-        <strong className="font-semibold text-accent">free first lesson</strong>. No card
-        required.
+        {t('pricingPlans.freeNoteStart')}{' '}
+        <strong className="font-semibold text-accent">{t('pricingPlans.freeNoteEmphasis')}</strong>
+        {t('pricingPlans.freeNoteEnd')}
       </p>
     </div>
   )

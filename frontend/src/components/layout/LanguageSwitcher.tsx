@@ -10,10 +10,10 @@ import { LOCALE_COOKIE, LOCALE_COOKIE_MAX_AGE, locales, type Locale } from '@/i1
 const LABELS: Record<Locale, string> = { en: 'EN', fr: 'FR' }
 
 /**
- * Record the pick before leaving the page. Without this, choosing English in a
- * French-speaking country would bounce straight back: the English URL carries no
- * `/fr` prefix, so the proxy would fall through to country detection and send
- * the visitor to French again. Writing the cookie first makes the choice the
+ * Record the pick before leaving the page. Without this, choosing English would
+ * bounce straight back: the English URL carries no `/fr` prefix, so the proxy
+ * would fall through to the default language and send the visitor to French
+ * again. Writing the cookie first makes the choice the
  * answer the proxy finds. (The proxy keeps it up to date afterwards; this is
  * only needed to beat the redirect on this one navigation.)
  */

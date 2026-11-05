@@ -36,8 +36,8 @@ export type Currency = {
 }
 
 export const currencies: Currency[] = [
-  { code: 'USD', symbol: '$', label: 'USD' },
   { code: 'EUR', symbol: '€', label: 'EUR' },
+  { code: 'USD', symbol: '$', label: 'USD' },
 ]
 
 /** Icon keys map to lucide icons in the PricingPlans component. */
@@ -77,6 +77,29 @@ export type PricingPackage = {
 
 /** The lesson length every stored `price` is quoted at. */
 export const BASE_DURATION: DurationId = '60'
+
+/** What the pricing page opens on, before the visitor changes either selector. */
+export const DEFAULT_DURATION: DurationId = '30'
+export const DEFAULT_CURRENCY: CurrencyCode = 'EUR'
+
+/**
+ * The WhatsApp message a package button opens with, quoting exactly what the
+ * visitor had selected so the academy can answer without asking again.
+ */
+export function packageWhatsappMessage(
+  pkg: PricingPackage,
+  currency: CurrencyCode,
+  duration: DurationId,
+): string {
+  const price = new Intl.NumberFormat('fr-FR', { style: 'currency', currency }).format(
+    packagePrice(pkg, currency, duration),
+  )
+  return (
+    `Assalamu alaikum, je souhaite choisir le forfait ${pkg.name} : ` +
+    `${pkg.lessons} cours de ${duration} minutes, au prix de ${price}. ` +
+    'Pouvez-vous m’indiquer la marche à suivre ?'
+  )
+}
 
 /**
  * What a package costs at each lesson length, as a share of its 60-minute

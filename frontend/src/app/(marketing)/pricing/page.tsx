@@ -105,7 +105,7 @@ export default async function PricingPage() {
                 </p>
               </div>
 
-              <PricingPlans ctaHref={localizedHref('/contact', locale)} />
+              <PricingPlans />
             </Container>
           </section>
         </div>

@@ -12,6 +12,7 @@ class TeacherController extends Controller
     public function index(): AnonymousResourceCollection
     {
         $data = Teacher::where('featured', true)
+            ->withPublishedReviewCount()
             ->orderBy('sort_order')
             ->get();
 
@@ -21,6 +22,7 @@ class TeacherController extends Controller
     public function show(string $slug): TeacherResource
     {
         $teacher = Teacher::where('slug', $slug)
+            ->withPublishedReviewCount()
             // Curated order first, then newest wins the tie — a visitor's review
             // is written with sort_order 0, and the list on the page is a scroll
             // area, so landing last would mean landing out of sight.

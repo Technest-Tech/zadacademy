@@ -209,7 +209,7 @@ export const fr: Messages = {
     stepsAlt: 'Étape 1 : réservez votre essai gratuit. Étape 2 : soyez mis en relation et planifiez. Étape 3 : commencez votre premier cours.',
     bookTrialAria: 'Réserver un cours d’essai gratuit',
     heroReassure: 'Essai gratuit — sans carte bancaire. Annulez à tout moment.',
-    heroSocialProof: 'La confiance de plus de 10 000 élèves dans le monde entier',
+    heroSocialProof: 'La confiance de plus de 1 500 élèves dans le monde entier',
     heroScroll: 'Défiler',
     heroImageAlt: 'Une famille musulmane apprenant le Coran et l’arabe en ligne ensemble',
     trustSubtext: {
@@ -256,6 +256,9 @@ export const fr: Messages = {
     lessons: 'Cours',
     minEach: '{m} min chacun',
     waMessage: 'Assalamu alaikum, je souhaiterais un cours d’essai gratuit et des conseils sur le forfait qui me convient.',
+    freeNoteStart: 'Chaque forfait inclut un',
+    freeNoteEmphasis: 'premier cours gratuit',
+    freeNoteEnd: '. Sans carte bancaire.',
   },
 
   coursePage: {
@@ -360,7 +363,7 @@ export const fr: Messages = {
     testimonialsHeading: 'Ce que disent les familles en {country}',
     faqEyebrow: 'Questions — {country}',
     faqHeading: 'Questions fréquentes',
-    trustStudentsValue: '10 000+',
+    trustStudentsValue: '1 500+',
     trustStudentsLabel: 'Élèves dans le monde',
     trustCountriesValue: '50+',
     trustCountriesLabel: 'Pays desservis',
@@ -432,7 +435,7 @@ export const fr: Messages = {
     subheading: 'Des milliers de familles à travers le monde nous confient l’enseignement du Coran et de l’arabe à leurs enfants — avec patience, bienveillance et Ijazah.',
     statRatingValue: '4,9',
     statRatingLabel: 'Note moyenne',
-    statStudentsValue: '10 000+',
+    statStudentsValue: '1 500+',
     statStudentsLabel: 'Élèves satisfaits',
     statReviewsValue: '2 000+',
     statReviewsLabel: 'Avis vérifiés',

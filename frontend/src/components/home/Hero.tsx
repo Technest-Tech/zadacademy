@@ -75,7 +75,7 @@ export async function Hero() {
       <HeroInteractiveBackground />
 
       {/* ── Content ── */}
-      <Container className="relative z-10 pt-28 pb-16 sm:pt-32 sm:pb-20 lg:py-28">
+      <Container className="relative z-10 pt-28 pb-16 sm:pt-32 sm:pb-20 lg:pt-40 lg:pb-28">
         <div className="grid lg:grid-cols-2 gap-12 lg:gap-10 items-center">
           {/* Text column */}
           <div className="max-w-2xl">
@@ -113,12 +113,14 @@ export async function Hero() {
             </p>
 
             {/* CTAs */}
-            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 mb-4">
+            {/* Wraps instead of squeezing: the French labels are too long to share
+                a row inside the two-column layout. */}
+            <div className="flex flex-col sm:flex-row sm:flex-wrap gap-3 sm:gap-4 mb-4">
               <LinkButton
                 href={localizedHref('/contact', locale)}
                 size="lg"
                 variant="gold"
-                className="group w-full sm:w-auto justify-center font-bold text-primary animate-cta-pulse hover:scale-[1.03]"
+                className="group w-full sm:w-auto justify-center font-bold text-primary animate-cta-pulse hover:scale-[1.03] max-sm:px-5 max-sm:text-base"
               >
                 {homeContent.hero.ctaPrimary}
                 <ArrowRight className="size-5 transition-transform group-hover:translate-x-1" aria-hidden="true" />
@@ -127,7 +129,7 @@ export async function Hero() {
                 href={whatsappLink()}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center justify-center gap-2.5 h-14 px-7 rounded-xl border border-white/25 text-white text-base font-medium hover:border-accent/60 hover:text-accent hover:bg-white/5 transition-all duration-200 w-full sm:w-auto backdrop-blur-sm"
+                className="flex items-center justify-center gap-2.5 h-14 px-7 rounded-xl border border-white/25 text-white text-base font-medium whitespace-nowrap hover:border-accent/60 hover:text-accent hover:bg-white/5 transition-all duration-200 w-full sm:w-auto backdrop-blur-sm"
               >
                 {homeContent.hero.ctaSecondary}
               </a>
@@ -165,7 +167,7 @@ export async function Hero() {
                   {[...Array(5)].map((_, i) => (
                     <Star key={i} className="size-3.5 fill-accent text-accent" aria-hidden="true" />
                   ))}
-                  <span className="text-white font-semibold text-sm ml-1.5">4.9</span>
+                  <span className="text-white font-semibold text-sm ml-1.5">{t('testimonialsMarquee.statRatingValue')}</span>
                 </div>
                 <p className="text-white/60 text-xs">{t('home.heroSocialProof')}</p>
               </div>

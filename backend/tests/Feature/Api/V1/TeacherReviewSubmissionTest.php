@@ -72,6 +72,38 @@ class TeacherReviewSubmissionTest extends TestCase
             ->assertJsonPath('data.reviews.0.author', 'Amina');
     }
 
+    public function test_the_card_and_the_profile_count_the_reviews_a_visitor_can_read(): void
+    {
+        // The stored column is deliberately wrong in both directions: neither
+        // an untouched 0 nor a hand-typed figure may reach the site.
+        foreach ([['stale-zero', 0], ['stale-high', 24]] as [$slug, $stored]) {
+            $teacher = $this->teacher(['slug' => $slug, 'name' => $slug, 'reviews_count' => $stored]);
+
+            $teacher->reviews()->create(['author' => 'A', 'rating' => 5, 'text' => 'One', 'approved' => true, 'sort_order' => 0]);
+            $teacher->reviews()->create(['author' => 'B', 'rating' => 5, 'text' => 'Two', 'approved' => true, 'sort_order' => 0]);
+            $teacher->reviews()->create(['author' => 'C', 'rating' => 1, 'text' => 'Hidden', 'approved' => false, 'sort_order' => 0]);
+
+            $this->getJson("/api/v1/teachers/{$slug}")
+                ->assertOk()
+                ->assertJsonPath('data.reviews_count', 2)
+                ->assertJsonCount(2, 'data.reviews');
+        }
+
+        $this->getJson('/api/v1/teachers')
+            ->assertOk()
+            ->assertJsonPath('data.0.reviews_count', 2)
+            ->assertJsonPath('data.1.reviews_count', 2);
+    }
+
+    public function test_a_new_review_raises_the_count_on_the_teacher_card(): void
+    {
+        $teacher = $this->teacher();
+
+        $this->postJson("/api/v1/teachers/{$teacher->slug}/reviews", $this->payload())->assertCreated();
+
+        $this->getJson('/api/v1/teachers')->assertJsonPath('data.0.reviews_count', 1);
+    }
+
     public function test_the_review_is_stored_already_approved(): void
     {
         $teacher = $this->teacher();

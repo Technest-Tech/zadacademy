@@ -66,7 +66,7 @@ export const countriesData: CountryData[] = [
       },
       {
         icon: 'Users',
-        title: 'Serving 10,000+ Families Worldwide',
+        title: 'Serving 1,500+ Families Worldwide',
         body: "From Dearborn to Houston to New York, thousands of American Muslim families trust Zad Academy for their children's Quran education.",
       },
     ],
@@ -489,7 +489,7 @@ export const countriesDataFr: CountryData[] = [
       },
       {
         icon: 'Users',
-        title: 'Au service de plus de 10 000 familles dans le monde entier',
+        title: 'Au service de plus de 1 500 familles dans le monde entier',
         body: 'De Dearborn à Houston en passant par New York, des milliers de familles musulmanes américaines font confiance à Zad Academy pour l’éducation coranique de leurs enfants.',
       },
     ],

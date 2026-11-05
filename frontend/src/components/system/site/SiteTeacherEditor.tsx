@@ -72,7 +72,6 @@ export function SiteTeacherEditor({ teacher }: { teacher?: SiteTeacher }) {
     free_trial: teacher?.free_trial ?? true,
     featured: teacher?.featured ?? true,
     rating: teacher?.rating ?? 5,
-    reviews_count: teacher?.reviews_count ?? 0,
     hourly_rate: teacher?.hourly_rate ?? 10,
     currency: teacher?.currency ?? 'EUR',
     years_experience: teacher?.years_experience ?? 0,
@@ -124,7 +123,6 @@ export function SiteTeacherEditor({ teacher }: { teacher?: SiteTeacher }) {
       languages_fr: csv(form.languages_fr),
       tags_fr: csv(form.tags_fr),
       rating: Number(form.rating),
-      reviews_count: Number(form.reviews_count),
       hourly_rate: Number(form.hourly_rate),
       years_experience: Number(form.years_experience),
       students_count: Number(form.students_count),
@@ -208,7 +206,6 @@ export function SiteTeacherEditor({ teacher }: { teacher?: SiteTeacher }) {
         <div className={CARD}>
           <div className="grid gap-4 sm:grid-cols-4">
             <Field label="Rating"><Input type="number" step="0.1" value={String(form.rating)} onChange={(e) => set('rating', e.target.value)} /></Field>
-            <Field label="Reviews count"><Input type="number" value={String(form.reviews_count)} onChange={(e) => set('reviews_count', e.target.value)} /></Field>
             <Field label="Hourly rate"><Input type="number" value={String(form.hourly_rate)} onChange={(e) => set('hourly_rate', e.target.value)} /></Field>
             <Field label="Currency"><Input value={String(form.currency)} onChange={(e) => set('currency', e.target.value)} /></Field>
             <Field label="Years experience"><Input type="number" value={String(form.years_experience)} onChange={(e) => set('years_experience', e.target.value)} /></Field>

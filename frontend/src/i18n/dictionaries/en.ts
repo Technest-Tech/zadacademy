@@ -172,8 +172,8 @@ export const en = {
     bodyTrial: 'Check your inbox — a confirmation email is on its way. We will be in touch within 24 hours to confirm your teacher and time slot.',
     bodyContact: 'We have received your message and will reply within 24 hours. Check your email for a confirmation.',
     continueWhatsapp: 'Continue on WhatsApp',
-    waTrial: 'Assalamu alaikum, I just booked a free trial (Ref: {ref}). I’d like to discuss scheduling.',
-    waContact: 'Assalamu alaikum, I submitted a contact message (Ref: {ref}). I’d like to follow up.',
+    waTrial: 'Assalamu alaikum, je viens de réserver un cours d’essai gratuit (Réf. : {ref}). J’aimerais discuter des horaires.',
+    waContact: 'Assalamu alaikum, j’ai envoyé un message via le formulaire de contact (Réf. : {ref}). J’aimerais faire un suivi.',
   },
 
   reviewForm: {
@@ -201,7 +201,7 @@ export const en = {
     noResultsTitle: 'No questions found',
     noResultsBody: 'Try a different search term or browse all categories.',
     askWhatsapp: 'Ask us on WhatsApp →',
-    waMessage: "Assalamu alaikum, I have a question I couldn't find in the FAQ.",
+    waMessage: 'Assalamu alaikum, j’ai une question que je n’ai pas trouvée dans la FAQ.',
   },
 
   home: {
@@ -211,7 +211,7 @@ export const en = {
     stepsAlt: 'Step 1: Book your free trial. Step 2: Get matched and schedule. Step 3: Start your first lesson.',
     bookTrialAria: 'Book a free trial lesson',
     heroReassure: 'Free trial — no credit card required. Cancel anytime.',
-    heroSocialProof: 'Trusted by 10,000+ students worldwide',
+    heroSocialProof: 'Trusted by 1,500+ students worldwide',
     heroScroll: 'Scroll',
     heroImageAlt: 'A Muslim family learning Quran and Arabic online together',
     trustSubtext: {
@@ -257,7 +257,10 @@ export const en = {
     currency: 'Currency',
     lessons: 'Lessons',
     minEach: '{m} min each',
-    waMessage: 'Assalamu alaikum, I would like a free trial lesson and advice on which package suits me.',
+    waMessage: 'Assalamu alaikum, je souhaiterais un cours d’essai gratuit et des conseils sur le forfait qui me convient.',
+    freeNoteStart: 'Every package includes a',
+    freeNoteEmphasis: 'free first lesson',
+    freeNoteEnd: '. No card required.',
   },
 
   coursePage: {
@@ -293,7 +296,7 @@ export const en = {
     freeFirstNoCard: '✓ Free first class · No credit card required',
     anyQuestions: 'Any questions?',
     anyQuestionsSub: 'Our team is available to answer all your questions.',
-    waInterested: "Assalamu alaikum, I'm interested in the {course} course.",
+    waInterested: 'Assalamu alaikum, je suis intéressé(e) par le cours {course}.',
     stickyBookTrial: 'Book Free Trial',
     stickyAria: 'Course booking options',
   },
@@ -312,7 +315,7 @@ export const en = {
     yearsExperience: 'years of experience',
     students: 'students',
     perHour: '/ hour',
-    waBook: 'Assalamu alaikum, I would like to book a class with {name}.',
+    waBook: 'Assalamu alaikum, je souhaiterais réserver un cours avec {name}.',
     whySuitableChildren: 'Suitable for children',
     whyFreeTrial: 'Free trial lesson offered',
     whyIjazah: 'Ijazah-certified teacher',
@@ -345,7 +348,7 @@ export const en = {
     classTimes: 'Available class times',
     trustIndicators: 'Trust indicators',
     heroReassure: '✓ Free first class · ✓ No credit card required · ✓ Cancel anytime',
-    waLearnMore: 'Assalamu alaikum, I am in {country} and would like to learn more about your Quran classes.',
+    waLearnMore: 'Assalamu alaikum, je suis en {country} et je souhaiterais en savoir plus sur vos cours de Coran.',
     whyEyebrow: 'Why {country} Families Choose Us',
     whyHeading: 'The Zad Academy Difference',
     schedulingEyebrow: 'Flexible Scheduling',
@@ -362,7 +365,7 @@ export const en = {
     testimonialsHeading: 'What Families in {country} Say',
     faqEyebrow: '{country} Questions',
     faqHeading: 'Frequently Asked Questions',
-    trustStudentsValue: '10,000+',
+    trustStudentsValue: '1,500+',
     trustStudentsLabel: 'Students Worldwide',
     trustCountriesValue: '50+',
     trustCountriesLabel: 'Countries Served',
@@ -372,7 +375,7 @@ export const en = {
     trustFreeLabel: 'First Class — No Card',
     ctaHeading: 'Start Your Quran Journey in {country}',
     ctaSub: 'Book your free first class today. No credit card, no commitment.',
-    waBookTrial: 'Assalamu alaikum, I am in {country} and would like to book a free trial class.',
+    waBookTrial: 'Assalamu alaikum, je suis en {country} et je souhaiterais réserver un cours d’essai gratuit.',
   },
 
   contactPage: {
@@ -434,7 +437,7 @@ export const en = {
     subheading: 'Thousands of families around the world trust us to teach their children the Quran and Arabic — with patience, care, and Ijazah.',
     statRatingValue: '4.9',
     statRatingLabel: 'Average Rating',
-    statStudentsValue: '10,000+',
+    statStudentsValue: '1,500+',
     statStudentsLabel: 'Happy Students',
     statReviewsValue: '2,000+',
     statReviewsLabel: 'Verified Reviews',

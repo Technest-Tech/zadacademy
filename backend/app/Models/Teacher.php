@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Str;
@@ -47,6 +48,17 @@ class Teacher extends Model
     public function reviews(): HasMany
     {
         return $this->hasMany(TeacherReview::class)->orderBy('sort_order');
+    }
+
+    /**
+     * Load `reviews_count` as the number of reviews a visitor can actually read,
+     * in place of the stored column of the same name. Nothing keeps that column
+     * up to date when a review is submitted, so a teacher's card could say 0 over
+     * a profile full of reviews.
+     */
+    public function scopeWithPublishedReviewCount(Builder $query): Builder
+    {
+        return $query->withCount(['reviews' => fn ($q) => $q->where('approved', true)]);
     }
 
     /**

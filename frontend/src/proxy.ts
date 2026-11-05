@@ -3,10 +3,12 @@ import {
   LOCALE_COOKIE,
   LOCALE_COOKIE_MAX_AGE,
   LOCALE_HEADER,
+  defaultLocale,
   isLocale,
+  unprefixedLocale,
   type Locale,
 } from '@/i18n/config'
-import { detectLocale, isBot } from '@/i18n/negotiate'
+import { isBot } from '@/i18n/negotiate'
 
 // Next 16 renamed the `middleware` convention to `proxy`. This file also owns
 // locale routing for the public marketing site: French lives under a `/fr`
@@ -15,14 +17,12 @@ import { detectLocale, isBot } from '@/i18n/negotiate'
 // (see src/i18n/getLocale.ts).
 //
 // Language is resolved in this order, first hit wins:
-//   1. the URL — `/fr/...` is French, anything else is English;
-//   2. the `zad.locale` cookie — what the visitor last browsed in or picked
-//      with the switcher;
-//   3. the country the request comes from, then `Accept-Language`
-//      (see src/i18n/negotiate.ts) — first visit only, and the result is
-//      written to the cookie so it is never guessed twice.
-// A visitor detected as French-speaking is redirected to the French twin of the
-// URL they asked for, so the address bar always agrees with the page.
+//   1. the `/fr` prefix — always French;
+//   2. the language cookie — what the visitor last browsed in or picked with
+//      the switcher;
+//   3. the default language — French, whatever their country or browser says.
+// A visitor who lands on an un-prefixed URL without having chosen English is
+// redirected to its French twin, so the address bar always agrees with the page.
 
 const APP_HOST = process.env.NEXT_PUBLIC_APP_HOST!   // app.zadacademiq.com OR app.localhost:3000
 const SITE_HOST = process.env.NEXT_PUBLIC_SITE_HOST! // zadacademiq.com OR localhost:3000
@@ -108,7 +108,7 @@ export function proxy(req: NextRequest) {
   const stored = req.cookies.get(LOCALE_COOKIE)?.value
   const chosen = isLocale(stored) ? stored : null
 
-  let locale: Locale = 'en'
+  let locale: Locale = unprefixedLocale
   let basePath = pathname
   let prefixed = false
   if (pathname === '/fr' || pathname.startsWith('/fr/')) {
@@ -123,22 +123,22 @@ export function proxy(req: NextRequest) {
     return serve(req, '/not-found', locale, 'rewrite')
   }
 
-  // An un-prefixed URL is English unless we know — or can tell — that the
-  // visitor reads French, in which case send them to the French twin. Crawlers
-  // and static files are left alone: both languages must stay reachable at
-  // their own URL for the hreflang pair in src/lib/seo.ts to hold.
+  // An un-prefixed URL is English only for a visitor who chose English; everyone
+  // else goes to the French twin. Crawlers and static files are left alone: both
+  // languages must stay reachable at their own URL for the hreflang pair in
+  // src/lib/seo.ts to hold.
   if (!prefixed) {
     if (isFile(basePath) || isBot(req.headers.get('user-agent'))) {
       return serve(req, basePath, locale, 'next')
     }
 
-    const preferred = chosen ?? detectLocale(req.headers)
+    const preferred = chosen ?? defaultLocale
     if (preferred === 'fr') {
       const url = req.nextUrl.clone()
       url.pathname = basePath === '/' ? '/fr' : `/fr${basePath}`
       const res = remember(NextResponse.redirect(url, 307), 'fr', chosen)
       // Keep this hop out of every cache in front of us: it is decided per
-      // visitor, from their country and their cookie.
+      // visitor, from their cookie.
       res.headers.set('Cache-Control', 'no-store')
       return res
     }

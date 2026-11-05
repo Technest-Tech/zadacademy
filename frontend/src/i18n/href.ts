@@ -1,12 +1,12 @@
-import { defaultLocale, isLocale, type Locale } from './config'
+import { isLocale, unprefixedLocale, type Locale } from './config'
 
 /**
- * Prefix an internal path with the locale segment. English (default) stays
- * unprefixed (`/courses`); French becomes `/fr/courses`. External URLs, hashes,
- * and mailto/tel links are returned untouched.
+ * Prefix an internal path with the locale segment. English stays unprefixed
+ * (`/courses`); French becomes `/fr/courses`. External URLs, hashes, and
+ * mailto/tel links are returned untouched.
  */
 export function localizedHref(path: string, locale: Locale): string {
-  if (locale === defaultLocale) return path
+  if (locale === unprefixedLocale) return path
   if (!path.startsWith('/')) return path // external, mailto:, tel:, #hash
   if (path === '/') return `/${locale}`
   return `/${locale}${path}`
@@ -20,7 +20,7 @@ export function stripLocale(pathname: string): { locale: Locale; path: string } 
     const rest = '/' + segments.slice(2).join('/')
     return { locale: first, path: rest === '/' ? '/' : rest.replace(/\/$/, '') || '/' }
   }
-  return { locale: defaultLocale, path: pathname }
+  return { locale: unprefixedLocale, path: pathname }
 }
 
 /** Rewrite the current pathname to point at a different locale (for the switcher). */
