@@ -8,7 +8,11 @@ import { blogPostsFr } from './blogFr'
  * within the hour, without a deploy.
  */
 export function publishedPostsFr(now: Date = new Date()): BlogPost[] {
-  return blogPostsFr.filter((p) => new Date(p.published_at) <= now)
+  return blogPostsFr
+    .filter((p) => new Date(p.published_at) <= now)
+    // Newest first, by date rather than by position in blogFr.ts, so the
+    // featured article is always the latest one however the file is ordered.
+    .sort((a, b) => Date.parse(b.published_at) - Date.parse(a.published_at))
 }
 
 /**
