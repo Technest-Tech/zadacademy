@@ -292,7 +292,7 @@ export const en = {
     lengthDefault: 'approx. 24 hours / level',
     requirements: 'Requirements',
     perkFlexible: 'Flexible hours',
-    perkThousands: 'Used by thousands',
+    perkThousands: 'Report after every lesson',
     perkOneOnOne: '1-on-1 lessons',
     perkCertificate: 'Certificate on completion',
     yrs: 'yrs',

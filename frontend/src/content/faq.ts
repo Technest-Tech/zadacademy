@@ -35,7 +35,7 @@ export const faqs: FaqItem[] = [
     id: 'g3',
     category: 'General',
     q: 'Which countries do you serve?',
-    a: 'We serve students in over 50 countries including the USA, UK, Canada, Australia, and across Europe, Asia, and Africa. Classes run 7 days a week to cover all major timezones.',
+    a: 'Classes are online, so you can join from any country. Explanations are given in French or English, and classes run 7 days a week, from 8 am to 10 pm, to fit your timezone.',
   },
   {
     id: 'g4',
@@ -228,7 +228,7 @@ export const faqsFr: { id: string; q: string; a: string; category: string }[] = 
     id: 'g3',
     category: 'Générale',
     q: 'Quels pays desservez-vous ?',
-    a: "Nous accompagnons des élèves dans plus de 50 pays, notamment les États-Unis, le Royaume-Uni, le Canada, l'Australie, ainsi qu'en Europe, en Asie et en Afrique. Les cours ont lieu 7 jours sur 7 afin de couvrir tous les principaux fuseaux horaires.",
+    a: "Les cours ont lieu en ligne : vous pouvez les suivre depuis n'importe quel pays. Les explications se font en français, et les cours ont lieu 7 jours sur 7, de 8 h à 22 h, pour s'adapter à votre fuseau horaire.",
   },
   {
     id: 'g4',

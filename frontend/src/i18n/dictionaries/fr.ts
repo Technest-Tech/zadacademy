@@ -290,7 +290,7 @@ export const fr: Messages = {
     lengthDefault: 'env. 24 heures / niveau',
     requirements: 'Prérequis',
     perkFlexible: 'Horaires flexibles',
-    perkThousands: 'Adopté par des milliers d’élèves',
+    perkThousands: 'Compte rendu après chaque cours',
     perkOneOnOne: 'Cours particuliers',
     perkCertificate: 'Certificat à la fin',
     yrs: 'ans',

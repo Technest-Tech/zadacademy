@@ -111,7 +111,7 @@ export const homeContentFr: typeof homeContent = {
       '« Les meilleurs d’entre vous sont ceux qui apprennent le Coran et l’enseignent. » — le Prophète Muhammad ﷺ',
     heading: 'Commencez votre parcours coranique dès aujourd’hui',
     subheading:
-      'Rejoignez plus de 1 500 élèves issus de plus de 50 pays. Votre premier cours est entièrement gratuit.',
+      'Rejoignez nos 180 élèves. Votre premier cours est entièrement gratuit.',
     ctaPrimary: 'Réserver un cours d’essai gratuit',
     ctaSecondary: 'Discuter sur WhatsApp',
   },

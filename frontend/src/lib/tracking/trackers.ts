@@ -17,6 +17,20 @@ declare global {
   }
 }
 
+/**
+ * The page the visitor first landed on, kept in memory only (nothing is stored
+ * on the device before consent), when it carries a Google Ads click id. A
+ * visitor who arrives from an ad and opens another page before answering the
+ * banner would otherwise lose the id, and their booking would never be credited
+ * to the ad.
+ */
+const AD_CLICK_PARAMS = ['gclid', 'gbraid', 'wbraid']
+const adLandingUrl: string | null = (() => {
+  if (typeof window === 'undefined') return null
+  const params = new URLSearchParams(window.location.search)
+  return AD_CLICK_PARAMS.some((p) => params.has(p)) ? window.location.href : null
+})()
+
 /** Only ever interpolate IDs that look like IDs into inline scripts. */
 const SAFE_ID = /^[A-Za-z0-9-]+$/
 
@@ -58,7 +72,12 @@ function startGoogle(consent: Consent) {
     analytics_storage: granted(consent.analytics),
   })
   window.gtag('js', new Date())
-  for (const id of ids) window.gtag('config', id)
+  for (const id of ids) {
+    // Google Ads reads the click id from the page URL; hand it the landing page
+    // when the visitor has since moved on. Analytics keeps the real page.
+    const passLanding = id === googleAdsId && adLandingUrl && adLandingUrl !== window.location.href
+    window.gtag('config', id, passLanding ? { page_location: adLandingUrl } : {})
+  }
   externalScript(`https://www.googletagmanager.com/gtag/js?id=${ids[0]}`)
 }
 
