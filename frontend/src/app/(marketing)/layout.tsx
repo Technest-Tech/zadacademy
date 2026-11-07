@@ -3,6 +3,7 @@ import { Navbar } from '@/components/layout/Navbar'
 import { Footer } from '@/components/layout/Footer'
 import { WhatsAppButton } from '@/components/layout/WhatsAppButton'
 import { VisitTracker } from '@/components/analytics/VisitTracker'
+import { ConsentManager } from '@/components/consent/ConsentManager'
 import { MarketingI18nProvider } from '@/i18n/MarketingI18nProvider'
 import { getLocale } from '@/i18n/getLocale'
 
@@ -20,6 +21,8 @@ export default async function MarketingLayout({
       </main>
       <Footer />
       <WhatsAppButton />
+      {/* Cookie banner + ad/analytics trackers — nothing loads before consent. */}
+      <ConsentManager />
       {/* Renders nothing — records the page view for the admin traffic report.
           Suspense keeps the rest of the layout prerendered. */}
       <Suspense fallback={null}>

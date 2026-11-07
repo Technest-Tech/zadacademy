@@ -3,7 +3,7 @@ import {
   Award, DollarSign, Wallet, BarChart3, TrendingUp,
   Bell, Settings, ScrollText, UserCheck, CreditCard, ListChecks,
   GraduationCap, Globe, MessageSquare, ClipboardCheck,
-  BadgeDollarSign, ChartNoAxesCombined, Star,
+  BadgeDollarSign, ChartNoAxesCombined, Landmark, Star,
 } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
 
@@ -40,15 +40,9 @@ export const SYSTEM_NAV: readonly NavSection[] = [
       { label: 'nav.payroll',    href: '/payroll',            icon: Wallet,     perm: 'payroll.view' },
       { label: 'nav.salaryTiers', href: '/salary-tiers',       icon: BadgeDollarSign, perm: 'payroll.view_any' },
       { label: 'nav.accounting', href: '/accounting/revenue', icon: BarChart3,  perm: 'accounting.view' },
+      { label: 'nav.profitability', href: '/accounting/profitability', icon: Landmark, perm: 'accounting.view_pnl' },
       { label: 'nav.analytics',  href: '/analytics',          icon: TrendingUp, perm: 'payroll.view_any' },
       { label: 'nav.studentAnalytics', href: '/students/analytics', icon: ChartNoAxesCombined, perm: 'students.view' },
-    ],
-  },
-  {
-    label: 'nav.sections.communications',
-    items: [
-      { label: 'nav.notifications', href: '/notifications', icon: Bell, perm: 'notifications.view' },
-      { label: 'nav.whatsappLogs', href: '/whatsapp/logs', icon: MessageSquare, perm: 'notifications.view_delivery_log' },
     ],
   },
   {
@@ -58,6 +52,13 @@ export const SYSTEM_NAV: readonly NavSection[] = [
       { label: 'nav.siteReviews',   href: '/site/reviews',   icon: Star,       perm: 'site.manage' },
       { label: 'nav.siteTraffic',   href: '/site/analytics', icon: BarChart3,  perm: 'site.view_analytics' },
       { label: 'nav.siteSettings',  href: '/site/settings',  icon: Settings,   perm: 'site.manage' },
+    ],
+  },
+  {
+    label: 'nav.sections.communications',
+    items: [
+      { label: 'nav.notifications', href: '/notifications', icon: Bell, perm: 'notifications.view' },
+      { label: 'nav.whatsappLogs', href: '/whatsapp/logs', icon: MessageSquare, perm: 'notifications.view_delivery_log' },
     ],
   },
   {

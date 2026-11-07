@@ -28,7 +28,7 @@ function Card({ t, tr }: { t: Testimonial; tr: TranslateFn }) {
           className="size-9 rounded-full bg-gradient-to-br from-secondary to-accent flex items-center justify-center text-white font-semibold text-xs shrink-0"
           aria-hidden="true"
         >
-          {t.name.replace(/[^A-Za-z ]/g, '').split(' ').map((w) => w.charAt(0)).join('').slice(0, 2)}
+          {t.name.split(/\s+/).map((w) => w.charAt(0)).join('').slice(0, 2).toUpperCase()}
         </div>
         <div className="min-w-0">
           <p className="font-semibold text-white text-sm leading-none mb-1 truncate">{t.name}</p>

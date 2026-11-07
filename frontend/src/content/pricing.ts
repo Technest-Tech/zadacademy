@@ -285,8 +285,8 @@ export const includedFeatures: IncludedFeature[] = [
   },
   {
     icon: 'graduation',
-    title: 'Al-Azhar certified teachers',
-    desc: 'Learn with graduates — for men, women and children.',
+    title: 'Money-back guarantee',
+    desc: 'Not happy after your first paid class? We refund your first package in full.',
   },
   {
     icon: 'certificate',
@@ -469,8 +469,8 @@ export const includedFeaturesFr: IncludedFeature[] = [
   },
   {
     icon: 'graduation',
-    title: 'Enseignants certifiés Al-Azhar',
-    desc: 'Apprenez avec des diplômés — pour hommes, femmes et enfants.',
+    title: 'Satisfait ou remboursé',
+    desc: 'Pas convaincu après votre premier cours payant ? Votre premier forfait vous est intégralement remboursé.',
   },
   {
     icon: 'certificate',

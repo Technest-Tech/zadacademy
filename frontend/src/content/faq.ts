@@ -23,13 +23,13 @@ export const faqs: FaqItem[] = [
     id: 'g1',
     category: 'General',
     q: 'What is Zad Academy?',
-    a: 'Zad Academy is an online Quran and Arabic education academy offering 1-on-1 live classes with certified teachers from Al-Azhar University and other leading Islamic institutions. We serve students in 50+ countries across all age groups and levels.',
+    a: "Zad Academy is an online Quran and Arabic academy offering live 1-on-1 classes for children and adults, with Arabic-speaking male and female teachers. 180 students currently take classes with us.",
   },
   {
     id: 'g2',
     category: 'General',
     q: 'What courses do you offer?',
-    a: 'We offer Noorani Qaida, Quran recitation for kids and adults, Tajweed, Hifz (memorization), Arabic for non-Arabic speakers, Tafseer, Islamic Studies, Ijazah program, and Ten Qiraat. See our Courses page for full details.',
+    a: "Quran reading and recitation (children and adults), Noorani Qaida, Tajweed, Quran memorisation (Hifz), Arabic for children and adults, Arabic conversation for kids, Islamic studies and stories of the prophets for kids, and an introduction to understanding the Quran. See our Courses page for details.",
   },
   {
     id: 'g3',
@@ -44,6 +44,43 @@ export const faqs: FaqItem[] = [
     a: 'Yes. We have dedicated programs for children as young as 5. Our teachers are trained to engage young learners, and we offer female teachers for families who prefer them.',
   },
   // Classes
+  // Parents
+  {
+    id: 'parent1',
+    category: 'Classes',
+    q: "My child doesn’t speak Arabic at home — can they start?",
+    a: "Yes. Classes can start with explanations entirely in French, then gradually bring in simple Arabic words and instructions.",
+  },
+  {
+    id: 'parent2',
+    category: 'Classes',
+    q: "Do you teach Arabic or only Quran recitation?",
+    a: "Both. Families can choose an Arabic-focused path, a Quran/tajweed path or a balanced mix.",
+  },
+  {
+    id: 'parent3',
+    category: 'Classes',
+    q: "How do you handle siblings at different levels?",
+    a: "Each child gets a short individual assessment. Skills, amount of practice and pace are not the same for everyone.",
+  },
+  {
+    id: 'parent4',
+    category: 'Classes',
+    q: "How will I know my child is progressing?",
+    a: "We record a starting point, then review progress regularly: reading, pronunciation, memorisation, independence and consistency. After every class you receive a short report in French.",
+  },
+  {
+    id: 'parent5',
+    category: 'Classes',
+    q: "Can we choose a female teacher for a girl and a male teacher for a boy?",
+    a: "Families can state their preference. The final match depends on teachers’ availability.",
+  },
+  {
+    id: 'parent6',
+    category: 'Classes',
+    q: "Is French used for the whole class?",
+    a: "French is used to explain and reassure; Arabic gradually takes more room to build listening and speaking.",
+  },
   {
     id: 'c1',
     category: 'Classes',
@@ -60,13 +97,13 @@ export const faqs: FaqItem[] = [
     id: 'c3',
     category: 'Classes',
     q: 'Can I choose my class schedule?',
-    a: 'Yes. After matching with a teacher, you agree on a recurring time slot that fits both schedules. Classes run 7 days a week, including evenings and weekends.',
+    a: "Yes. After matching with a teacher, you agree on a recurring time slot that fits both schedules. Classes run 7 days a week, from 8 am to 10 pm.",
   },
   {
     id: 'c4',
     category: 'Classes',
     q: 'What if I need to reschedule?',
-    a: 'We offer free rescheduling with 24 hours notice. Simply message your teacher or our admin team on WhatsApp and we will arrange an alternative slot.',
+    a: "You can cancel or reschedule a class free of charge by telling our team at least 24 hours in advance on WhatsApp. A class cancelled with less notice is counted as taken, except in exceptional situations approved by the team. If your teacher is late or has to cancel, the time is made up or the class is rescheduled at no cost.",
   },
   {
     id: 'c5',
@@ -79,7 +116,7 @@ export const faqs: FaqItem[] = [
     id: 't1',
     category: 'Teachers',
     q: 'Are your teachers qualified?',
-    a: "All teachers hold an authenticated Ijazah — a certified chain of Quran transmission traceable back to the Prophet سلم — and are graduates of Al-Azhar University or equivalent accredited Islamic institutions. Less than 10% of applicants pass our vetting process.",
+    a: "Our teachers are Arabic speakers who teach the Quran and Arabic in private classes. The best way to judge is the first class, which is free — and your first package comes with a money-back guarantee.",
   },
   {
     id: 't2',
@@ -104,25 +141,25 @@ export const faqs: FaqItem[] = [
     id: 'p1',
     category: 'Pricing',
     q: 'How much do classes cost?',
-    a: 'Plans start at $30/month for 8 classes. See our Pricing page for the full breakdown of Starter, Growth, and Premium plans.',
+    a: "Packages start at €19.99 for 4 classes of 30 minutes (€5 per class) — the larger the package, the lower the price per class. See our Pricing page for every package and lesson length.",
   },
   {
     id: 'p2',
     category: 'Pricing',
     q: 'Is there a contract or lock-in period?',
-    a: 'No. All plans are month-to-month. You can upgrade, downgrade, or cancel at any time before your next billing date.',
+    a: "No. There is no subscription and no automatic renewal: you buy a package of classes, valid for 14 months, and only buy another one if you want to. You can also pause your package up to twice.",
   },
   {
     id: 'p3',
     category: 'Pricing',
     q: 'Do you offer family discounts?',
-    a: 'Yes. Premium plan subscribers receive 20% off for each additional sibling enrolled. Contact us after your free trial to activate the sibling discount.',
+    a: "For several children from the same family, message us on WhatsApp after the free trial: we will recommend the most cost-effective package and organise each child’s classes.",
   },
   {
     id: 'p4',
     category: 'Pricing',
     q: 'What payment methods do you accept?',
-    a: 'We accept Visa, Mastercard, Amex, and PayPal. All transactions are in USD and processed securely.',
+    a: "Packages are paid in advance, in euros, via PayPal (you can pay by bank card through PayPal). Your class slots are confirmed once payment is received.",
   },
   // Technical
   {
@@ -179,13 +216,13 @@ export const faqsFr: { id: string; q: string; a: string; category: string }[] = 
     id: 'g1',
     category: 'Générale',
     q: "Qu'est-ce que Zad Academy ?",
-    a: "Zad Academy est une académie en ligne d'enseignement du Coran et de l'arabe proposant des cours particuliers en direct avec des enseignants certifiés issus de l'université Al-Azhar et d'autres grandes institutions islamiques. Nous accompagnons des élèves dans plus de 50 pays, tous âges et tous niveaux confondus.",
+    a: "Zad Academy est une académie en ligne de Coran et d’arabe : des cours particuliers en direct, pour enfants et adultes, avec des enseignants et enseignantes arabophones. 180 élèves suivent actuellement nos cours.",
   },
   {
     id: 'g2',
     category: 'Générale',
     q: 'Quels cours proposez-vous ?',
-    a: "Nous proposons la Qaïda Nourania, la récitation du Coran pour enfants et adultes, le Tajwid, le Hifz (mémorisation), l'arabe pour non-arabophones, le Tafsir, les sciences islamiques, le programme Ijazah et les Dix Qiraat. Consultez notre page Cours pour tous les détails.",
+    a: "La lecture et la récitation du Coran (enfants et adultes), la Qaïda Nourania, le tajwid, la mémorisation du Coran (hifz), l’arabe pour enfants et adultes, la conversation arabe pour enfants, l’islam et les histoires des prophètes pour enfants, et une initiation à la compréhension du Coran. Tous les détails sur la page Cours.",
   },
   {
     id: 'g3',
@@ -200,6 +237,43 @@ export const faqsFr: { id: string; q: string; a: string; category: string }[] = 
     a: "Oui. Nous avons des programmes dédiés aux enfants dès 5 ans. Nos enseignants sont formés pour capter l'attention des jeunes apprenants, et nous proposons des enseignantes pour les familles qui le préfèrent.",
   },
   // Cours
+  // Parents
+  {
+    id: 'parent1',
+    category: 'Cours',
+    q: "Mon enfant ne parle pas arabe à la maison : peut-il commencer ?",
+    a: "Oui. Le cours peut démarrer entièrement avec des explications en français, puis introduire progressivement des mots et des consignes simples en arabe.",
+  },
+  {
+    id: 'parent2',
+    category: 'Cours',
+    q: "Enseignez-vous l’arabe ou seulement la récitation du Coran ?",
+    a: "Les deux sont possibles. La famille peut choisir un parcours centré sur l’arabe, un parcours Coran/tajwīd ou une formule équilibrée.",
+  },
+  {
+    id: 'parent3',
+    category: 'Cours',
+    q: "Comment gérez-vous les niveaux différents au sein d’une fratrie ?",
+    a: "Un bref bilan individuel est réalisé pour chaque enfant. Les compétences, la quantité d’exercices et la vitesse de progression ne sont pas identiques.",
+  },
+  {
+    id: 'parent4',
+    category: 'Cours',
+    q: "Comment savoir si mon enfant progresse ?",
+    a: "Un point de départ est enregistré, puis les acquis sont revus régulièrement : lecture, prononciation, mémorisation, autonomie et régularité. Après chaque séance, vous recevez un court compte rendu en français.",
+  },
+  {
+    id: 'parent5',
+    category: 'Cours',
+    q: "Peut-on choisir une enseignante pour une fille et un enseignant pour un garçon ?",
+    a: "Les familles peuvent exprimer leur préférence. L’affectation finale dépend des disponibilités des enseignants.",
+  },
+  {
+    id: 'parent6',
+    category: 'Cours',
+    q: "Le français est-il utilisé pendant toute la séance ?",
+    a: "Le français sert à expliquer et rassurer ; l’arabe prend progressivement plus de place pour développer l’écoute et l’expression.",
+  },
   {
     id: 'c1',
     category: 'Cours',
@@ -216,13 +290,13 @@ export const faqsFr: { id: string; q: string; a: string; category: string }[] = 
     id: 'c3',
     category: 'Cours',
     q: 'Puis-je choisir mon emploi du temps ?',
-    a: "Oui. Après avoir été mis en relation avec un enseignant, vous convenez d'un créneau récurrent qui convient aux deux emplois du temps. Les cours ont lieu 7 jours sur 7, y compris en soirée et le week-end.",
+    a: "Oui. Après avoir été mis en relation avec un enseignant, vous convenez d’un créneau récurrent qui convient aux deux emplois du temps. Les cours ont lieu 7 jours sur 7, de 8 h à 22 h.",
   },
   {
     id: 'c4',
     category: 'Cours',
     q: 'Que faire si je dois reporter un cours ?',
-    a: "Nous proposons un report gratuit avec un préavis de 24 heures. Il vous suffit d'envoyer un message à votre enseignant ou à notre équipe administrative sur WhatsApp et nous vous proposerons un autre créneau.",
+    a: "Vous pouvez annuler ou reporter un cours sans frais en prévenant notre équipe sur WhatsApp au moins 24 heures à l’avance. En dessous de 24 heures, la séance est considérée comme effectuée, sauf situation exceptionnelle validée par l’équipe. Si l’enseignant est en retard ou doit annuler, le temps est rattrapé ou le cours reprogrammé sans frais.",
   },
   {
     id: 'c5',
@@ -235,7 +309,7 @@ export const faqsFr: { id: string; q: string; a: string; category: string }[] = 
     id: 't1',
     category: 'Enseignants',
     q: 'Vos enseignants sont-ils qualifiés ?',
-    a: "Tous nos enseignants détiennent une Ijazah authentifiée — une chaîne certifiée de transmission du Coran remontant jusqu'au Prophète سلم — et sont diplômés de l'université Al-Azhar ou d'institutions islamiques accréditées équivalentes. Moins de 10 % des candidats réussissent notre processus de sélection.",
+    a: "Nos enseignants sont arabophones et enseignent le Coran et l’arabe en cours particuliers. Le meilleur moyen d’en juger est le premier cours, offert — et votre premier forfait est satisfait ou remboursé.",
   },
   {
     id: 't2',
@@ -260,25 +334,25 @@ export const faqsFr: { id: string; q: string; a: string; category: string }[] = 
     id: 'p1',
     category: 'Tarifs',
     q: 'Combien coûtent les cours ?',
-    a: "Les formules débutent à 30 $/mois pour 8 cours. Consultez notre page Tarifs pour le détail complet des formules Starter, Growth et Premium.",
+    a: "Les forfaits commencent à 19,99 € pour 4 cours de 30 minutes (5 € le cours) : plus le forfait est grand, moins le cours revient cher. Tous les forfaits et toutes les durées sont sur la page Tarifs.",
   },
   {
     id: 'p2',
     category: 'Tarifs',
     q: "Y a-t-il un contrat ou une période d'engagement ?",
-    a: "Non. Toutes les formules sont sans engagement, au mois. Vous pouvez passer à une formule supérieure ou inférieure, ou résilier à tout moment avant votre prochaine date de facturation.",
+    a: "Non. Il n’y a ni abonnement ni reconduction automatique : vous achetez un forfait de cours, valable 14 mois, et vous en reprenez un seulement si vous le souhaitez. Vous pouvez aussi suspendre votre forfait jusqu’à deux fois.",
   },
   {
     id: 'p3',
     category: 'Tarifs',
     q: 'Proposez-vous des réductions pour les familles ?',
-    a: "Oui. Les abonnés à la formule Premium bénéficient de 20 % de réduction pour chaque frère ou sœur supplémentaire inscrit. Contactez-nous après votre essai gratuit pour activer la réduction fratrie.",
+    a: "Pour plusieurs enfants d’une même famille, écrivez-nous sur WhatsApp après le cours d’essai : nous vous conseillons le forfait le plus avantageux et organisons les cours de chaque enfant.",
   },
   {
     id: 'p4',
     category: 'Tarifs',
     q: 'Quels moyens de paiement acceptez-vous ?',
-    a: "Nous acceptons Visa, Mastercard, Amex et PayPal. Toutes les transactions sont effectuées en USD et traitées de manière sécurisée.",
+    a: "Les forfaits se règlent à l’avance, en euros, via PayPal (paiement par carte bancaire possible via PayPal). Vos créneaux sont confirmés dès réception du paiement.",
   },
   // Technique
   {

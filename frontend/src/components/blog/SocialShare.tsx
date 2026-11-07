@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { useT } from '@/i18n/MarketingI18nProvider'
 import { Link as LinkIcon } from 'lucide-react'
 
 type Props = {
@@ -27,6 +28,7 @@ const WhatsAppIcon = () => (
 )
 
 export function SocialShare({ title, url }: Props) {
+  const { t } = useT()
   const [copied, setCopied] = useState(false)
 
   const encoded = encodeURIComponent(url)
@@ -34,17 +36,17 @@ export function SocialShare({ title, url }: Props) {
 
   const shareLinks = [
     {
-      label: 'Share on X',
+      label: t('blogUi.shareOn', { name: 'X' }),
       href: `https://twitter.com/intent/tweet?text=${encodedTitle}&url=${encoded}`,
       Icon: XIcon,
     },
     {
-      label: 'Share on Facebook',
+      label: t('blogUi.shareOn', { name: 'Facebook' }),
       href: `https://www.facebook.com/sharer/sharer.php?u=${encoded}`,
       Icon: FacebookIcon,
     },
     {
-      label: 'Share on WhatsApp',
+      label: t('blogUi.shareOn', { name: 'WhatsApp' }),
       href: `https://wa.me/?text=${encodedTitle}%20${encoded}`,
       Icon: WhatsAppIcon,
     },
@@ -62,7 +64,7 @@ export function SocialShare({ title, url }: Props) {
 
   return (
     <div className="flex flex-wrap items-center gap-3 py-6 border-t border-b border-border-soft my-8">
-      <span className="text-sm font-medium text-muted-text">Share:</span>
+      <span className="text-sm font-medium text-muted-text">{t('blogUi.share')}</span>
       {shareLinks.map(({ label, href, Icon }) => (
         <a
           key={label}
@@ -77,11 +79,11 @@ export function SocialShare({ title, url }: Props) {
       ))}
       <button
         onClick={copyLink}
-        aria-label="Copy link"
+        aria-label={t('blogUi.copyLink')}
         className="flex items-center gap-2 rounded-full border border-border-soft px-3 py-1.5 text-xs font-medium text-muted-text hover:text-primary hover:border-primary transition-colors"
       >
         <LinkIcon className="w-3.5 h-3.5" />
-        {copied ? 'Copied!' : 'Copy link'}
+        {copied ? t('blogUi.copied') : t('blogUi.copyLink')}
       </button>
     </div>
   )

@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import { useT } from '@/i18n/MarketingI18nProvider'
 
 type Heading = {
   id: string
@@ -20,13 +21,14 @@ function extractHeadings(html: string): Heading[] {
   div.querySelectorAll('h2, h3').forEach((el) => {
     const level = el.tagName === 'H2' ? 2 : 3
     const text = el.textContent?.trim() ?? ''
-    const id = text.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')
+    const id = text.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')
     if (text) headings.push({ id, text, level })
   })
   return headings
 }
 
 export function TableOfContents({ html }: Props) {
+  const { t } = useT()
   const [headings, setHeadings] = useState<Heading[]>([])
 
   useEffect(() => {
@@ -38,10 +40,10 @@ export function TableOfContents({ html }: Props) {
   return (
     <nav
       className="hidden lg:block sticky top-24 self-start bg-cream rounded-2xl p-6 border border-border-soft"
-      aria-label="Table of contents"
+      aria-label={t('blogUi.tocAria')}
     >
       <p className="text-xs font-semibold uppercase tracking-widest text-muted-text mb-4">
-        On This Page
+        {t('blogUi.onThisPage')}
       </p>
       <ol className="space-y-2">
         {headings.map((h) => (

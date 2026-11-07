@@ -37,6 +37,7 @@ function isAppHost(host: string) {
 
 const MARKETING_PATHS = [
   '/courses', '/pricing', '/faq', '/contact', '/blog', '/countries',
+  '/privacy', '/terms', '/legal-notice',
 ]
 
 const SYSTEM_PATHS = [

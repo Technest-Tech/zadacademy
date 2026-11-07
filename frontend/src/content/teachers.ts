@@ -16,7 +16,7 @@ export type TeacherExperience = {
 export type TeacherCertification = {
   title: string
   org: string
-  year: string
+  year?: string
 }
 
 export type RatingBreakdown = {

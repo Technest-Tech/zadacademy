@@ -1,9 +1,9 @@
 export const siteConfig = {
   name: 'Zad Academy',
   nameArabic: 'أكاديمية زاد',
-  tagline: 'Learn Quran Online — 1-on-1 Classes with Certified Teachers',
+  tagline: 'Learn Quran Online — 1-on-1 Classes with a Dedicated Teacher',
   description:
-    'Premium online Quran, Arabic language, and Islamic studies academy. 1-on-1 classes with certified teachers from Al-Azhar. Free trial available.',
+    'Premium online Quran, Arabic language, and Islamic studies academy. 1-on-1 classes with a dedicated teacher, explained in French or English. Free trial available.',
   url: process.env.NEXT_PUBLIC_SITE_URL ?? 'https://zadacademiq.com',
   email: 'zadacademiq@gmail.com',
   phone: '+33 7 80 93 30 87',

@@ -15,16 +15,17 @@ export const courseSlugs = [
   'quran',
   'arabic',
   'arabic-and-quran',
+  'islamic-studies',
   'quran-classes-for-kids',
-  'quran-classes-for-adults',
+  'arabic-for-kids',
+  'arabic-conversation-for-kids',
+  'prophets-stories-for-kids',
+  'noorani-qaida',
   'tajweed-course',
   'hifz-memorization',
-  'noorani-qaida',
+  'quran-classes-for-adults',
   'arabic-for-non-arabs',
-  'islamic-studies',
-  'ijazah-program',
   'tafseer-course',
-  'ten-qiraat',
   'female-quran-teachers',
 ] as const
 
@@ -70,6 +71,7 @@ export const footerNav: Record<'courses' | 'company' | 'legal', FooterGroup> = {
   legal: {
     headingKey: 'footer.legalHeading',
     items: [
+      { labelKey: 'footer.legalNotice', href: '/legal-notice' },
       { labelKey: 'footer.privacy', href: '/privacy' },
       { labelKey: 'footer.terms', href: '/terms' },
     ],

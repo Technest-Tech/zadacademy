@@ -3,7 +3,9 @@
 import { useCallback, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { Star, CheckCircle2, AlertCircle } from 'lucide-react'
+import Link from 'next/link'
 import { useT } from '@/i18n/MarketingI18nProvider'
+import { localizedHref } from '@/i18n/href'
 import { TurnstileWidget } from '@/components/conversion/TurnstileWidget'
 
 // Cloudflare Turnstile is optional: the captcha only appears (and is required)
@@ -30,7 +32,7 @@ export function ReviewForm({
   teacherName: string
   teacherSlug: string
 }) {
-  const { t } = useT()
+  const { t, locale } = useT()
   const router = useRouter()
   const [rating, setRating] = useState(0)
   const [hover, setHover] = useState(0)
@@ -161,6 +163,11 @@ export function ReviewForm({
       >
         {busy ? t('reviewForm.submitting') : t('reviewForm.submit')}
       </button>
+      <p className="text-xs text-white/45">
+        <Link href={localizedHref('/privacy', locale)} className="underline underline-offset-2">
+          {t('trialForm.privacyLink')}
+        </Link>
+      </p>
     </form>
   )
 }

@@ -11,6 +11,10 @@ import { BlogCard } from '@/components/blog/BlogCard'
 import { CategoryFilter } from '@/components/blog/CategoryFilter'
 import { Pagination } from '@/components/blog/Pagination'
 import { blogCategories, blogPosts } from '@/content/blog'
+import { blogCategoriesFr } from '@/content/blogFr'
+import { publishedPostsFr } from '@/content/blogSchedule'
+import { localizedHref } from '@/i18n/href'
+import type { Locale } from '@/i18n/config'
 import type { BlogPost } from '@/content/blog'
 
 export const revalidate = 3600
@@ -33,8 +37,9 @@ type ApiResponse = {
   last_page: number
 }
 
-async function getPosts(page: number, category: string): Promise<ApiResponse> {
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL
+async function getPosts(page: number, category: string, locale: Locale): Promise<ApiResponse> {
+  // French articles live in the repo (src/content/blogFr.ts); the CMS posts are English.
+  const apiUrl = locale === 'fr' ? undefined : process.env.NEXT_PUBLIC_API_URL
   if (apiUrl) {
     try {
       const params = new URLSearchParams({ page: String(page), perPage: '9' })
@@ -49,9 +54,10 @@ async function getPosts(page: number, category: string): Promise<ApiResponse> {
   }
 
   // Static fallback
+  const source = locale === 'fr' ? publishedPostsFr() : blogPosts
   const filtered = category
-    ? blogPosts.filter((p) => p.categories.some((c) => c.slug === category))
-    : blogPosts
+    ? source.filter((p) => p.categories.some((c) => c.slug === category))
+    : source
   const perPage = 9
   const total = filtered.length
   const lastPage = Math.max(1, Math.ceil(total / perPage))
@@ -68,13 +74,14 @@ export default async function BlogPage({ searchParams }: Props) {
   const page = Math.max(1, parseInt(pageParam ?? '1', 10))
   const category = categoryParam ?? ''
 
-  const { data: posts, current_page, last_page } = await getPosts(page, category)
+  const locale = await getLocale()
+  const { data: posts, current_page, last_page } = await getPosts(page, category, locale)
   const featured = posts[0]
   const grid = posts.slice(1)
 
   const schema = breadcrumbSchema([
-    { name: 'Home', href: '/' },
-    { name: 'Blog', href: '/blog' },
+    { name: locale === 'fr' ? 'Accueil' : 'Home', href: localizedHref('/', locale) },
+    { name: 'Blog', href: localizedHref('/blog', locale) },
   ])
 
   return (
@@ -100,8 +107,9 @@ export default async function BlogPage({ searchParams }: Props) {
           </p>
           <h1 className="heading-display font-display text-white mb-4">Blog</h1>
           <p className="text-white/70 text-xl max-w-2xl mx-auto">
-            Quran learning tips, Tajweed guides, and Islamic education insights from our
-            certified teachers.
+            {locale === 'fr'
+              ? 'Conseils pour apprendre le Coran et l’arabe, guides de Tajwid et ressources pour les familles francophones.'
+              : 'Quran learning tips, Tajweed guides, and Islamic education insights from our teachers.'}
           </p>
         </Container>
       </section>
@@ -110,7 +118,7 @@ export default async function BlogPage({ searchParams }: Props) {
       {featured && (
         <Section bg="white">
           <Container>
-            <FeaturedPost post={featured} />
+            <FeaturedPost post={featured} locale={locale} />
           </Container>
         </Section>
       )}
@@ -120,14 +128,14 @@ export default async function BlogPage({ searchParams }: Props) {
         <Container>
           <div className="mb-8">
             <Suspense fallback={<div className="h-10" />}>
-              <CategoryFilter categories={blogCategories} active={category || null} />
+              <CategoryFilter categories={locale === 'fr' ? blogCategoriesFr : blogCategories} active={category || null} />
             </Suspense>
           </div>
 
           {grid.length > 0 ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {grid.map((post) => (
-                <BlogCard key={post.slug} post={post} />
+                <BlogCard key={post.slug} post={post} locale={locale} />
               ))}
             </div>
           ) : (
@@ -139,8 +147,9 @@ export default async function BlogPage({ searchParams }: Props) {
           <Pagination
             currentPage={current_page}
             totalPages={last_page}
-            basePath="/blog"
+            basePath={localizedHref('/blog', locale)}
             category={category || null}
+            locale={locale}
           />
         </Container>
       </Section>

@@ -23,7 +23,6 @@ export function organizationSchema() {
       'Hifz',
       'Arabic Language',
       'Islamic Studies',
-      'Ijazah',
     ],
   }
 }
@@ -40,6 +39,21 @@ export function breadcrumbSchema(
       name: item.name,
       item: `${siteConfig.url}${item.href}`,
     })),
+  }
+}
+
+export function aboutPageSchema() {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'AboutPage',
+    name: `About ${siteConfig.name}`,
+    url: `${siteConfig.url}/about`,
+    description: 'Learn about Zad Academy — our mission, story, teaching approach, and teachers.',
+    publisher: {
+      '@type': 'EducationalOrganization',
+      name: siteConfig.name,
+      url: siteConfig.url,
+    },
   }
 }
 

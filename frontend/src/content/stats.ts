@@ -7,17 +7,17 @@ export type Stat = {
 }
 
 export const stats: Stat[] = [
-  { value: '1,500+', label: 'Students Taught', description: 'Across 50+ countries worldwide' },
-  { value: '50+', label: 'Countries Served', description: 'From USA to Malaysia' },
-  { value: '100+', label: 'Certified Teachers', description: 'Al-Azhar & Ijazah certified' },
-  { value: '4.9★', label: 'Average Rating', description: 'From 2,000+ verified reviews' },
+  { value: '180', label: 'Students enrolled', description: 'Children, teenagers and adults' },
+  { value: '20', label: 'Teachers', description: 'Men and women, 1-on-1 classes' },
+  { value: '7 days', label: 'A week', description: 'From 8 am to 10 pm' },
+  { value: '1st', label: 'Class free', description: 'No card, no commitment' },
 ]
 
 export const statsFr: Stat[] = [
-  { value: '1 500+', label: 'Élèves formés', description: 'Dans plus de 50 pays à travers le monde' },
-  { value: '50+', label: 'Pays desservis', description: 'Des États-Unis à la Malaisie' },
-  { value: '100+', label: 'Enseignants certifiés', description: 'Certifiés Al-Azhar et Ijazah' },
-  { value: '4,9★', label: 'Note moyenne', description: 'Sur plus de 2 000 avis vérifiés' },
+  { value: '180', label: 'Élèves en cours', description: 'Enfants, adolescents et adultes' },
+  { value: '20', label: 'Enseignants', description: 'Hommes et femmes, en cours particuliers' },
+  { value: '7j/7', label: 'De 8 h à 22 h', description: 'Des horaires adaptés à votre famille' },
+  { value: '1er', label: 'Cours offert', description: 'Sans carte bancaire, sans engagement' },
 ]
 
 /**

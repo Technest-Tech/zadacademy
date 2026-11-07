@@ -29,6 +29,7 @@ use App\Http\Controllers\System\PaymentController;
 use App\Http\Controllers\System\PaymobIntegrationController;
 use App\Http\Controllers\System\PaymobWebhookController;
 use App\Http\Controllers\System\PricingSettingsController;
+use App\Http\Controllers\System\ProfitabilityController;
 use App\Http\Controllers\System\QcAssignmentController;
 use App\Http\Controllers\System\QcCategoryController;
 use App\Http\Controllers\System\QcCategoryItemController;
@@ -125,11 +126,11 @@ Route::prefix('system')->name('system.')->group(function () {
             Route::get('/site/settings',  [\App\Http\Controllers\System\SiteSettingsController::class, 'show'])->name('site.settings.show');
             Route::put('/site/settings',  [\App\Http\Controllers\System\SiteSettingsController::class, 'update'])->name('site.settings.update');
         });
-
         // Public-site traffic. Split from site.manage so an analyst can read the
         // numbers without also gaining edit rights over the site's content.
         Route::middleware('system.can:site.view_analytics')
             ->get('/site/analytics', [\App\Http\Controllers\System\SiteAnalyticsController::class, 'index'])->name('site.analytics.index');
+
 
         // Unified user directory (students, teachers, parents, staff in one place).
         // Defined before the /users/{id} routes so /users/directory/* matches first.
@@ -550,12 +551,20 @@ Route::prefix('system')->name('system.')->group(function () {
         });
         Route::middleware('system.can:accounting.view_pnl')->group(function () {
             Route::get('/accounting/profit-loss',   [AccountingController::class, 'profitLoss'])->name('accounting.profit-loss');
+            Route::get('/accounting/profitability', [ProfitabilityController::class, 'index'])->name('accounting.profitability');
             Route::get('/monthly-reports',          [MonthlyReportController::class, 'index'])->name('monthly-reports.index');
             Route::get('/monthly-reports/{id}/pdf', [MonthlyReportController::class, 'showPdf'])->name('monthly-reports.pdf');
             Route::get('/monthly-reports/{id}/xlsx',[MonthlyReportController::class, 'showXlsx'])->name('monthly-reports.xlsx');
         });
         Route::middleware('system.can:accounting.export')
             ->post('/monthly-reports/regenerate', [MonthlyReportController::class, 'regenerate'])->name('monthly-reports.regenerate');
+
+        // The profitability report's percentage lines / partner split are academy-wide
+        // business constants, so editing them needs the settings permission, not just
+        // the ability to read the report.
+        Route::middleware('system.can:settings.edit')
+            ->put('/accounting/profitability/settings', [ProfitabilityController::class, 'updateSettings'])
+            ->name('accounting.profitability.settings');
 
         // Expenses
         Route::middleware('system.can:expenses.view')->group(function () {
@@ -640,6 +649,8 @@ Route::prefix('system')->name('system.')->group(function () {
             Route::get('/lesson-schedules/{lessonSchedule}',             [LessonScheduleController::class, 'show'])->name('lesson-schedules.show');
             Route::get('/student-packages',                              [StudentPackageController::class, 'index'])->name('student-packages.index');
             Route::get('/student-packages/{studentPackage}',             [StudentPackageController::class, 'show'])->name('student-packages.show');
+            // Academy subjects (Settings → Subjects) as lesson/schedule picker options.
+            Route::get('/subjects',                                      [CourseController::class,         'options'])->name('subjects.options');
             Route::get('/lesson-subjects',                               [LessonSubjectController::class,  'index'])->name('lesson-subjects.index');
             Route::get('/lesson-evaluations',                            [LessonEvaluationController::class,'index'])->name('lesson-evaluations.index');
         });

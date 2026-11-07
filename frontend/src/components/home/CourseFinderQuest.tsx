@@ -243,7 +243,7 @@ const COPY: Record<'en' | 'fr', QuestCopy> = {
     title: 'Quel cours est fait pour moi ?',
     progress: 'Progression',
     intro: 'Je choisis ma quête. Le jeu adapte ensuite les questions pour estimer mon niveau actuel.',
-    start: 'Start',
+    start: 'Commencer',
     mission: 'Mission niveau',
     back: 'Revenir en arrière',
     question: 'Question {current}/3',

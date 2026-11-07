@@ -25,7 +25,7 @@ const journeyCopy: Record<Locale, JourneyStep[]> = {
     {
       number: '02',
       title: 'Meet your best match',
-      description: 'We pair you with a certified teacher who fits your goals and schedule.',
+      description: 'We pair you with a dedicated teacher who fits your goals and schedule.',
       icon: UserRoundCheck,
     },
     {
@@ -45,7 +45,7 @@ const journeyCopy: Record<Locale, JourneyStep[]> = {
     {
       number: '02',
       title: 'Rencontrez votre professeur',
-      description: 'Nous vous proposons un enseignant certifié adapté à vos objectifs.',
+      description: 'Nous vous proposons un enseignant dédié adapté à vos objectifs.',
       icon: UserRoundCheck,
     },
     {

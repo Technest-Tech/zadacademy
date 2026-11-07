@@ -1,27 +1,33 @@
 import Link from 'next/link'
 import { LinkButton } from '@/components/ui/link-button'
 import type { BlogPost } from '@/content/blog'
+import type { Locale } from '@/i18n/config'
+import { localeTag } from '@/i18n/config'
+import { localizedHref } from '@/i18n/href'
+import { dictionaries, translate } from '@/i18n/translate'
 
 type Props = {
   post: BlogPost
+  locale?: Locale
 }
 
-function formatDate(iso: string): string {
-  return new Intl.DateTimeFormat('en-GB', {
+function formatDate(iso: string, locale: Locale): string {
+  return new Intl.DateTimeFormat(localeTag[locale], {
     day: 'numeric',
     month: 'long',
     year: 'numeric',
   }).format(new Date(iso))
 }
 
-export function FeaturedPost({ post }: Props) {
+export function FeaturedPost({ post, locale = 'en' }: Props) {
+  const t = (key: string, vars?: Record<string, string | number>) => translate(dictionaries[locale], key, vars)
   const primaryCategory = post.categories[0]
 
   return (
     <Link
-      href={`/blog/${post.slug}`}
+      href={localizedHref(`/blog/${post.slug}`, locale)}
       className="group relative flex items-end rounded-3xl overflow-hidden min-h-[420px] bg-primary"
-      aria-label={`Read: ${post.title}`}
+      aria-label={t('blogUi.readAria', { title: post.title })}
     >
       {/* Background gradient overlay */}
       <div
@@ -48,7 +54,7 @@ export function FeaturedPost({ post }: Props) {
             </span>
           )}
           <span className="text-white/60 text-sm">
-            {post.reading_minutes} min read · {formatDate(post.published_at)}
+            {t('blogUi.minRead', { n: post.reading_minutes })} · {formatDate(post.published_at, locale)}
           </span>
         </div>
 
@@ -61,7 +67,7 @@ export function FeaturedPost({ post }: Props) {
 
         <div className="mt-2">
           <span className="inline-flex items-center gap-2 text-accent font-semibold text-sm group-hover:gap-3 transition-all">
-            Read Article
+            {t('blogUi.readArticle')}
             <span aria-hidden="true">→</span>
           </span>
         </div>

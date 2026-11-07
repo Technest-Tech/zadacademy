@@ -11,6 +11,8 @@ type BuildMetadataArgs = {
   noIndex?: boolean
   /** Active locale. Defaults to the site's default language. */
   locale?: Locale
+  /** The page exists in this language only (e.g. a French article): no hreflang twin. */
+  singleLocale?: boolean
 }
 
 /** Absolute URL for a path in a given locale (French pages live under /fr). */
@@ -29,23 +31,28 @@ export function buildMetadata({
   type = 'website',
   noIndex = false,
   locale = defaultLocale,
+  singleLocale = false,
 }: BuildMetadataArgs): Metadata {
   const url = localeUrl(path, locale)
   const ogImage = image ?? `${siteConfig.url}/og-default.jpg`
 
   return {
-    title,
+    // Most page titles already end in "| Zad Academy"; letting the root layout's
+    // `%s | Zad Academy` template run again would print the name twice.
+    title: title.includes(siteConfig.name) ? { absolute: title } : title,
     description,
     metadataBase: new URL(siteConfig.url),
     ...(noIndex && { robots: { index: false, follow: false } }),
     alternates: {
       canonical: url,
       // hreflang — tells search engines each page has an English and a French twin.
-      languages: {
-        en: localeUrl(path, 'en'),
-        fr: localeUrl(path, 'fr'),
-        'x-default': localeUrl(path, defaultLocale),
-      },
+      ...(!singleLocale && {
+        languages: {
+          en: localeUrl(path, 'en'),
+          fr: localeUrl(path, 'fr'),
+          'x-default': localeUrl(path, defaultLocale),
+        },
+      }),
     },
     openGraph: {
       title,

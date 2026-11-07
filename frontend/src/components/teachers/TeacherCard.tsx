@@ -47,6 +47,8 @@ export function TeacherCard({ t, locale }: { t: Teacher; locale: Locale }) {
         )}
 
         {/* Rating pill */}
+        {/* Stars only once real reviews exist */}
+        {t.reviewsCount > 0 && (
         <div className="absolute bottom-3 left-1/2 inline-flex -translate-x-1/2 items-center gap-1.5 whitespace-nowrap rounded-full border border-white/10 bg-primary/75 px-3 py-1 backdrop-blur-sm">
           <span className="flex" aria-hidden="true">
             {Array.from({ length: 5 }).map((_, i) => (
@@ -59,6 +61,7 @@ export function TeacherCard({ t, locale }: { t: Teacher; locale: Locale }) {
           <span className="text-xs font-bold text-white">{t.rating.toFixed(1)}</span>
           <span className="text-[11px] text-white/45">({t.reviewsCount})</span>
         </div>
+        )}
       </div>
 
       <div className="flex flex-1 flex-col p-5 pt-4">

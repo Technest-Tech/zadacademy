@@ -9,7 +9,9 @@ import { Button } from '@/components/ui/button'
 import { FormField } from './FormField'
 import { SuccessState } from './SuccessState'
 import { TurnstileWidget } from './TurnstileWidget'
+import Link from 'next/link'
 import { useT } from '@/i18n/MarketingI18nProvider'
+import { localizedHref } from '@/i18n/href'
 import type { TranslateFn } from '@/i18n/translate'
 import {
   sendWeb3FormsNotification,
@@ -228,6 +230,12 @@ export function ContactForm() {
           pendingNotification ? t('contactForm.retryEmail') : t('contactForm.submit')
         )}
       </Button>
+      <p className="text-center text-xs text-muted-foreground">
+        {t('trialForm.secureNote')}{' '}
+        <Link href={localizedHref('/privacy', locale)} className="underline underline-offset-2">
+          {t('trialForm.privacyLink')}
+        </Link>
+      </p>
     </form>
   )
 }

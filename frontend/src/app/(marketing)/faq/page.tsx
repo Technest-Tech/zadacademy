@@ -87,7 +87,7 @@ export default async function FaqPage() {
             <h2 className="heading-xl font-display text-white mb-4">{cta.heading}</h2>
             <p className="text-white/70 text-lg mb-10">{cta.subheading}</p>
             <div className="flex flex-wrap justify-center gap-4">
-              <LinkButton href="/contact" size="lg" variant="gold">
+              <LinkButton href={localizedHref('/contact', locale)} size="lg" variant="gold">
                 {cta.ctaPrimary}
               </LinkButton>
               <a

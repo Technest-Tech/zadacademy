@@ -28,6 +28,13 @@ import {
   Quote,
 } from 'lucide-react'
 
+/**
+ * Off until each teacher's figures (lessons given, hours, career, degrees,
+ * weekly schedule) are confirmed: they used to be invented or computed. Turn
+ * back on once the real values are in the admin panel.
+ */
+const SHOW_UNVERIFIED_TEACHER_FACTS = false
+
 type Props = { params: Promise<{ id: string }> }
 
 export async function generateStaticParams() {
@@ -191,6 +198,9 @@ export default async function TeacherPage({ params }: Props) {
                 {t.quote}
               </p>
 
+              {/* Lessons, hours and rating are not verified yet */}
+              {SHOW_UNVERIFIED_TEACHER_FACTS && (
+              <>
               {/* Stats */}
               <div className="mt-7 grid max-w-2xl grid-cols-3 divide-x divide-white/10 rounded-2xl border border-white/10 bg-white/[0.03] py-5">
                 <div className="px-4 text-center">
@@ -209,6 +219,8 @@ export default async function TeacherPage({ params }: Props) {
                   <div className="mt-0.5 text-xs text-white/45">{t.reviewsCount} {reviewsLabel(t.reviewsCount, tr)}</div>
                 </div>
               </div>
+              </>
+              )}
 
               {/* Tags */}
               <div className="mt-6 flex flex-wrap gap-2">
@@ -278,6 +290,9 @@ export default async function TeacherPage({ params }: Props) {
               </blockquote>
             </Panel>
 
+            {/* Career and degrees are not verified yet */}
+            {SHOW_UNVERIFIED_TEACHER_FACTS && (
+            <>
             {/* Journey */}
             <Panel>
               <PanelTitle>{tr('teacherPage.journey')}</PanelTitle>
@@ -305,13 +320,16 @@ export default async function TeacherPage({ params }: Props) {
                   <li key={i} className="flex items-start gap-2.5">
                     <Check className="mt-0.5 size-4 shrink-0 text-emerald-400" aria-hidden="true" />
                     <span className="text-sm text-white/75">
-                      <span className="font-medium text-white">{c.title}</span> — {c.org}{' '}
-                      <span className="text-white/40">({c.year})</span>
+                      <span className="font-medium text-white">{c.title}</span>
+                      {c.org && <> — {c.org}</>}
+                      {c.year && <span className="text-white/40"> ({c.year})</span>}
                     </span>
                   </li>
                 ))}
               </ul>
             </Panel>
+            </>
+            )}
 
             {/* Teaching style */}
             <Panel>
@@ -345,6 +363,9 @@ export default async function TeacherPage({ params }: Props) {
                 <span className="text-sm text-white/45">{t.reviews.length} {reviewsLabel(t.reviews.length, tr)}</span>
               </div>
 
+              {/* Per-criterion scores were computed, not collected */}
+              {SHOW_UNVERIFIED_TEACHER_FACTS && (
+              <>
               {/* Breakdown */}
               <div className="mb-7 grid grid-cols-2 gap-4 rounded-xl border border-white/10 bg-white/[0.02] p-5 sm:grid-cols-4">
                 {breakdown.map((b) => (
@@ -354,6 +375,8 @@ export default async function TeacherPage({ params }: Props) {
                   </div>
                 ))}
               </div>
+              </>
+              )}
 
               {/* Review list — held to a fixed height once there are more
                   than a handful, so a well-reviewed teacher does not push the
@@ -401,6 +424,9 @@ export default async function TeacherPage({ params }: Props) {
 
           {/* ── Sidebar ── */}
           <aside className="space-y-6 lg:sticky lg:top-28 lg:self-start">
+            {/* Same placeholder schedule for every teacher */}
+            {SHOW_UNVERIFIED_TEACHER_FACTS && (
+            <>
             {/* Availability */}
             <Panel className="p-5 sm:p-6">
               <PanelTitle icon={CalendarDays}>{tr('teacherPage.availability')}</PanelTitle>
@@ -426,6 +452,8 @@ export default async function TeacherPage({ params }: Props) {
                 <MessageCircle className="size-5" aria-hidden="true" /> {tr('teacherPage.bookNow')}
               </a>
             </Panel>
+            </>
+            )}
 
             {/* Why choose me */}
             <Panel className="p-5 sm:p-6">

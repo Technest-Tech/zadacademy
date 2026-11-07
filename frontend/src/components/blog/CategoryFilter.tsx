@@ -2,6 +2,8 @@
 
 import { useRouter, useSearchParams } from 'next/navigation'
 import type { BlogCategory } from '@/content/blog'
+import { useT } from '@/i18n/MarketingI18nProvider'
+import { localizedHref } from '@/i18n/href'
 
 type Props = {
   categories: BlogCategory[]
@@ -10,6 +12,7 @@ type Props = {
 
 export function CategoryFilter({ categories, active }: Props) {
   const router = useRouter()
+  const { t, locale } = useT()
   const searchParams = useSearchParams()
 
   function setCategory(slug: string | null) {
@@ -20,11 +23,11 @@ export function CategoryFilter({ categories, active }: Props) {
       params.delete('category')
     }
     params.delete('page')
-    router.push(`/blog?${params.toString()}`)
+    router.push(`${localizedHref('/blog', locale)}?${params.toString()}`)
   }
 
   return (
-    <div className="flex flex-wrap gap-2" role="group" aria-label="Filter by category">
+    <div className="flex flex-wrap gap-2" role="group" aria-label={t('blogUi.filterAria')}>
       <button
         onClick={() => setCategory(null)}
         className={`rounded-full px-4 py-2 text-sm font-medium transition-colors ${
@@ -34,7 +37,7 @@ export function CategoryFilter({ categories, active }: Props) {
         }`}
         aria-pressed={active === null}
       >
-        All
+        {t('blogUi.all')}
       </button>
       {categories.map((cat) => (
         <button

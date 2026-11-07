@@ -8,14 +8,14 @@ return new class extends Migration
     public function up(): void
     {
         $defaults = [
-            'site.contact_email'    => 'alrayanacadmy@gmail.com',
-            'site.contact_phone'    => '+20 127 919 3105',
-            'site.contact_whatsapp' => '201279193105',
+            'site.contact_email'    => 'zadacademiq@gmail.com',
+            'site.contact_phone'    => '+33 7 80 93 30 87',
+            'site.contact_whatsapp' => '33780933087',
             'site.contact_address'  => 'Online — Serving students worldwide',
-            'site.social_facebook'  => 'https://www.facebook.com/alrayanaquran/',
-            'site.social_instagram' => 'https://www.instagram.com/rayan_academyy/',
-            'site.social_youtube'   => 'https://youtube.com/@alrayanacademy',
-            'site.social_twitter'   => 'https://twitter.com/alrayanacademy',
+            'site.social_facebook'  => 'https://www.facebook.com/profile.php?id=61591750688347',
+            'site.social_instagram' => 'https://www.instagram.com/zadacademiq414/',
+            'site.social_youtube'   => '',
+            'site.social_twitter'   => '',
             'site.social_tiktok'    => '',
             'site.social_telegram'  => '',
         ];

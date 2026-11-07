@@ -81,38 +81,7 @@ export const countriesData: CountryData[] = [
       ],
     },
     localCurrencyNote: 'Prices are in USD. Plans start at $30/month.',
-    testimonials: [
-      {
-        id: 'usa-1',
-        name: 'Fatima R.',
-        location: 'New York, NY',
-        country: 'usa',
-        quote:
-          'Having a female teacher was so important to me. The class schedule is flexible and fits perfectly around my work hours. I feel so comfortable and supported.',
-        course: 'Tajweed for Adults',
-        rating: 5,
-      },
-      {
-        id: 'usa-2',
-        name: 'Khalid M.',
-        location: 'Houston, TX',
-        country: 'usa',
-        quote:
-          'My son started from zero and is now halfway through his Hifz. The teacher checks in with us on WhatsApp every week — we feel like part of a family.',
-        course: 'Hifz / Memorization',
-        rating: 5,
-      },
-      {
-        id: 'usa-3',
-        name: 'Nadia S.',
-        location: 'Dearborn, MI',
-        country: 'usa',
-        quote:
-          'As a convert, I was nervous about finding a teacher who would be patient with my complete beginner level. My teacher has been wonderful — kind, clear, and encouraging.',
-        course: 'Noorani Qaida',
-        rating: 5,
-      },
-    ],
+    testimonials: [],
     faqs: [
       {
         q: 'Do you offer Quran classes across all US time zones?',
@@ -189,38 +158,7 @@ export const countriesData: CountryData[] = [
       ],
     },
     localCurrencyNote: '≈ £24–£56/month at current exchange rates (billed in USD).',
-    testimonials: [
-      {
-        id: 'uk-1',
-        name: 'Sarah A.',
-        location: 'London, UK',
-        country: 'uk',
-        quote:
-          "My children's Tajweed has improved beyond recognition in just 3 months. The teachers are so patient and knowledgeable — my daughter actually looks forward to her classes every day.",
-        course: 'Quran for Kids',
-        rating: 5,
-      },
-      {
-        id: 'uk-2',
-        name: 'Amina H.',
-        location: 'Birmingham, UK',
-        country: 'uk',
-        quote:
-          "I've tried several online academies. Zad Academy is the only one where I felt genuinely supported. The free trial convinced me immediately — the quality is exceptional.",
-        course: 'Arabic for Non-Arabs',
-        rating: 5,
-      },
-      {
-        id: 'uk-3',
-        name: 'Zaynab H.',
-        location: 'Manchester, UK',
-        country: 'uk',
-        quote:
-          'My daughter was struggling with Tajweed at madrassa. Within two months of 1-on-1 sessions with Zad Academy, her teacher at madrassa commented on the improvement. Highly recommend.',
-        course: 'Tajweed Course',
-        rating: 5,
-      },
-    ],
+    testimonials: [],
     faqs: [
       {
         q: 'Do you adjust class times for British Summer Time (BST)?',
@@ -293,38 +231,7 @@ export const countriesData: CountryData[] = [
       ],
     },
     localCurrencyNote: '≈ C$41–C$95/month at current exchange rates (billed in USD).',
-    testimonials: [
-      {
-        id: 'ca-1',
-        name: 'Ahmed K.',
-        location: 'Toronto, ON',
-        country: 'canada',
-        quote:
-          "I started as a complete beginner and now read the Quran with confidence. The 1-on-1 format makes all the difference — the teacher focuses entirely on me and my pace.",
-        course: 'Noorani Qaida',
-        rating: 5,
-      },
-      {
-        id: 'ca-2',
-        name: 'Ibrahim F.',
-        location: 'Calgary, AB',
-        country: 'canada',
-        quote:
-          'Calgary is not well served by local Islamic schools. Zad Academy filled that gap perfectly. My children now have consistent, high-quality Quran instruction from home.',
-        course: 'Quran for Kids',
-        rating: 5,
-      },
-      {
-        id: 'ca-3',
-        name: 'Maryam T.',
-        location: 'Vancouver, BC',
-        country: 'canada',
-        quote:
-          "The Pacific Time evening slots are perfect. My kids finish school, have a snack, and join their Quran class before dinner. The routine has been transformative for our household.",
-        course: 'Quran for Kids',
-        rating: 5,
-      },
-    ],
+    testimonials: [],
     faqs: [
       {
         q: 'Do you serve students across all Canadian provinces and territories?',
@@ -397,38 +304,7 @@ export const countriesData: CountryData[] = [
       ],
     },
     localCurrencyNote: '≈ A$46–A$108/month at current exchange rates (billed in USD).',
-    testimonials: [
-      {
-        id: 'au-1',
-        name: 'Omar M.',
-        location: 'Melbourne, VIC',
-        country: 'australia',
-        quote:
-          'The Ijazah program is rigorous and authentic. My teacher has a direct chain to Al-Azhar. I finished my Hifz revision and received my Ijazah certificate — a dream fulfilled.',
-        course: 'Ijazah Program',
-        rating: 5,
-      },
-      {
-        id: 'au-2',
-        name: 'Aisha N.',
-        location: 'Sydney, NSW',
-        country: 'australia',
-        quote:
-          "We tried local tutors but found it hard to be consistent. Zad Academy's fixed weekly schedule and WhatsApp reminders kept us on track. My son completed his first Juz in six months.",
-        course: 'Hifz / Memorization',
-        rating: 5,
-      },
-      {
-        id: 'au-3',
-        name: 'Hassan W.',
-        location: 'Brisbane, QLD',
-        country: 'australia',
-        quote:
-          'I started learning Quran as an adult. I thought it was too late, but my teacher made me feel completely at ease. I now read Surah Al-Baqarah with confidence.',
-        course: 'Quran for Adults',
-        rating: 5,
-      },
-    ],
+    testimonials: [],
     faqs: [
       {
         q: 'Do you offer Quran classes in Perth (Western Australian Time)?',
@@ -504,38 +380,7 @@ export const countriesDataFr: CountryData[] = [
       ],
     },
     localCurrencyNote: 'Les prix sont en USD. Les formules commencent à 30 $/mois.',
-    testimonials: [
-      {
-        id: 'usa-1',
-        name: 'Fatima R.',
-        location: 'New York, NY',
-        country: 'usa',
-        quote:
-          'Avoir une enseignante était très important pour moi. Les horaires de cours sont flexibles et s’adaptent parfaitement à mes heures de travail. Je me sens tellement à l’aise et soutenue.',
-        course: 'Tajwid pour adultes',
-        rating: 5,
-      },
-      {
-        id: 'usa-2',
-        name: 'Khalid M.',
-        location: 'Houston, TX',
-        country: 'usa',
-        quote:
-          'Mon fils est parti de zéro et a désormais mémorisé la moitié de son Hifz. L’enseignant prend de nos nouvelles sur WhatsApp chaque semaine — nous nous sentons comme en famille.',
-        course: 'Hifz / Mémorisation',
-        rating: 5,
-      },
-      {
-        id: 'usa-3',
-        name: 'Nadia S.',
-        location: 'Dearborn, MI',
-        country: 'usa',
-        quote:
-          'En tant que convertie, j’avais peur de trouver un enseignant qui serait patient avec mon niveau de grande débutante. Mon enseignant a été formidable — bienveillant, clair et encourageant.',
-        course: 'Noorani Qaida',
-        rating: 5,
-      },
-    ],
+    testimonials: [],
     faqs: [
       {
         q: 'Proposez-vous des cours de Coran dans tous les fuseaux horaires américains ?',
@@ -612,38 +457,7 @@ export const countriesDataFr: CountryData[] = [
       ],
     },
     localCurrencyNote: '≈ 24–56 £/mois aux taux de change actuels (facturé en USD).',
-    testimonials: [
-      {
-        id: 'uk-1',
-        name: 'Sarah A.',
-        location: 'Londres, Royaume-Uni',
-        country: 'uk',
-        quote:
-          'Le Tajwid de mes enfants s’est amélioré au point d’être méconnaissable en seulement 3 mois. Les enseignants sont si patients et compétents — ma fille attend même ses cours avec impatience chaque jour.',
-        course: 'Coran pour enfants',
-        rating: 5,
-      },
-      {
-        id: 'uk-2',
-        name: 'Amina H.',
-        location: 'Birmingham, Royaume-Uni',
-        country: 'uk',
-        quote:
-          'J’ai essayé plusieurs académies en ligne. Zad Academy est la seule où je me suis sentie véritablement soutenue. L’essai gratuit m’a immédiatement convaincue — la qualité est exceptionnelle.',
-        course: 'Arabe pour non-arabophones',
-        rating: 5,
-      },
-      {
-        id: 'uk-3',
-        name: 'Zaynab H.',
-        location: 'Manchester, Royaume-Uni',
-        country: 'uk',
-        quote:
-          'Ma fille avait des difficultés en Tajwid à la madrassa. En deux mois de cours particuliers avec Zad Academy, son enseignant à la madrassa a remarqué les progrès. Je recommande vivement.',
-        course: 'Cours de Tajwid',
-        rating: 5,
-      },
-    ],
+    testimonials: [],
     faqs: [
       {
         q: 'Ajustez-vous les horaires des cours pour l’heure d’été britannique (BST) ?',
@@ -716,38 +530,7 @@ export const countriesDataFr: CountryData[] = [
       ],
     },
     localCurrencyNote: '≈ 41–95 $ CA/mois aux taux de change actuels (facturé en USD).',
-    testimonials: [
-      {
-        id: 'ca-1',
-        name: 'Ahmed K.',
-        location: 'Toronto, ON',
-        country: 'canada',
-        quote:
-          'J’ai commencé en grand débutant et je lis maintenant le Coran avec assurance. Le format en cours particuliers fait toute la différence — l’enseignant se concentre entièrement sur moi et sur mon rythme.',
-        course: 'Noorani Qaida',
-        rating: 5,
-      },
-      {
-        id: 'ca-2',
-        name: 'Ibrahim F.',
-        location: 'Calgary, AB',
-        country: 'canada',
-        quote:
-          'Calgary est mal desservie par les écoles islamiques locales. Zad Academy a comblé cette lacune à la perfection. Mes enfants bénéficient désormais d’un enseignement coranique régulier et de grande qualité depuis la maison.',
-        course: 'Coran pour enfants',
-        rating: 5,
-      },
-      {
-        id: 'ca-3',
-        name: 'Maryam T.',
-        location: 'Vancouver, BC',
-        country: 'canada',
-        quote:
-          'Les créneaux du soir à l’heure du Pacifique sont parfaits. Mes enfants finissent l’école, prennent une collation et rejoignent leur cours de Coran avant le dîner. La routine a transformé notre foyer.',
-        course: 'Coran pour enfants',
-        rating: 5,
-      },
-    ],
+    testimonials: [],
     faqs: [
       {
         q: 'Servez-vous les élèves de toutes les provinces et de tous les territoires canadiens ?',
@@ -820,38 +603,7 @@ export const countriesDataFr: CountryData[] = [
       ],
     },
     localCurrencyNote: '≈ 46–108 $ AU/mois aux taux de change actuels (facturé en USD).',
-    testimonials: [
-      {
-        id: 'au-1',
-        name: 'Omar M.',
-        location: 'Melbourne, VIC',
-        country: 'australia',
-        quote:
-          'Le programme d’Ijazah est rigoureux et authentique. Mon enseignant possède une chaîne directe jusqu’à Al-Azhar. J’ai terminé ma révision de Hifz et reçu mon certificat d’Ijazah — un rêve réalisé.',
-        course: 'Programme Ijazah',
-        rating: 5,
-      },
-      {
-        id: 'au-2',
-        name: 'Aisha N.',
-        location: 'Sydney, NSW',
-        country: 'australia',
-        quote:
-          'Nous avons essayé des professeurs particuliers locaux mais avons eu du mal à être réguliers. L’horaire hebdomadaire fixe de Zad Academy et les rappels WhatsApp nous ont maintenus sur la bonne voie. Mon fils a terminé son premier Juz en six mois.',
-        course: 'Hifz / Mémorisation',
-        rating: 5,
-      },
-      {
-        id: 'au-3',
-        name: 'Hassan W.',
-        location: 'Brisbane, QLD',
-        country: 'australia',
-        quote:
-          'J’ai commencé à apprendre le Coran à l’âge adulte. Je pensais qu’il était trop tard, mais mon enseignant m’a mis complètement à l’aise. Je lis désormais la sourate Al-Baqarah avec assurance.',
-        course: 'Coran pour adultes',
-        rating: 5,
-      },
-    ],
+    testimonials: [],
     faqs: [
       {
         q: 'Proposez-vous des cours de Coran à Perth (heure de l’Australie-Occidentale) ?',

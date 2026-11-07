@@ -56,12 +56,29 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   })
 }
 
+/** Flip to true only once these pages are rewritten with real content. */
+const COUNTRY_PAGES_ENABLED = false
+
+const IN_COUNTRY_FR: Record<string, string> = {
+  usa: 'aux États-Unis',
+  uk: 'au Royaume-Uni',
+  canada: 'au Canada',
+  australia: 'en Australie',
+}
+
 export default async function CountryPage({ params }: Props) {
   const { country: slug } = await params
+  // Retired: these pages targeted the US, UK, Canada and Australia with
+  // content that was never true (families served, local testimonials).
+  if (!COUNTRY_PAGES_ENABLED) notFound()
   const locale = await getLocale()
   const t = getT(locale)
   const country = getCountriesData(locale).find((c) => c.slug === slug)
   if (!country) notFound()
+  // French needs the right preposition ("au Royaume-Uni", not "en Royaume-Uni").
+  // Used by the French headings and by the WhatsApp messages, which are French
+  // in both languages.
+  const where = IN_COUNTRY_FR[country.slug]
 
   const schemas = [
     localBusinessSchema(country),
@@ -127,7 +144,7 @@ export default async function CountryPage({ params }: Props) {
                 {t('nav.bookFreeTrial')}
               </LinkButton>
               <a
-                href={whatsappLink(t('countryPage.waLearnMore', { country: country.name }))}
+                href={whatsappLink(t('countryPage.waLearnMore', { country: country.name, where }))}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center gap-2.5 h-14 px-7 rounded-xl border border-white/30 text-white text-base font-medium hover:border-accent hover:text-accent transition-colors"
@@ -148,7 +165,7 @@ export default async function CountryPage({ params }: Props) {
         <Container>
           <div className="mb-10">
             <p className="text-secondary text-sm font-semibold uppercase tracking-wider mb-3">
-              {t('countryPage.whyEyebrow', { country: country.shortName })}
+              {t('countryPage.whyEyebrow', { country: country.shortName, where })}
             </p>
             <h2 id="why-heading" className="heading-xl font-heading text-primary">
               {t('countryPage.whyHeading')}
@@ -284,56 +301,58 @@ export default async function CountryPage({ params }: Props) {
         </Container>
       </Section>
 
-      {/* ── Testimonials ── */}
-      <Section aria-labelledby="testimonials-heading">
-        <Container>
-          <div className="text-center mb-10">
-            <p className="text-secondary text-sm font-semibold uppercase tracking-wider mb-3">
-              {t('countryPage.testimonialsEyebrow')}
-            </p>
-            <h2 id="testimonials-heading" className="heading-xl font-heading text-primary">
-              {t('countryPage.testimonialsHeading', { country: country.shortName })}
-            </h2>
-          </div>
+      {/* ── Testimonials — only real reviews from families in this country ── */}
+      {country.testimonials.length > 0 && (
+        <Section aria-labelledby="testimonials-heading">
+          <Container>
+            <div className="text-center mb-10">
+              <p className="text-secondary text-sm font-semibold uppercase tracking-wider mb-3">
+                {t('countryPage.testimonialsEyebrow')}
+              </p>
+              <h2 id="testimonials-heading" className="heading-xl font-heading text-primary">
+                {t('countryPage.testimonialsHeading', { country: country.shortName, where })}
+              </h2>
+            </div>
 
-          <ul className="grid grid-cols-1 md:grid-cols-3 gap-6" role="list">
-            {country.testimonials.map((testimonial) => (
-              <li
-                key={testimonial.id}
-                className="bg-cream rounded-2xl p-6 border border-border-soft flex flex-col gap-4"
-              >
-                <div
-                  className="flex gap-0.5"
-                  role="img"
-                  aria-label={t('common.ratingAria', { rating: testimonial.rating })}
+            <ul className="grid grid-cols-1 md:grid-cols-3 gap-6" role="list">
+              {country.testimonials.map((testimonial) => (
+                <li
+                  key={testimonial.id}
+                  className="bg-cream rounded-2xl p-6 border border-border-soft flex flex-col gap-4"
                 >
-                  {Array.from({ length: testimonial.rating }).map((_, i) => (
-                    <Star
-                      key={i}
-                      className="size-4 fill-accent text-accent"
-                      aria-hidden="true"
-                    />
-                  ))}
-                </div>
-                <blockquote className="text-primary text-sm leading-relaxed flex-1">
-                  &ldquo;{testimonial.quote}&rdquo;
-                </blockquote>
-                <footer className="text-sm">
-                  <p className="font-semibold text-primary">{testimonial.name}</p>
-                  <p className="text-muted-text">{testimonial.location} &middot; {testimonial.course}</p>
-                </footer>
-              </li>
-            ))}
-          </ul>
-        </Container>
-      </Section>
+                  <div
+                    className="flex gap-0.5"
+                    role="img"
+                    aria-label={t('common.ratingAria', { rating: testimonial.rating })}
+                  >
+                    {Array.from({ length: testimonial.rating }).map((_, i) => (
+                      <Star
+                        key={i}
+                        className="size-4 fill-accent text-accent"
+                        aria-hidden="true"
+                      />
+                    ))}
+                  </div>
+                  <blockquote className="text-primary text-sm leading-relaxed flex-1">
+                    &ldquo;{testimonial.quote}&rdquo;
+                  </blockquote>
+                  <footer className="text-sm">
+                    <p className="font-semibold text-primary">{testimonial.name}</p>
+                    <p className="text-muted-text">{testimonial.location} &middot; {testimonial.course}</p>
+                  </footer>
+                </li>
+              ))}
+            </ul>
+          </Container>
+        </Section>
+      )}
 
       {/* ── Country FAQ ── */}
       <Section bg="cream" aria-labelledby="faq-heading">
         <Container>
           <div className="mb-10">
             <p className="text-secondary text-sm font-semibold uppercase tracking-wider mb-3">
-              {t('countryPage.faqEyebrow', { country: country.shortName })}
+              {t('countryPage.faqEyebrow', { country: country.shortName, where })}
             </p>
             <h2 id="faq-heading" className="heading-xl font-heading text-primary">
               {t('countryPage.faqHeading')}
@@ -391,7 +410,7 @@ export default async function CountryPage({ params }: Props) {
               {t('coursesIndex.hadith')}
             </p>
             <h2 id="cta-heading" className="heading-xl font-display text-white mb-4">
-              {t('countryPage.ctaHeading', { country: country.shortName })}
+              {t('countryPage.ctaHeading', { country: country.shortName, where })}
             </h2>
             <p className="text-white/70 text-lg mb-10">
               {t('countryPage.ctaSub')}
@@ -401,7 +420,7 @@ export default async function CountryPage({ params }: Props) {
                 {t('nav.bookFreeTrial')}
               </LinkButton>
               <a
-                href={whatsappLink(t('countryPage.waBookTrial', { country: country.name }))}
+                href={whatsappLink(t('countryPage.waBookTrial', { country: country.name, where }))}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center gap-2.5 h-14 px-7 rounded-xl border border-white/30 text-white font-medium hover:border-accent hover:text-accent transition-colors"

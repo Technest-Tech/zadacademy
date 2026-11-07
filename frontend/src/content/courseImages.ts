@@ -11,11 +11,12 @@ const COURSE_IMAGES: Record<string, string> = {
   'quran-classes-for-adults': '/images/courses/quran-classes-for-adults.webp',
   'tajweed-course': '/images/courses/tajweed-course.webp',
   'hifz-memorization': '/images/courses/hifz-memorization.webp',
-  'ijazah-program': '/images/courses/ijazah-program.webp',
+  'arabic-for-kids': '/images/courses/quran-classes-for-kids.webp',
+  'arabic-conversation-for-kids': '/images/courses/arabic-for-non-arabs.webp',
+  'prophets-stories-for-kids': '/images/courses/islamic-studies.webp',
   'arabic-for-non-arabs': '/images/courses/arabic-for-non-arabs.webp',
   'tafseer-course': '/images/courses/tafseer-course.webp',
   'islamic-studies': '/images/courses/islamic-studies.webp',
-  'ten-qiraat': '/images/courses/ten-qiraat.webp',
   'female-quran-teachers': '/images/courses/female-quran-teachers.webp',
 }
 

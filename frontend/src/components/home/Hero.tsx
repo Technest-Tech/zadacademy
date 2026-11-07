@@ -25,8 +25,6 @@ export async function Hero() {
   const locale = await getLocale()
   const t = getT(locale)
   const homeContent = getHomeContent(locale)
-  const [subheadingBeforeAlAzhar, subheadingAfterAlAzhar] =
-    homeContent.hero.subheading.split('Al-Azhar')
 
   return (
     <section
@@ -105,11 +103,7 @@ export async function Hero() {
             </h1>
 
             <p className="text-white/75 text-lg sm:text-xl leading-relaxed mb-7 sm:mb-10 max-w-xl">
-              {subheadingBeforeAlAzhar}
-              <strong className="whitespace-nowrap rounded-md border border-accent/40 bg-accent/15 px-1.5 py-0.5 font-bold text-accent shadow-[0_0_20px_rgba(201,162,75,0.2)]">
-                Al-Azhar
-              </strong>
-              {subheadingAfterAlAzhar}
+              {homeContent.hero.subheading}
             </p>
 
             {/* CTAs */}
@@ -163,13 +157,7 @@ export async function Hero() {
                 ))}
               </div>
               <div>
-                <div className="flex items-center gap-1 mb-0.5">
-                  {[...Array(5)].map((_, i) => (
-                    <Star key={i} className="size-3.5 fill-accent text-accent" aria-hidden="true" />
-                  ))}
-                  <span className="text-white font-semibold text-sm ml-1.5">{t('testimonialsMarquee.statRatingValue')}</span>
-                </div>
-                <p className="text-white/60 text-xs">{t('home.heroSocialProof')}</p>
+                <p className="text-white font-semibold text-sm">{t('home.heroSocialProof')}</p>
               </div>
             </div>
           </div>

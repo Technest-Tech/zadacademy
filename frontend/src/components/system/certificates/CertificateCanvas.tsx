@@ -403,7 +403,7 @@ export function ModernCert({ data }: { data: CertData }) {
         display: 'flex', alignItems: 'center', justifyContent: 'space-between',
         padding: '0 28px',
       }}>
-        <div style={{ color: 'rgba(255,255,255,0.6)', fontSize: 9 }}>www.alrayanacademy.com</div>
+        <div style={{ color: 'rgba(255,255,255,0.6)', fontSize: 9 }}>zadacademiq.com</div>
         <div style={{ color: 'rgba(255,255,255,0.45)', fontSize: 9, fontFamily: 'monospace' }}>{data.certNumber}</div>
       </div>
     </div>
@@ -667,7 +667,7 @@ body{width:297mm;height:210mm;background:#F9FAFB;position:relative;overflow:hidd
     <div class="sb"><div class="sl">${esc(d.teacherName || 'Instructor')}</div><div class="sr">Instructor</div></div>
   </div>
 </div>
-<div class="ftr"><div class="fl">www.alrayanacademy.com</div><div class="fr">${esc(d.certNumber)}</div></div>
+<div class="ftr"><div class="fl">zadacademiq.com</div><div class="fr">${esc(d.certNumber)}</div></div>
 </body></html>`
 }
 

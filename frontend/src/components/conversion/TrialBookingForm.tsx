@@ -5,7 +5,10 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { ArrowRight, Baby, Check, Loader2, Lock, User } from 'lucide-react'
+import Link from 'next/link'
 import { SuccessState } from './SuccessState'
+import { trackLead } from '@/lib/tracking/trackers'
+import { localizedHref } from '@/i18n/href'
 import { courses, getCourses } from '@/content/courses'
 import { navCourseSlugs } from '@/config/nav'
 import { useT } from '@/i18n/MarketingI18nProvider'
@@ -153,6 +156,8 @@ export function TrialBookingForm() {
         const json = (await res.json()) as { reference: string }
         setReference(json.reference)
         savedInBackend = true
+        // The lead exists from here on, whatever happens to the email below.
+        trackLead({ reference: json.reference, course: data.courseInterest })
 
         notification = {
           subject: `[Free Trial Booking] ${data.name}`,
@@ -458,9 +463,17 @@ export function TrialBookingForm() {
               )}
             </button>
 
-            <p className="flex items-center justify-center gap-1.5 text-[11px] text-white/45">
-              <Lock className="size-3" aria-hidden="true" />
-              {t('trialForm.secureNote')}
+            <p className="flex items-center justify-center gap-1.5 text-center text-[11px] text-white/45">
+              <Lock className="size-3 shrink-0" aria-hidden="true" />
+              <span>
+                {t('trialForm.secureNote')}{' '}
+                <Link
+                  href={localizedHref('/privacy', locale)}
+                  className="underline underline-offset-2 hover:text-white/70"
+                >
+                  {t('trialForm.privacyLink')}
+                </Link>
+              </span>
             </p>
           </form>
         </div>

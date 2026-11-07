@@ -9,6 +9,7 @@ import { StatsSection } from '@/components/home/StatsSection'
 import { CoursesGrid } from '@/components/home/CoursesGrid'
 import { TestimonialsMarquee } from '@/components/home/TestimonialsMarquee'
 import { TeachersSection } from '@/components/home/TeachersSection'
+import { ApproachSection } from '@/components/home/ApproachSection'
 import { CourseFinderQuest } from '@/components/home/CourseFinderQuest'
 import { MobileJourney } from '@/components/home/MobileJourney'
 import { TrustStrip } from '@/components/home/TrustStrip'
@@ -67,7 +68,7 @@ export default async function HomePage() {
       <StatsSection stats={stats} />
 
       {/* ── Testimonials (directly below stats) ── */}
-      <TestimonialsMarquee items={testimonials} locale={locale} />
+      {testimonials.length > 0 && <TestimonialsMarquee items={testimonials} locale={locale} />}
 
       {/* ── How It Works ── */}
       <section className="relative overflow-hidden bg-navy-soft py-12 sm:py-14" aria-labelledby="how-heading">
@@ -117,6 +118,9 @@ export default async function HomePage() {
           </div>
         </Container>
       </section>
+
+      {/* ── Our approach (teaching for French-speaking families) ── */}
+      <ApproachSection locale={locale} />
 
       {/* ── Teachers ── */}
       <TeachersSection />

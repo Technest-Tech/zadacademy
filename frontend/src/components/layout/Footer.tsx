@@ -8,6 +8,8 @@ import { getLocale } from '@/i18n/getLocale'
 import { getT } from '@/i18n/getDictionary'
 import { localizedHref } from '@/i18n/href'
 import { Container } from './Container'
+import { CookieSettingsButton } from '@/components/consent/CookieSettingsButton'
+import { hasTrackers } from '@/config/tracking'
 
 const SOCIAL_META: Record<keyof SiteSocial, { label: string; path: string }> = {
   facebook: {
@@ -116,7 +118,8 @@ export async function Footer() {
                 {contact.address && (
                   <li className="flex items-center gap-2.5">
                     <MapPin className="size-4 shrink-0" aria-hidden="true" />
-                    {contact.address}
+                    {/* The stored default is English; show it in the page's language. */}
+                    {/^online\b/i.test(contact.address) ? t('footer.onlineAddress') : contact.address}
                   </li>
                 )}
               </ul>
@@ -176,6 +179,14 @@ export async function Footer() {
                       </Link>
                     </li>
                   ))}
+                  {group === 'legal' && hasTrackers && (
+                    <li>
+                      <CookieSettingsButton
+                        label={t('footer.cookieSettings')}
+                        className="text-sm text-white/70 hover:text-white transition-colors"
+                      />
+                    </li>
+                  )}
                 </ul>
               </div>
             ))}

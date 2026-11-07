@@ -6,12 +6,12 @@ export const homeContent = {
     arabicVerseLabel: 'In the name of Allah, the Most Gracious, the Most Merciful',
     headingStart: 'Learn',
     headingEmphasis: 'Arabic & Quran',
-    headingEnd: 'with Certified Teachers',
+    headingEnd: 'with Dedicated Teachers',
     subheading:
-      'Premium 1-on-1 classes in Quran, Tajweed, Hifz, Arabic, and Islamic Studies. Certified teachers from Al-Azhar. Students in 50+ countries.',
+      'Private online classes in Quran, Tajweed, Hifz, Arabic and Islamic Studies, for children and adults. Free first class, money-back guarantee on your first package.',
     ctaPrimary: 'Book Free Trial Class',
     ctaSecondary: 'Chat on WhatsApp',
-    microcopy: '✓ Free first class · ✓ No credit card required · ✓ Cancel anytime',
+    microcopy: '✓ Free first class · ✓ No credit card required · ✓ Money-back guarantee',
   },
 
   trustBadges: [
@@ -19,18 +19,18 @@ export const homeContent = {
     { icon: 'ShieldCheck',   label: 'Free First Class' },
     { icon: 'Heart',         label: 'Female Teachers Available' },
     { icon: 'Globe',         label: 'Native Arab Tutors' },
-    { icon: 'GraduationCap', label: 'Ijazah-Certified' },
+    { icon: 'GraduationCap', label: 'Money-back guarantee' },
   ],
 
   whyUs: {
     eyebrow: 'Why Zad Academy',
-    heading: 'Scholars, Not Just Teachers',
-    body: "Every teacher at Zad Academy holds an authenticated Ijazah — a chain of transmission going back to the Prophet ﷺ. We don't hire tutors; we partner with certified scholars.",
+    heading: 'One Dedicated Teacher for Every Student',
+    body: 'Every student learns 1-on-1 with their teacher, at their own pace and towards their own goals. Try it for free — and if your first package is not right for you, we refund it.',
     items: [
       {
         icon: 'BookOpen',
-        title: 'Qualified Teachers',
-        desc: 'All teachers hold Ijazah and are graduates of Al-Azhar or equivalent Islamic universities.',
+        title: 'Dedicated Teachers',
+        desc: 'Arabic-speaking male and female teachers, in private classes for men, women and children.',
       },
       {
         icon: 'Clock',
@@ -52,7 +52,7 @@ export const homeContent = {
     hadithTranslation:
       '"The best of you are those who learn the Quran and teach it." — Prophet Muhammad ﷺ',
     heading: 'Begin Your Quran Journey Today',
-    subheading: 'Join 1,500+ students from 50+ countries. Your first class is completely free.',
+    subheading: 'Join our 180 students. Your first class is completely free.',
     ctaPrimary: 'Book Free Trial Class',
     ctaSecondary: 'Chat on WhatsApp',
   },
@@ -64,12 +64,12 @@ export const homeContentFr: typeof homeContent = {
     arabicVerseLabel: 'Au nom d’Allah, le Tout Miséricordieux, le Très Miséricordieux',
     headingStart: 'Apprenez',
     headingEmphasis: 'l’arabe et le Coran',
-    headingEnd: 'avec des enseignants certifiés',
+    headingEnd: 'avec des enseignants dédiés',
     subheading:
-      'Cours particuliers haut de gamme de Coran, Tajwid, Hifz, arabe et sciences islamiques. Enseignants certifiés d’Al-Azhar. Des élèves dans plus de 50 pays.',
+      'Cours particuliers en ligne de Coran, Tajwid, Hifz, arabe et sciences islamiques, pour enfants et adultes. Premier cours offert, premier forfait satisfait ou remboursé.',
     ctaPrimary: 'Réserver un cours d’essai gratuit',
     ctaSecondary: 'Discuter sur WhatsApp',
-    microcopy: '✓ Premier cours gratuit · ✓ Sans carte bancaire · ✓ Annulation à tout moment',
+    microcopy: '✓ Premier cours gratuit · ✓ Sans carte bancaire · ✓ Satisfait ou remboursé',
   },
 
   trustBadges: [
@@ -77,18 +77,18 @@ export const homeContentFr: typeof homeContent = {
     { icon: 'ShieldCheck',   label: 'Premier cours gratuit' },
     { icon: 'Heart',         label: 'Enseignantes disponibles' },
     { icon: 'Globe',         label: 'Tuteurs arabophones natifs' },
-    { icon: 'GraduationCap', label: 'Certifiés par Ijazah' },
+    { icon: 'GraduationCap', label: 'Satisfait ou remboursé' },
   ],
 
   whyUs: {
     eyebrow: 'Pourquoi Zad Academy',
-    heading: 'Des savants, pas de simples enseignants',
-    body: 'Chaque enseignant de Zad Academy détient une Ijazah authentifiée — une chaîne de transmission (sanad) remontant jusqu’au Prophète ﷺ. Nous ne recrutons pas des tuteurs ; nous collaborons avec des savants certifiés.',
+    heading: 'Un enseignant dédié pour chaque élève',
+    body: 'Chaque élève suit ses cours en tête-à-tête avec son enseignant, à son rythme et selon ses objectifs. Essayez gratuitement — et si votre premier forfait ne vous convient pas, nous vous le remboursons.',
     items: [
       {
         icon: 'BookOpen',
-        title: 'Enseignants qualifiés',
-        desc: 'Tous nos enseignants détiennent une Ijazah et sont diplômés d’Al-Azhar ou d’universités islamiques équivalentes.',
+        title: 'Enseignants dédiés',
+        desc: 'Des enseignants et enseignantes arabophones, en cours particuliers pour hommes, femmes et enfants.',
       },
       {
         icon: 'Clock',

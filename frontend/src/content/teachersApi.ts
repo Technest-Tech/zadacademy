@@ -121,22 +121,20 @@ function specialtyDetails(specialties: string[], locale: Locale): SpecialtyDetai
   }))
 }
 
-function journey(role: string, primary: string, locale: Locale): TeacherExperience[] {
+/**
+ * Only what the academy actually knows: the teacher's role here and their
+ * years of experience. (This used to invent an "Islamic Institute, Cairo,
+ * 2016 – 2023" job for every teacher.)
+ */
+function journey(role: string, years: number, primary: string, locale: Locale): TeacherExperience[] {
   if (locale === 'fr') {
     return [
       {
         role,
         org: 'Zad Academy',
-        period: '2023 – Aujourd’hui · En ligne',
+        period: `${years} ans d’expérience · En ligne`,
         location: 'En ligne',
-        desc: `Cours particuliers de ${primary} en ligne pour des élèves du monde entier, enfants et adultes, du niveau débutant au niveau avancé.`,
-      },
-      {
-        role: 'Enseignant de Coran et d’arabe',
-        org: 'Institut islamique',
-        period: '2016 – 2023 · Le Caire, Égypte',
-        location: 'Le Caire, Égypte',
-        desc: 'A enseigné le Coran, le Tajwid et l’arabe à des élèves de tous âges, en présentiel et en ligne.',
+        desc: `Cours particuliers en ligne (${primary}) pour des élèves francophones, avec des explications en français.`,
       },
     ]
   }
@@ -144,31 +142,28 @@ function journey(role: string, primary: string, locale: Locale): TeacherExperien
     {
       role,
       org: 'Zad Academy',
-      period: '2023 – Present · Online',
+      period: `${years} years of experience · Online`,
       location: 'Online',
-      desc: `Private online ${primary} instruction for students worldwide, children and adults, from beginner to advanced level.`,
-    },
-    {
-      role: 'Quran & Arabic Teacher',
-      org: 'Islamic Institute',
-      period: '2016 – 2023 · Cairo, Egypt',
-      location: 'Cairo, Egypt',
-      desc: 'Taught Quran, Tajweed and Arabic to students of all ages, in person and online.',
+      desc: `Private online classes (${primary}) for French-speaking students, with explanations in French.`,
     },
   ]
 }
 
-function certifications(credentials: string, locale: Locale): TeacherCertification[] {
-  const fallbackDegree = locale === 'fr' ? 'Diplôme en sciences coraniques' : 'Quranic Sciences degree'
-  const fallbackOrg = locale === 'fr' ? 'Université Al-Azhar' : 'Al-Azhar University'
-  const first = credentials ? credentials.split('.')[0].trim() : fallbackDegree
-  const org = credentials ? credentials.split('—')[0].trim() : fallbackOrg
-  const ijazahTitle = locale === 'fr' ? 'Ijazah en Hafs ‘an ‘Asim (avec sanad)' : 'Ijazah in Hafs an ‘Asim (with sanad)'
-  const ijazahOrg = locale === 'fr' ? 'Chaîne de transmission certifiée' : 'Certified chain of transmission'
-  return [
-    { title: first, org, year: '2016' },
-    { title: ijazahTitle, org: ijazahOrg, year: '2019' },
-  ]
+/**
+ * The teacher's degree, read from `credentials` written as
+ * "Degree — Institution". No year and no Ijazah are added unless the teacher
+ * has them on file.
+ */
+function certifications(credentials: string): TeacherCertification[] {
+  if (!credentials.trim()) return []
+  return credentials
+    .split(/\.\s+/)
+    .map((part) => part.trim().replace(/\.$/, ''))
+    .filter(Boolean)
+    .map((part) => {
+      const [title, ...rest] = part.split('—')
+      return { title: title.trim(), org: rest.join('—').trim() }
+    })
 }
 
 function ratingBreakdown(rating: number): RatingBreakdown {
@@ -220,8 +215,8 @@ function mapApiTeacher(a: ApiTeacher, locale: Locale): Teacher {
     teachingStyle: a.teaching_style ?? TEACHING_STYLE_FALLBACK[locale],
     strengths: a.strengths ?? strengthsFallback(a.tags ?? [], first, locale),
     specialtyDetails: specialtyDetails(specialties, locale),
-    journey: journey(a.role, specialties[0] ?? 'Quran', locale),
-    certifications: certifications(a.credentials ?? '', locale),
+    journey: journey(a.role, a.years_experience, specialties[0] ?? (locale === 'fr' ? 'Coran et arabe' : 'Quran and Arabic'), locale),
+    certifications: certifications(a.credentials ?? ''),
     ratingBreakdown: ratingBreakdown(Number(a.rating)),
     reviews: (a.reviews ?? []).map((r) => ({
       id: String(r.id),

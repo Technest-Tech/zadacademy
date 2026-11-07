@@ -1,24 +1,30 @@
 import Link from 'next/link'
 import type { BlogPost } from '@/content/blog'
+import type { Locale } from '@/i18n/config'
+import { localeTag } from '@/i18n/config'
+import { localizedHref } from '@/i18n/href'
+import { dictionaries, translate } from '@/i18n/translate'
 
 type Props = {
   post: BlogPost
+  locale?: Locale
 }
 
-function formatDate(iso: string): string {
-  return new Intl.DateTimeFormat('en-GB', {
+function formatDate(iso: string, locale: Locale): string {
+  return new Intl.DateTimeFormat(localeTag[locale], {
     day: 'numeric',
     month: 'short',
     year: 'numeric',
   }).format(new Date(iso))
 }
 
-export function BlogCard({ post }: Props) {
+export function BlogCard({ post, locale = 'en' }: Props) {
+  const t = (key: string, vars?: Record<string, string | number>) => translate(dictionaries[locale], key, vars)
   const primaryCategory = post.categories[0]
 
   return (
     <Link
-      href={`/blog/${post.slug}`}
+      href={localizedHref(`/blog/${post.slug}`, locale)}
       className="group flex flex-col rounded-2xl border border-border-soft bg-white overflow-hidden hover:shadow-md transition-shadow"
     >
       {/* Cover placeholder */}
@@ -39,9 +45,9 @@ export function BlogCard({ post }: Props) {
           {post.excerpt}
         </p>
         <div className="flex items-center gap-3 text-xs text-muted-text pt-1 border-t border-border-soft">
-          <span>{post.reading_minutes} min read</span>
+          <span>{t('blogUi.minRead', { n: post.reading_minutes })}</span>
           <span aria-hidden="true">·</span>
-          <span>{formatDate(post.published_at)}</span>
+          <span>{formatDate(post.published_at, locale)}</span>
         </div>
       </div>
     </Link>
