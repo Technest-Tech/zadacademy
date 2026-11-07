@@ -96,7 +96,20 @@ class TrialBookingTest extends TestCase
         ]);
 
         $response->assertStatus(422)
-            ->assertJsonValidationErrors(['name', 'email', 'country', 'ageGroup', 'courseInterest', 'preferredTime', 'timezone']);
+            ->assertJsonValidationErrors(['name', 'email', 'phone', 'country', 'ageGroup', 'courseInterest', 'preferredTime', 'timezone']);
+    }
+
+    public function test_books_with_a_whatsapp_number_and_no_email(): void
+    {
+        $payload = $this->validPayload(['phone' => '+33 6 12 34 56 78', 'country' => 'FR']);
+        unset($payload['email']);
+
+        $this->postJson('/api/v1/trial-bookings', $payload)->assertStatus(201);
+
+        $this->assertDatabaseHas('trial_bookings', ['phone' => '+33 6 12 34 56 78', 'email' => null]);
+        $this->assertSame('FR', Lead::firstOrFail()->country);
+        // No address to confirm to.
+        Mail::assertNothingQueued();
     }
 
     public function test_returns_422_with_invalid_email(): void

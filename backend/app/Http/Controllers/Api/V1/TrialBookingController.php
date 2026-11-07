@@ -22,9 +22,10 @@ class TrialBookingController extends Controller
     ): JsonResponse {
         $validated = $request->validate([
             'name'           => 'required|string|max:100',
-            'email'          => 'required|email|max:255',
+            // The short form sends a WhatsApp number instead of an email; one of the two is required.
+            'email'          => 'nullable|required_without:phone|email|max:255',
             'country'        => 'required|string|max:100',
-            'phone'          => 'nullable|string|max:30',
+            'phone'          => 'nullable|required_without:email|string|max:30',
             'ageGroup'       => 'required|in:kid-5-8,kid-9-12,teen,adult',
             'courseInterest' => 'required|string|max:100',
             'preferredTime'  => 'required|string|max:50',
@@ -35,7 +36,7 @@ class TrialBookingController extends Controller
         $booking = TrialBooking::create([
             'reference'       => $refs->forTrialBooking(),
             'name'            => $validated['name'],
-            'email'           => $validated['email'],
+            'email'           => $validated['email'] ?? null,
             'country'         => $validated['country'],
             'phone'           => $validated['phone'] ?? null,
             'age_group'       => $validated['ageGroup'],
@@ -59,8 +60,11 @@ class TrialBookingController extends Controller
 
         // The website sends the admin notification through Web3Forms after
         // this response confirms the booking was saved successfully.
-        Mail::to($booking->email)
-            ->queue(new TrialBookingConfirmation($booking));
+        // Bookings from the short WhatsApp form carry no email to confirm to.
+        if ($booking->email) {
+            Mail::to($booking->email)
+                ->queue(new TrialBookingConfirmation($booking));
+        }
 
         return response()->json([
             'reference' => $booking->reference,

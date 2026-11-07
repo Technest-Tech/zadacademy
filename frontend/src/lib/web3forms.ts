@@ -16,6 +16,9 @@ export type Web3FormsFields = Record<string, string>
 export async function sendWeb3FormsNotification(fields: Web3FormsFields): Promise<void> {
   const response = await fetch(WEB3FORMS_ENDPOINT, {
     method: 'POST',
+    // Lets the request finish even when the page navigates away right after
+    // (the booking form opens WhatsApp as soon as it is sent).
+    keepalive: true,
     headers: {
       'Content-Type': 'application/json',
       Accept: 'application/json',

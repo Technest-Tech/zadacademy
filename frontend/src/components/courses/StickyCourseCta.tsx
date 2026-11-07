@@ -3,10 +3,9 @@ import { useState, useEffect } from 'react'
 import { LinkButton } from '@/components/ui/link-button'
 import { whatsappLink } from '@/config/site'
 import { useT } from '@/i18n/MarketingI18nProvider'
-import { localizedHref } from '@/i18n/href'
 
 export function StickyCourseCta({ courseTitle }: { courseTitle: string }) {
-  const { locale, t } = useT()
+  const { t } = useT()
   const [visible, setVisible] = useState(false)
 
   useEffect(() => {
@@ -25,7 +24,8 @@ export function StickyCourseCta({ courseTitle }: { courseTitle: string }) {
       aria-label={t('coursePage.stickyAria')}
     >
       <div className="flex gap-3 max-w-sm mx-auto">
-        <LinkButton href={localizedHref('/contact', locale)} variant="gold" size="sm" className="flex-1 justify-center">
+        {/* The booking form sits right under the hero on phones. */}
+        <LinkButton href="#reserver" variant="gold" size="sm" className="flex-1 justify-center">
           {t('coursePage.stickyBookTrial')}
         </LinkButton>
         <a

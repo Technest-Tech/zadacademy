@@ -35,7 +35,7 @@
       <table class="fields">
         <tr><th>Reference</th><td>{{ $booking->reference }}</td></tr>
         <tr><th>Name</th><td>{{ $booking->name }}</td></tr>
-        <tr><th>Email</th><td>{{ $booking->email }}</td></tr>
+        <tr><th>Email</th><td>{{ $booking->email ?? '—' }}</td></tr>
         <tr><th>Country</th><td>{{ $booking->country }}</td></tr>
         <tr><th>Phone</th><td>{{ $booking->phone ?? '—' }}</td></tr>
         <tr><th>Age Group</th><td>{{ $booking->age_group }}</td></tr>

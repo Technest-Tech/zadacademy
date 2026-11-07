@@ -4,7 +4,6 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { buildMetadata } from '@/lib/seo'
 import { courseSchema, breadcrumbSchema, faqSchema } from '@/lib/schema'
-import { whatsappLink } from '@/config/site'
 import { courses, getCourses } from '@/content/courses'
 import { courseImage } from '@/content/courseImages'
 import { fetchTeachers } from '@/content/teachersApi'
@@ -12,17 +11,16 @@ import { getLocale } from '@/i18n/getLocale'
 import { getT } from '@/i18n/getDictionary'
 import { localizedHref } from '@/i18n/href'
 import { StickyCourseCta } from '@/components/courses/StickyCourseCta'
+import { QuickTrialForm } from '@/components/conversion/QuickTrialForm'
 import {
   ArrowLeft,
   ArrowRight,
-  Check,
   CheckCircle2,
   Star,
   ChevronDown,
   Users,
   Clock,
   ClipboardList,
-  MessageCircle,
   Sparkles,
   GraduationCap,
 } from 'lucide-react'
@@ -117,8 +115,6 @@ export default async function CourseDetailPage({ params }: Props) {
     faqSchema(course.faqs),
   ]
 
-  const waHref = whatsappLink(t('coursePage.waInterested', { course: course.title }))
-
   return (
     <div className="bg-primary">
       {schemas.map((schema, i) => (
@@ -175,6 +171,15 @@ export default async function CourseDetailPage({ params }: Props) {
         </div>
       </section>
 
+      {/* ═══ Booking — phones see it right under the hero ═══ */}
+      <div className="mx-auto max-w-xl px-4 pb-10 sm:px-6 lg:hidden">
+        <div className="rounded-2xl border border-accent/25 bg-gradient-to-br from-secondary/40 to-primary p-5 shadow-lg sm:p-6">
+          <h2 className="font-heading text-xl font-bold text-white">{t('trialForm.quickTitle')}</h2>
+          <p className="mb-5 mt-1.5 text-sm leading-relaxed text-white/70">{t('trialForm.quickSub')}</p>
+          <QuickTrialForm courseSlug={course.slug} id="reserver" />
+        </div>
+      </div>
+
       {/* ═══ Body ═══ */}
       <div className="mx-auto max-w-7xl px-4 pb-24 sm:px-6 lg:px-8">
         <div className="grid gap-8 lg:grid-cols-[1fr_340px]">
@@ -213,6 +218,19 @@ export default async function CourseDetailPage({ params }: Props) {
                   )
                 })}
               </div>
+            </Panel>
+
+            {/* Key facts */}
+            <Panel>
+              <ul className="grid gap-3 sm:grid-cols-2">
+                {characteristics.map((c) => (
+                  <li key={c.label} className="flex items-center gap-2.5 text-sm">
+                    <c.icon className="size-4 shrink-0 text-accent" aria-hidden="true" />
+                    <span className="text-white/60">{c.label} :</span>
+                    <span className="font-medium text-white">{c.value}</span>
+                  </li>
+                ))}
+              </ul>
             </Panel>
 
             {/* What you'll learn */}
@@ -308,38 +326,6 @@ export default async function CourseDetailPage({ params }: Props) {
                 ))}
               </div>
             </Panel>
-          </div>
-
-          {/* ── Sidebar ── */}
-          <aside className="space-y-6 lg:sticky lg:top-28 lg:self-start">
-            {/* Start now */}
-            <div className="overflow-hidden rounded-2xl bg-gradient-to-br from-secondary to-[#0a6849] p-6 shadow-lg">
-              <h3 className="font-heading text-xl font-bold text-white">{t('coursePage.startNow')}</h3>
-              <p className="mt-2 text-sm leading-relaxed text-white/80">
-                {t('coursePage.startNowSub')}
-              </p>
-
-              <ul className="my-5 space-y-2.5 border-y border-white/15 py-4">
-                {characteristics.map((c) => (
-                  <li key={c.label} className="flex items-center gap-2.5 text-sm text-white/90">
-                    <c.icon className="size-4 shrink-0 text-white/70" aria-hidden="true" />
-                    <span className="text-white/70">{c.label}:</span>
-                    <span className="ml-auto font-medium text-white">{c.value}</span>
-                  </li>
-                ))}
-              </ul>
-
-              <Link
-                href={localizedHref('/contact', locale)}
-                className="flex w-full items-center justify-center gap-2 rounded-xl bg-white py-3.5 font-semibold text-secondary transition-transform hover:scale-[1.02]"
-              >
-                {t('nav.bookFreeTrial')} <ArrowRight className="size-4" aria-hidden="true" />
-              </Link>
-              <p className="mt-3 text-center text-xs text-white/70">
-                {t('coursePage.freeFirstNoCard')}
-              </p>
-            </div>
-
             {/* Other courses */}
             <Panel className="p-5 sm:p-6">
               <h3 className="mb-4 font-heading text-lg font-bold text-white">{t('coursePage.otherCourses')}</h3>
@@ -358,22 +344,15 @@ export default async function CourseDetailPage({ params }: Props) {
                 ))}
               </ul>
             </Panel>
+          </div>
 
-            {/* Any questions */}
-            <Panel className="p-5 sm:p-6">
-              <h3 className="mb-2 font-heading text-lg font-bold text-white">{t('coursePage.anyQuestions')}</h3>
-              <p className="mb-4 text-sm leading-relaxed text-white/60">
-                {t('coursePage.anyQuestionsSub')}
-              </p>
-              <a
-                href={waHref}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#25D366] py-3.5 font-semibold text-white transition-transform hover:scale-[1.02]"
-              >
-                <MessageCircle className="size-5" aria-hidden="true" /> {t('nav.chatWhatsapp')}
-              </a>
-            </Panel>
+          {/* ── Sidebar: booking (desktop) ── */}
+          <aside className="hidden lg:sticky lg:top-28 lg:block lg:self-start">
+            <div className="overflow-hidden rounded-2xl bg-gradient-to-br from-secondary to-[#0a6849] p-6 shadow-lg">
+              <h3 className="font-heading text-xl font-bold text-white">{t('trialForm.quickTitle')}</h3>
+              <p className="mb-5 mt-2 text-sm leading-relaxed text-white/80">{t('trialForm.quickSub')}</p>
+              <QuickTrialForm courseSlug={course.slug} id="reserver-desktop" />
+            </div>
           </aside>
         </div>
       </div>
