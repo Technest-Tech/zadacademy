@@ -7,6 +7,7 @@ import type {
   DaySchedule,
 } from './teachers'
 import type { Locale } from '@/i18n/config'
+import { specialtyLabel } from './specialties'
 
 const API = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:8001'
 
@@ -116,7 +117,7 @@ function firstName(name: string): string {
 
 function specialtyDetails(specialties: string[], locale: Locale): SpecialtyDetail[] {
   return specialties.map((s) => ({
-    title: s,
+    title: specialtyLabel(s, locale),
     desc: SPECIALTY_DESC[locale][s] ?? SPECIALTY_FALLBACK[locale],
   }))
 }

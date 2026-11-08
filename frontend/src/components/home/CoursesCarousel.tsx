@@ -5,6 +5,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { ArrowRight, ChevronLeft, ChevronRight } from 'lucide-react'
 import { courseImage } from '@/content/courseImages'
+import { specialtyLabel } from '@/content/specialties'
 import type { Course } from '@/content/courses'
 import type { Locale } from '@/i18n/config'
 import { useT } from '@/i18n/MarketingI18nProvider'
@@ -135,7 +136,7 @@ export function CoursesCarousel({
                       key={tag}
                       className="rounded-full bg-black/45 px-2.5 py-1 text-[11px] font-medium text-white/90 backdrop-blur-sm"
                     >
-                      {tag}
+                      {specialtyLabel(tag, locale)}
                     </span>
                   ))}
                 </div>

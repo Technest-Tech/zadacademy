@@ -109,10 +109,10 @@ export default async function HomePage() {
           <MobileJourney locale={locale} />
           <div className="hidden justify-center md:flex">
             <Image
-              src="/images/contact-trial-steps.png"
+              src={locale === 'fr' ? '/images/contact-trial-steps-fr.webp' : '/images/contact-trial-steps.png'}
               alt={t('home.stepsAlt')}
-              width={900}
-              height={320}
+              width={1679}
+              height={937}
               className="w-full max-w-3xl h-auto rounded-2xl"
             />
           </div>

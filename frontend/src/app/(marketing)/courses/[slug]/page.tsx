@@ -6,6 +6,7 @@ import { buildMetadata } from '@/lib/seo'
 import { courseSchema, breadcrumbSchema, faqSchema } from '@/lib/schema'
 import { courses, getCourses } from '@/content/courses'
 import { courseImage } from '@/content/courseImages'
+import { specialtyLabel } from '@/content/specialties'
 import { fetchTeachers } from '@/content/teachersApi'
 import { getLocale } from '@/i18n/getLocale'
 import { getT } from '@/i18n/getDictionary'
@@ -95,7 +96,7 @@ export default async function CourseDetailPage({ params }: Props) {
       ? relatedCourses.slice(0, 4)
       : localizedCourses.filter((c) => c.slug !== course.slug).slice(0, 4)
 
-  const tags = [...course.specialtyTags, ...(course.ageGroup ? [course.ageGroup] : [])].slice(0, 4)
+  const tags = [...course.specialtyTags.map((tag) => specialtyLabel(tag, locale)), ...(course.ageGroup ? [course.ageGroup] : [])].slice(0, 4)
   const levelActive = enLevel === 'All Levels' ? LEVELS : [enLevel]
 
   const characteristics = [
