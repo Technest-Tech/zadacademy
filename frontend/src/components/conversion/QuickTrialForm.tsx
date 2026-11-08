@@ -1,9 +1,9 @@
 'use client'
 
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import Link from 'next/link'
-import { Baby, Loader2, Lock, User } from 'lucide-react'
-import { PHONE_COUNTRIES } from './phoneCountries'
+import { Baby, CheckCircle2, HelpCircle, Loader2, Lock, Send, User } from 'lucide-react'
+import { PHONE_COUNTRIES, limitPhoneInput, maxTypedDigits, normalizeMobile } from './phoneCountries'
 import { trackLead } from '@/lib/tracking/trackers'
 import { whatsappLink } from '@/config/site'
 import { courses, getCourses } from '@/content/courses'
@@ -14,12 +14,26 @@ import { sendWeb3FormsNotification } from '@/lib/web3forms'
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:8000'
 
-/** How long the booking may take to save before WhatsApp opens anyway. */
-const SAVE_TIMEOUT_MS = 3500
-/** How long WhatsApp waits for the academy's email notification to leave. */
-const NOTIFY_TIMEOUT_MS = 2000
+/** How long the booking may take to save in the CRM before we give up on it. */
+const SAVE_TIMEOUT_MS = 8000
+/** How long the academy's email notification may take before we give up on it. */
+const NOTIFY_TIMEOUT_MS = 8000
+
+/** Resolves true when `task` settles successfully within `ms`, false otherwise. */
+function within(task: Promise<unknown>, ms: number): Promise<boolean> {
+  return Promise.race([
+    task.then(
+      () => true,
+      () => false,
+    ),
+    new Promise<boolean>((resolve) => setTimeout(() => resolve(false), ms)),
+  ])
+}
 
 type Audience = 'child' | 'adult'
+
+/** The course choice for a visitor who doesn't know which course fits yet. */
+const HELP_ME_CHOOSE = 'Help me choose'
 type Errors = Partial<Record<'name' | 'phone' | 'audience' | 'course', string>>
 
 function WhatsAppIcon({ className }: { className?: string }) {
@@ -71,17 +85,32 @@ export function QuickTrialForm({ courseSlug, id }: { courseSlug?: string; id?: s
   const [chosenCourse, setChosenCourse] = useState<string | null>(null)
   const [errors, setErrors] = useState<Errors>({})
   const [busy, setBusy] = useState(false)
-  const [redirectTo, setRedirectTo] = useState<string | null>(null)
+  const [formError, setFormError] = useState<string | null>(null)
+  const [done, setDone] = useState<{
+    name: string
+    phone: string
+    reference: string | null
+  } | null>(null)
+  const successRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    if (done)
+      successRef.current?.scrollIntoView({
+        behavior: 'smooth',
+        block: 'center',
+      })
+  }, [done])
+
+  const dial = PHONE_COUNTRIES.find((c) => c.code === country) ?? PHONE_COUNTRIES[0]
 
   const frCourseTitle = (value: string) => {
+    if (value === HELP_ME_CHOOSE) return 'À définir — aidez-moi à choisir'
     const i = courses.findIndex((c) => c.title === value)
     return i < 0 ? value : getCourses('fr')[i].title
   }
 
   const directHref = whatsappLink(
-    fixedCourse
-      ? t('trialForm.waDirectCourse', { course: fixedCourse.fr })
-      : t('trialForm.waDirectGeneric'),
+    fixedCourse ? t('trialForm.waDirectCourse', { course: fixedCourse.fr }) : t('trialForm.waDirectGeneric'),
   )
 
   const onSubmit = async (e: React.FormEvent) => {
@@ -89,18 +118,22 @@ export function QuickTrialForm({ courseSlug, id }: { courseSlug?: string; id?: s
     if (busy) return
 
     const courseValue = fixedCourse?.value ?? chosenCourse
-    const digits = phone.replace(/[^\d]/g, '')
+    const national = normalizeMobile(phone, dial)
     const next: Errors = {}
     if (name.trim().length < 2) next.name = t('trialForm.nameRequired')
-    if (digits.length < 6) next.phone = t('trialForm.phoneRequired')
+    if (!phone.trim()) next.phone = t('trialForm.phoneRequired')
+    else if (!national)
+      next.phone = t('trialForm.phoneInvalid', {
+        example: `${dial.dial} ${dial.example}`,
+      })
     if (!audience) next.audience = t('trialForm.audienceRequired')
     if (!courseValue) next.course = t('trialForm.courseRequired')
     setErrors(next)
-    if (Object.keys(next).length > 0 || !audience || !courseValue) return
+    if (Object.keys(next).length > 0 || !audience || !courseValue || !national) return
 
     setBusy(true)
-    const dial = PHONE_COUNTRIES.find((c) => c.code === country) ?? PHONE_COUNTRIES[0]
-    const fullPhone = `${dial.dial} ${phone.trim()}`
+    setFormError(null)
+    const fullPhone = `${dial.dial} ${national}`
     const firstName = name.trim()
     let timezone = 'UTC'
     try {
@@ -108,14 +141,6 @@ export function QuickTrialForm({ courseSlug, id }: { courseSlug?: string; id?: s
     } catch {
       // Intl unavailable — keep UTC
     }
-
-    const waHref = whatsappLink(
-      t('trialForm.waBooking', {
-        name: firstName,
-        course: frCourseTitle(courseValue),
-        audience: audience === 'child' ? t('trialForm.waForChild') : t('trialForm.waForAdult'),
-      }),
-    )
 
     // 1. Save the lead in the CRM — never keeping the visitor waiting more
     //    than SAVE_TIMEOUT_MS.
@@ -125,7 +150,10 @@ export function QuickTrialForm({ courseSlug, id }: { courseSlug?: string; id?: s
     try {
       const res = await fetch(`${API_URL}/api/v1/trial-bookings`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          Accept: 'application/json',
+        },
         signal: controller.signal,
         body: JSON.stringify({
           name: firstName,
@@ -135,7 +163,7 @@ export function QuickTrialForm({ courseSlug, id }: { courseSlug?: string; id?: s
           courseInterest: courseValue,
           preferredTime: 'flexible',
           timezone,
-          message: 'Réservation rapide — suite sur WhatsApp',
+          message: 'Réservation rapide — à recontacter sur WhatsApp',
         }),
       })
       if (res.ok) {
@@ -149,8 +177,7 @@ export function QuickTrialForm({ courseSlug, id }: { courseSlug?: string; id?: s
     }
 
     // 2. Email the academy about every booking — also when the CRM did not
-    //    answer, so no visitor is lost. Waits at most NOTIFY_TIMEOUT_MS; the
-    //    request carries on in the background (keepalive) if WhatsApp opens first.
+    //    answer, so no visitor is lost.
     const notify = sendWeb3FormsNotification({
       subject: `[Nouvelle réservation] ${firstName} — ${frCourseTitle(courseValue)}`,
       form_name: 'Réservation rapide (WhatsApp)',
@@ -158,17 +185,31 @@ export function QuickTrialForm({ courseSlug, id }: { courseSlug?: string; id?: s
       name: firstName,
       phone: fullPhone,
       // A national number typed with its leading 0 (06…) drops it after the dial code.
-      whatsapp: `https://wa.me/${dial.dial.replace('+', '')}${digits.replace(/^0+/, '')}`,
+      whatsapp: `https://wa.me/${dial.dial.replace('+', '')}${national}`,
       country: dial.name,
       audience: audience === 'adult' ? 'Adulte' : 'Enfant',
       course: frCourseTitle(courseValue),
       language: locale.toUpperCase(),
       page_url: window.location.href,
-    }).catch(() => {})
-    await Promise.race([notify, new Promise((r) => setTimeout(r, NOTIFY_TIMEOUT_MS))])
+    })
+    const emailed = await within(notify, NOTIFY_TIMEOUT_MS)
 
-    setRedirectTo(waHref)
-    window.location.href = waHref
+    setBusy(false)
+    // Neither the CRM nor the email reached the academy: say so, keep what was typed.
+    if (!reference && !emailed) {
+      setFormError(t('trialForm.errorGeneric'))
+      return
+    }
+    setDone({ name: firstName, phone: fullPhone, reference })
+  }
+
+  const startOver = () => {
+    setName('')
+    setPhone('')
+    setAudience(null)
+    setChosenCourse(null)
+    setErrors({})
+    setDone(null)
   }
 
   const field =
@@ -183,141 +224,197 @@ export function QuickTrialForm({ courseSlug, id }: { courseSlug?: string; id?: s
 
   return (
     <div id={id} className="scroll-mt-28">
-      <form onSubmit={onSubmit} noValidate className="space-y-4">
-        <div>
-          <label htmlFor={`${id ?? 'qb'}-name`} className={label}>
-            {t('trialForm.firstNameLabel')}
-          </label>
-          <input
-            id={`${id ?? 'qb'}-name`}
-            type="text"
-            autoComplete="given-name"
-            placeholder={t('trialForm.firstNamePlaceholder')}
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            disabled={busy}
-            aria-invalid={!!errors.name}
-            className={field}
-          />
-          {err(errors.name)}
+      {done ? (
+        <div
+          ref={successRef}
+          role="status"
+          aria-live="polite"
+          className="rounded-2xl border border-accent/40 bg-accent/10 px-5 py-8 text-center"
+        >
+          <CheckCircle2 className="mx-auto size-12 text-accent" aria-hidden="true" />
+          <h3 className="mt-4 text-xl font-bold text-white">{t('trialForm.successTitle', { name: done.name })}</h3>
+          <p className="mt-3 text-sm leading-relaxed text-white/80">
+            {t('trialForm.successBody', { phone: done.phone })}
+          </p>
+          {done.reference && (
+            <p className="mt-3 text-xs text-white/60">
+              {t('trialForm.successReference')}{' '}
+              <span className="font-mono font-semibold text-white">{done.reference}</span>
+            </p>
+          )}
+          <button
+            type="button"
+            onClick={startOver}
+            className="mt-6 text-sm font-medium text-accent underline underline-offset-2 hover:text-white"
+          >
+            {t('trialForm.successAgain')}
+          </button>
         </div>
-
-        <div>
-          <label htmlFor={`${id ?? 'qb'}-phone`} className={label}>
-            {t('trialForm.whatsappLabel')}
-          </label>
-          <div className="flex gap-2">
-            <select
-              aria-label={t('trialForm.dialCodeAria')}
-              value={country}
-              onChange={(e) => setCountry(e.target.value)}
-              disabled={busy}
-              className="shrink-0 rounded-xl border border-white/15 bg-white/[0.06] px-2 py-3 text-base text-white outline-none focus:border-accent/70 disabled:opacity-50"
-            >
-              {PHONE_COUNTRIES.map((c) => (
-                <option key={c.code} value={c.code} className="text-black">
-                  {c.flag} {c.dial}
-                </option>
-              ))}
-            </select>
+      ) : (
+        <form onSubmit={onSubmit} noValidate className="space-y-4">
+          <div>
+            <label htmlFor={`${id ?? 'qb'}-name`} className={label}>
+              {t('trialForm.firstNameLabel')}
+            </label>
             <input
-              id={`${id ?? 'qb'}-phone`}
-              type="tel"
-              inputMode="tel"
-              autoComplete="tel-national"
-              placeholder={t('trialForm.phonePlaceholder')}
-              value={phone}
-              onChange={(e) => setPhone(e.target.value)}
+              id={`${id ?? 'qb'}-name`}
+              type="text"
+              autoComplete="given-name"
+              placeholder={t('trialForm.firstNamePlaceholder')}
+              value={name}
+              onChange={(e) => setName(e.target.value)}
               disabled={busy}
-              aria-invalid={!!errors.phone}
+              aria-invalid={!!errors.name}
               className={field}
             />
+            {err(errors.name)}
           </div>
-          {err(errors.phone)}
-        </div>
 
-        <div>
-          <span className={label}>{t('trialForm.audienceLabel')}</span>
-          <div className="grid grid-cols-2 gap-2">
-            {(
-              [
-                { value: 'child', text: t('trialForm.audienceChild'), Icon: Baby },
-                { value: 'adult', text: t('trialForm.audienceAdult'), Icon: User },
-              ] as const
-            ).map(({ value, text, Icon }) => (
-              <button
-                key={value}
-                type="button"
-                onClick={() => setAudience(value)}
-                aria-pressed={audience === value}
-                disabled={busy}
-                className={`flex items-center justify-center gap-2 rounded-xl border px-3 py-3 text-sm font-medium transition-colors disabled:opacity-50 ${
-                  audience === value
-                    ? 'border-accent bg-accent/15 text-white'
-                    : 'border-white/15 bg-white/[0.04] text-white/80 hover:border-white/30'
-                }`}
-              >
-                <Icon className="size-4" aria-hidden="true" />
-                {text}
-              </button>
-            ))}
-          </div>
-          {err(errors.audience)}
-        </div>
-
-        {!fixedCourse && (
           <div>
-            <span className={label}>{t('trialForm.courseLabel')}</span>
+            <label htmlFor={`${id ?? 'qb'}-phone`} className={label}>
+              {t('trialForm.whatsappLabel')}
+            </label>
+            <div className="flex gap-2">
+              <select
+                aria-label={t('trialForm.dialCodeAria')}
+                value={country}
+                onChange={(e) => {
+                  const nextDial = PHONE_COUNTRIES.find((c) => c.code === e.target.value) ?? PHONE_COUNTRIES[0]
+                  setCountry(nextDial.code)
+                  setPhone((p) => limitPhoneInput(p, nextDial))
+                  setErrors((er) => ({ ...er, phone: undefined }))
+                }}
+                disabled={busy}
+                className="shrink-0 rounded-xl border border-white/15 bg-white/[0.06] px-2 py-3 text-base text-white outline-none focus:border-accent/70 disabled:opacity-50"
+              >
+                {PHONE_COUNTRIES.map((c) => (
+                  <option key={c.code} value={c.code} className="text-black">
+                    {c.flag} {c.dial}
+                  </option>
+                ))}
+              </select>
+              <input
+                id={`${id ?? 'qb'}-phone`}
+                type="tel"
+                inputMode="tel"
+                autoComplete="tel-national"
+                placeholder={dial.example}
+                value={phone}
+                // Digits and spaces only, never longer than the country's numbers (plus a leading 0).
+                maxLength={maxTypedDigits(dial) * 2}
+                onChange={(e) => {
+                  setPhone(limitPhoneInput(e.target.value, dial))
+                  if (errors.phone) setErrors((er) => ({ ...er, phone: undefined }))
+                }}
+                disabled={busy}
+                aria-invalid={!!errors.phone}
+                className={field}
+              />
+            </div>
+            {err(errors.phone)}
+          </div>
+
+          <div>
+            <span className={label}>{t('trialForm.audienceLabel')}</span>
             <div className="grid grid-cols-2 gap-2">
-              {courseOptions.map((c) => (
+              {(
+                [
+                  {
+                    value: 'child',
+                    text: t('trialForm.audienceChild'),
+                    Icon: Baby,
+                  },
+                  {
+                    value: 'adult',
+                    text: t('trialForm.audienceAdult'),
+                    Icon: User,
+                  },
+                ] as const
+              ).map(({ value, text, Icon }) => (
                 <button
-                  key={c.slug}
+                  key={value}
                   type="button"
-                  onClick={() => setChosenCourse(c.value)}
-                  aria-pressed={chosenCourse === c.value}
+                  onClick={() => setAudience(value)}
+                  aria-pressed={audience === value}
                   disabled={busy}
-                  className={`rounded-xl border px-3 py-2.5 text-sm font-medium leading-snug transition-colors disabled:opacity-50 ${
-                    chosenCourse === c.value
+                  className={`flex items-center justify-center gap-2 rounded-xl border px-3 py-3 text-sm font-medium transition-colors disabled:opacity-50 ${
+                    audience === value
                       ? 'border-accent bg-accent/15 text-white'
                       : 'border-white/15 bg-white/[0.04] text-white/80 hover:border-white/30'
                   }`}
                 >
-                  {c.label}
+                  <Icon className="size-4" aria-hidden="true" />
+                  {text}
                 </button>
               ))}
             </div>
-            {err(errors.course)}
+            {err(errors.audience)}
           </div>
-        )}
 
-        <button
-          type="submit"
-          disabled={busy}
-          className="flex w-full items-center justify-center gap-2.5 rounded-xl bg-[#25D366] px-4 py-4 text-base font-bold text-[#06301b] shadow-lg shadow-black/30 transition-all hover:bg-[#2ee372] disabled:cursor-wait disabled:opacity-80"
-        >
-          {busy ? (
-            <>
-              <Loader2 className="size-5 animate-spin" aria-hidden="true" />
-              {t('trialForm.redirecting')}
-            </>
-          ) : (
-            <>
-              <WhatsAppIcon className="size-5" />
-              {t('trialForm.whatsappSubmit')}
-            </>
+          {!fixedCourse && (
+            <div>
+              <span className={label}>{t('trialForm.courseLabel')}</span>
+              <div className="grid grid-cols-2 gap-2">
+                {courseOptions.map((c) => (
+                  <button
+                    key={c.slug}
+                    type="button"
+                    onClick={() => setChosenCourse(c.value)}
+                    aria-pressed={chosenCourse === c.value}
+                    disabled={busy}
+                    className={`rounded-xl border px-3 py-2.5 text-sm font-medium leading-snug transition-colors disabled:opacity-50 ${
+                      chosenCourse === c.value
+                        ? 'border-accent bg-accent/15 text-white'
+                        : 'border-white/15 bg-white/[0.04] text-white/80 hover:border-white/30'
+                    }`}
+                  >
+                    {c.label}
+                  </button>
+                ))}
+                <button
+                  type="button"
+                  onClick={() => setChosenCourse(HELP_ME_CHOOSE)}
+                  aria-pressed={chosenCourse === HELP_ME_CHOOSE}
+                  disabled={busy}
+                  className={`col-span-2 flex items-center justify-center gap-2 rounded-xl border border-dashed px-3 py-2.5 text-sm font-medium leading-snug transition-colors disabled:opacity-50 ${
+                    chosenCourse === HELP_ME_CHOOSE
+                      ? 'border-accent bg-accent/15 text-white'
+                      : 'border-white/25 bg-white/[0.02] text-white/80 hover:border-white/40'
+                  }`}
+                >
+                  <HelpCircle className="size-4" aria-hidden="true" />
+                  {t('trialForm.courseHelpMeChoose')}
+                </button>
+              </div>
+              {err(errors.course)}
+            </div>
           )}
-        </button>
 
-        {redirectTo ? (
-          <p className="text-center text-sm text-white/80">
-            <a href={redirectTo} className="font-semibold text-accent underline underline-offset-2">
-              {t('trialForm.redirectFallback')}
-            </a>
-          </p>
-        ) : (
-          <p className="text-center text-xs leading-relaxed text-white/55">{t('trialForm.redirectNote')}</p>
-        )}
-      </form>
+          <button
+            type="submit"
+            disabled={busy}
+            className="flex w-full items-center justify-center gap-2.5 rounded-xl bg-accent px-4 py-4 text-base font-bold text-primary shadow-lg shadow-black/30 transition-all hover:brightness-110 disabled:cursor-wait disabled:opacity-80"
+          >
+            {busy ? (
+              <>
+                <Loader2 className="size-5 animate-spin" aria-hidden="true" />
+                {t('trialForm.submitting')}
+              </>
+            ) : (
+              <>
+                <Send className="size-5" aria-hidden="true" />
+                {t('trialForm.quickSubmit')}
+              </>
+            )}
+          </button>
+
+          {formError && (
+            <p role="alert" className="text-center text-sm text-red-300">
+              {formError}
+            </p>
+          )}
+        </form>
+      )}
 
       <div className="mt-5 border-t border-white/10 pt-4 text-center">
         <a

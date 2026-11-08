@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import Image from 'next/image'
-import { Mail, Phone, MapPin } from 'lucide-react'
+import { Mail, Phone, MapPin, ArrowRight } from 'lucide-react'
 import { footerNav } from '@/config/nav'
 import { siteConfig } from '@/config/site'
 import { fetchSiteSettings, waLink, type SiteSocial } from '@/content/siteSettings'
@@ -50,82 +50,85 @@ export async function Footer() {
     .filter((s) => s.href && s.href.trim())
 
   const year = new Date().getFullYear()
-  const { courses, ...otherGroups } = footerNav
+  const linkClass =
+    'group inline-flex items-start gap-2 text-sm text-white/65 hover:text-white transition-colors'
+  const headingClass =
+    'mb-5 flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.18em] text-accent'
 
   return (
-    <footer className="bg-primary text-white" role="contentinfo">
-      {/* Main footer */}
-      <div className="py-12 lg:py-14">
-        <Container>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-x-8 gap-y-10">
-            {/* Brand column — spans 2 cols on lg */}
-            <div className="lg:col-span-2 space-y-5">
-              <Link
-                href={href('/')}
-                aria-label={t('nav.homeAria')}
-                className="inline-block"
-              >
-                <Image
-                  src="/logo/zad-logo-gold.png"
-                  alt="Zad Academy"
-                  width={512}
-                  height={512}
-                  className="h-28 w-auto rounded-xl"
-                />
-              </Link>
+    <footer
+      className="relative isolate overflow-hidden text-white"
+      style={{ background: 'linear-gradient(160deg, #0C2547 0%, #0B1F3A 45%, #081627 100%)' }}
+      role="contentinfo"
+    >
+      {/* ── Decorative background ── */}
+      <div className="pointer-events-none absolute inset-0 -z-10" aria-hidden="true">
+        {/* Static Islamic geometric pattern (same tile as the hero) */}
+        <div
+          className="absolute inset-0 opacity-[0.045]"
+          style={{
+            backgroundImage:
+              "url(\"data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='60'%20height='60'%3E%3Cg%20fill='none'%20stroke='%23C9A24B'%20stroke-width='0.7'%3E%3Cpath%20d='M30%204%20L36%2024%20L56%2030%20L36%2036%20L30%2056%20L24%2036%20L4%2030%20L24%2024%20Z'/%3E%3Ccircle%20cx='30'%20cy='30'%20r='14'/%3E%3C/g%3E%3C/svg%3E\")",
+            backgroundSize: '60px 60px',
+          }}
+        />
+        {/* Soft glows */}
+        <div className="absolute -top-40 -left-32 size-[520px] rounded-full bg-secondary/20 blur-[120px]" />
+        <div className="absolute -bottom-48 -right-24 size-[480px] rounded-full bg-accent/10 blur-[120px]" />
+        {/* Gold hairline on top */}
+        <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-accent/60 to-transparent" />
+      </div>
 
-              <p className="text-white/70 text-sm leading-relaxed max-w-xs">
-                {t('footer.brandBlurb')}
-              </p>
+      <Container>
+        {/* ── CTA band ── */}
+        <div className="pt-14 lg:pt-16">
+          <div className="flex flex-col items-start gap-6 rounded-2xl border border-white/10 bg-white/[0.04] p-6 backdrop-blur-sm sm:p-8 md:flex-row md:items-center md:justify-between">
+            <div className="space-y-2">
+              <p className="text-xl font-semibold text-white sm:text-2xl">{t('footer.ctaTitle')}</p>
+              <p className="text-sm text-white/65">{t('nav.announcement')}</p>
+            </div>
+            <Link
+              href={href('/contact')}
+              className="group inline-flex w-full shrink-0 items-center justify-center gap-2 rounded-full bg-accent px-6 py-3 text-center text-sm font-bold md:w-auto text-primary shadow-[0_8px_28px_rgba(201,162,75,0.3)] transition hover:brightness-110 active:scale-[0.98]"
+            >
+              {t('nav.bookFreeTrial')}
+              <ArrowRight
+                className="size-4 transition-transform group-hover:translate-x-0.5 rtl:rotate-180"
+                aria-hidden="true"
+              />
+            </Link>
+          </div>
+        </div>
 
-              {/* Arabic ayah */}
-              <p
-                className="font-arabic text-accent text-lg leading-relaxed"
-                dir="rtl"
-                lang="ar"
-                aria-label={t('footer.verseAria')}
-              >
-                اقْرَأْ بِاسْمِ رَبِّكَ
-              </p>
+        {/* ── Main grid ── */}
+        <div className="grid grid-cols-1 gap-x-10 gap-y-12 py-14 lg:grid-cols-12 lg:py-16">
+          {/* Brand */}
+          <div className="space-y-5 lg:col-span-3">
+            <Link href={href('/')} aria-label={t('nav.homeAria')} className="inline-block">
+              <Image
+                src="/logo/zad-logo-gold.png"
+                alt="Zad Academy"
+                width={512}
+                height={512}
+                className="-my-2 h-24 w-auto rounded-xl"
+              />
+            </Link>
 
-              {/* Contact details */}
-              <ul className="space-y-3 text-sm text-white/70" role="list">
-                {contact.email && (
-                  <li>
-                    <a
-                      href={`mailto:${contact.email}`}
-                      className="flex items-center gap-2.5 hover:text-accent transition-colors"
-                    >
-                      <Mail className="size-4 shrink-0" aria-hidden="true" />
-                      {contact.email}
-                    </a>
-                  </li>
-                )}
-                {contact.phone && (
-                  <li>
-                    <a
-                      href={waLink(contact.whatsapp || contact.phone)}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex items-center gap-2.5 hover:text-accent transition-colors"
-                      aria-label={t('footer.chatWhatsapp')}
-                    >
-                      <Phone className="size-4 shrink-0" aria-hidden="true" />
-                      {contact.phone}
-                    </a>
-                  </li>
-                )}
-                {contact.address && (
-                  <li className="flex items-center gap-2.5">
-                    <MapPin className="size-4 shrink-0" aria-hidden="true" />
-                    {/* The stored default is English; show it in the page's language. */}
-                    {/^online\b/i.test(contact.address) ? t('footer.onlineAddress') : contact.address}
-                  </li>
-                )}
-              </ul>
+            <p className="max-w-sm text-sm leading-relaxed text-white/65">
+              {t('footer.brandBlurb')}
+            </p>
 
-              {/* Social links */}
-              <div className="flex items-center gap-3">
+            <p
+              className="w-fit font-arabic text-lg leading-relaxed text-accent"
+              dir="rtl"
+              lang="ar"
+              aria-label={t('footer.verseAria')}
+            >
+              اقْرَأْ بِاسْمِ رَبِّكَ
+            </p>
+
+            {socials.length > 0 && (
+              <div className="flex flex-wrap items-center gap-2.5 pt-1">
                 {socials.map((s) => (
                   <a
                     key={s.key}
@@ -133,7 +136,7 @@ export async function Footer() {
                     target="_blank"
                     rel="noopener noreferrer"
                     aria-label={t('footer.followOn', { name: s.label })}
-                    className="flex items-center justify-center size-9 rounded-full border border-white/20 text-white/60 hover:border-accent hover:text-accent transition-colors"
+                    className="flex size-10 items-center justify-center rounded-xl border border-white/10 bg-white/5 text-white/70 transition hover:-translate-y-0.5 hover:border-accent/60 hover:bg-accent hover:text-primary"
                   >
                     <svg viewBox="0 0 24 24" className="size-4 fill-current" aria-hidden="true">
                       <path d={s.path} />
@@ -141,40 +144,28 @@ export async function Footer() {
                   </a>
                 ))}
               </div>
-            </div>
+            )}
+          </div>
 
-            {/* Courses — split into two columns, spans 2 cols on lg */}
-            <div className="lg:col-span-2">
-              <h3 className="text-sm font-semibold uppercase tracking-wider text-accent mb-4">
-                {t(courses.headingKey)}
-              </h3>
-              <ul className="grid grid-cols-2 gap-x-6 gap-y-2.5" role="list">
-                {courses.items.map((link) => (
-                  <li key={link.href}>
-                    <Link
-                      href={href(link.href)}
-                      className="text-sm text-white/70 hover:text-white transition-colors"
-                    >
-                      {t(link.labelKey)}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            {/* Remaining nav columns */}
-            {Object.entries(otherGroups).map(([group, { headingKey, items }]) => (
+          {/* Link groups */}
+          <nav
+            className="grid grid-cols-2 gap-x-8 gap-y-10 sm:grid-cols-3 lg:col-span-6"
+            aria-label={t('footer.navAria')}
+          >
+            {Object.entries(footerNav).map(([group, { headingKey, items }]) => (
               <div key={group}>
-                <h3 className="text-sm font-semibold uppercase tracking-wider text-accent mb-4">
+                <h3 className={headingClass}>
+                  <span className="h-px w-4 bg-accent/70" aria-hidden="true" />
                   {t(headingKey)}
                 </h3>
-                <ul className="space-y-2.5" role="list">
+                <ul className="space-y-3" role="list">
                   {items.map((link) => (
                     <li key={link.href}>
-                      <Link
-                        href={href(link.href)}
-                        className="text-sm text-white/70 hover:text-white transition-colors"
-                      >
+                      <Link href={href(link.href)} className={linkClass}>
+                        <span
+                          className="mt-2 size-1 shrink-0 rounded-full bg-accent/50 transition-colors group-hover:bg-accent"
+                          aria-hidden="true"
+                        />
                         {t(link.labelKey)}
                       </Link>
                     </li>
@@ -183,25 +174,73 @@ export async function Footer() {
                     <li>
                       <CookieSettingsButton
                         label={t('footer.cookieSettings')}
-                        className="text-sm text-white/70 hover:text-white transition-colors"
+                        className="ps-3 text-sm text-white/65 transition-colors hover:text-white"
                       />
                     </li>
                   )}
                 </ul>
               </div>
             ))}
-          </div>
-        </Container>
-      </div>
+          </nav>
 
-      {/* Gold divider */}
-      <div className="border-t border-white/10">
+          {/* Contact */}
+          <div className="lg:col-span-3">
+            <h3 className={headingClass}>
+              <span className="h-px w-4 bg-accent/70" aria-hidden="true" />
+              {t('footer.contactHeading')}
+            </h3>
+            <ul className="space-y-3" role="list">
+              {contact.email && (
+                <li>
+                  <a
+                    href={`mailto:${contact.email}`}
+                    className="group flex items-center gap-3 text-sm text-white/70 transition-colors hover:text-white"
+                  >
+                    <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-white/5 text-accent ring-1 ring-white/10 transition group-hover:bg-accent group-hover:text-primary">
+                      <Mail className="size-4" aria-hidden="true" />
+                    </span>
+                    <span className="break-all">{contact.email}</span>
+                  </a>
+                </li>
+              )}
+              {contact.phone && (
+                <li>
+                  <a
+                    href={waLink(contact.whatsapp || contact.phone)}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="group flex items-center gap-3 text-sm text-white/70 transition-colors hover:text-white"
+                    aria-label={t('footer.chatWhatsapp')}
+                  >
+                    <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-white/5 text-accent ring-1 ring-white/10 transition group-hover:bg-accent group-hover:text-primary">
+                      <Phone className="size-4" aria-hidden="true" />
+                    </span>
+                    <span dir="ltr">{contact.phone}</span>
+                  </a>
+                </li>
+              )}
+              {contact.address && (
+                <li className="flex items-center gap-3 text-sm text-white/70">
+                  <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-white/5 text-accent ring-1 ring-white/10">
+                    <MapPin className="size-4" aria-hidden="true" />
+                  </span>
+                  {/* The stored default is English; show it in the page's language. */}
+                  {/^online\b/i.test(contact.address) ? t('footer.onlineAddress') : contact.address}
+                </li>
+              )}
+            </ul>
+          </div>
+        </div>
+      </Container>
+
+      {/* ── Bottom bar ── */}
+      <div className="border-t border-white/10 bg-black/15">
         <Container>
-          <div className="py-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-white/50">
+          <div className="flex flex-col items-center justify-between gap-3 py-5 text-center text-xs text-white/50 sm:flex-row sm:text-start">
             <p>
               © {year} {siteConfig.name} ({siteConfig.nameArabic}). {t('footer.rights')}
             </p>
-            <p className="text-accent/80 font-arabic text-sm" aria-hidden="true">
+            <p className="font-arabic text-sm text-accent/80" aria-hidden="true">
               بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ
             </p>
           </div>
