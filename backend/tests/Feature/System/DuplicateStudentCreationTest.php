@@ -100,7 +100,7 @@ class DuplicateStudentCreationTest extends SystemTestCase
         $this->assertSame($first->json('data.id'), $again->json('data.id'));
         $this->assertSame(1, Lead::count());
         $this->assertSame(1, Student::count());
-        $this->assertDatabaseMissing('users', ['email' => 'walk.in@students.alrayanquran.com']);
+        $this->assertDatabaseMissing('users', ['email' => 'walk.in@students.zadacademiq.com']);
     }
 
     public function test_a_repeated_student_submission_creates_the_student_once(): void
@@ -116,7 +116,7 @@ class DuplicateStudentCreationTest extends SystemTestCase
         }
 
         $this->assertSame(1, Student::where('name', 'Repeat Me')->count());
-        $this->assertDatabaseMissing('users', ['email' => 'repeat.me.2@students.alrayanquran.com']);
+        $this->assertDatabaseMissing('users', ['email' => 'repeat.me.2@students.zadacademiq.com']);
     }
 
     public function test_a_repeated_directory_submission_creates_the_student_once(): void
