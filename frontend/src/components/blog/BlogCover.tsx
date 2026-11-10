@@ -22,7 +22,10 @@ export function BlogCover({ src, priority = false, sizes, className }: Props) {
       alt=""
       fill
       sizes={sizes}
-      priority={priority}
+      // `priority` is deprecated in Next 16: it adds a preload but leaves the
+      // <img> lazy at low fetch priority, so the LCP cover arrived last.
+      loading={priority ? 'eager' : 'lazy'}
+      fetchPriority={priority ? 'high' : 'auto'}
       className={className ?? 'object-cover'}
     />
   )

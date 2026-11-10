@@ -108,8 +108,8 @@ export async function Footer() {
               <Image
                 src="/logo/zad-logo-gold.png"
                 alt="Zad Academy"
-                width={512}
-                height={512}
+                width={96}
+                height={96}
                 className="-my-2 h-24 w-auto rounded-xl"
               />
             </Link>

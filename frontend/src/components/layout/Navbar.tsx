@@ -112,9 +112,9 @@ export function Navbar() {
             <Image
               src="/logo/zad-logo-gold.png"
               alt="Zad Academy"
-              width={512}
-              height={512}
-              priority
+              width={96}
+              height={96}
+              loading="eager"
               className="h-14 w-auto rounded-lg sm:h-16 md:h-20 lg:h-24"
             />
           </Link>
@@ -244,8 +244,8 @@ export function Navbar() {
                     <Image
                       src="/logo/zad-logo-gold.png"
                       alt="Zad Academy"
-                      width={512}
-                      height={512}
+                      width={96}
+                      height={96}
                       className="h-16 w-auto rounded-lg"
                     />
                   </Link>
