@@ -29,11 +29,14 @@ import {
 } from 'lucide-react'
 
 /**
- * Off until each teacher's figures (lessons given, hours, career, degrees,
- * weekly schedule) are confirmed: they used to be invented or computed. Turn
- * back on once the real values are in the admin panel.
+ * The per-criterion review scores and the weekly schedule are still the same
+ * computed placeholders for every teacher, so they stay off. Stats, career and
+ * degrees show whatever is filled in for the teacher in the admin panel, and
+ * each one hides itself while it is empty.
  */
-const SHOW_UNVERIFIED_TEACHER_FACTS = false
+const SHOW_COMPUTED_TEACHER_FACTS = false
+
+const STAT_COLS: Record<number, string> = { 1: 'grid-cols-1', 2: 'grid-cols-2', 3: 'grid-cols-3' }
 
 type Props = { params: Promise<{ id: string }> }
 
@@ -118,6 +121,30 @@ export default async function TeacherPage({ params }: Props) {
   const similar = (await fetchTeachers(locale)).filter((x) => x.id !== id).slice(0, 6)
   const bookMsg = tr('teacherPage.waBook', { name: t.name })
 
+  const num = new Intl.NumberFormat(locale === 'fr' ? 'fr-FR' : 'en-US')
+  const avgRating = t.reviews.length
+    ? t.reviews.reduce((sum, r) => sum + r.rating, 0) / t.reviews.length
+    : 0
+  const stats = [
+    t.coursesGiven > 0 && {
+      key: 'courses', Icon: BookOpen, value: num.format(t.coursesGiven), label: tr('teacherPage.coursesGiven'),
+    },
+    t.teachingHours > 0 && {
+      key: 'hours', Icon: Clock, value: num.format(t.teachingHours), label: tr('teacherPage.hoursTaught'),
+    },
+    t.reviews.length > 0 && {
+      key: 'rating',
+      Icon: Star,
+      value: <>{avgRating.toFixed(1)}<span className="text-base text-white/50"> /5</span></>,
+      label: `${t.reviews.length} ${reviewsLabel(t.reviews.length, tr)}`,
+    },
+    t.yearsExperience > 0 && {
+      key: 'years', Icon: Briefcase, value: num.format(t.yearsExperience), label: tr('teacherPage.yearsExperience'),
+    },
+  ]
+    .filter((x): x is Exclude<typeof x, false> => Boolean(x))
+    .slice(0, 3)
+
   const whyChooseMe = [
     t.forChildren && tr('teacherPage.whySuitableChildren'),
     t.freeTrial && tr('teacherPage.whyFreeTrial'),
@@ -198,28 +225,18 @@ export default async function TeacherPage({ params }: Props) {
                 {t.quote}
               </p>
 
-              {/* Lessons, hours and rating are not verified yet */}
-              {SHOW_UNVERIFIED_TEACHER_FACTS && (
-              <>
-              {/* Stats */}
-              <div className="mt-7 grid max-w-2xl grid-cols-3 divide-x divide-white/10 rounded-2xl border border-white/10 bg-white/[0.03] py-5">
-                <div className="px-4 text-center">
-                  <BookOpen className="mx-auto mb-2 size-5 text-emerald-400" aria-hidden="true" />
-                  <div className="font-display text-2xl font-bold text-white">{t.coursesGiven}</div>
-                  <div className="mt-0.5 text-xs text-white/45">{tr('teacherPage.coursesGiven')}</div>
-                </div>
-                <div className="px-4 text-center">
-                  <Clock className="mx-auto mb-2 size-5 text-emerald-400" aria-hidden="true" />
-                  <div className="font-display text-2xl font-bold text-white">{t.teachingHours.toLocaleString()}</div>
-                  <div className="mt-0.5 text-xs text-white/45">{tr('teacherPage.hoursTaught')}</div>
-                </div>
-                <div className="px-4 text-center">
-                  <Star className="mx-auto mb-2 size-5 text-emerald-400" aria-hidden="true" />
-                  <div className="font-display text-2xl font-bold text-white">{t.rating.toFixed(1)}<span className="text-base text-white/50"> /5</span></div>
-                  <div className="mt-0.5 text-xs text-white/45">{t.reviewsCount} {reviewsLabel(t.reviewsCount, tr)}</div>
-                </div>
+              {/* Stats — admin-panel figures; the rating is the average of the
+                  published reviews shown further down, never a typed-in score. */}
+              {stats.length > 0 && (
+              <div className={`mt-7 grid max-w-2xl ${STAT_COLS[stats.length]} divide-x divide-white/10 rounded-2xl border border-white/10 bg-white/[0.03] py-5`}>
+                {stats.map(({ key, Icon, value, label }) => (
+                  <div key={key} className="px-4 text-center">
+                    <Icon className="mx-auto mb-2 size-5 text-emerald-400" aria-hidden="true" />
+                    <div className="font-display text-2xl font-bold text-white">{value}</div>
+                    <div className="mt-0.5 text-xs text-white/45">{label}</div>
+                  </div>
+                ))}
               </div>
-              </>
               )}
 
               {/* Tags */}
@@ -290,8 +307,8 @@ export default async function TeacherPage({ params }: Props) {
               </blockquote>
             </Panel>
 
-            {/* Career and degrees are not verified yet */}
-            {SHOW_UNVERIFIED_TEACHER_FACTS && (
+            {/* Journey — role at Zad plus the degrees on file */}
+            {(t.journey.length > 0 || t.certifications.length > 0) && (
             <>
             {/* Journey */}
             <Panel>
@@ -312,6 +329,8 @@ export default async function TeacherPage({ params }: Props) {
                 ))}
               </ol>
 
+              {t.certifications.length > 0 && (
+              <>
               <h3 className="mb-3 flex items-center gap-2 text-sm font-semibold uppercase tracking-wide text-emerald-300">
                 <Award className="size-4" aria-hidden="true" /> {tr('teacherPage.certificationsDiplomas')}
               </h3>
@@ -327,6 +346,8 @@ export default async function TeacherPage({ params }: Props) {
                   </li>
                 ))}
               </ul>
+              </>
+              )}
             </Panel>
             </>
             )}
@@ -364,7 +385,7 @@ export default async function TeacherPage({ params }: Props) {
               </div>
 
               {/* Per-criterion scores were computed, not collected */}
-              {SHOW_UNVERIFIED_TEACHER_FACTS && (
+              {SHOW_COMPUTED_TEACHER_FACTS && (
               <>
               {/* Breakdown */}
               <div className="mb-7 grid grid-cols-2 gap-4 rounded-xl border border-white/10 bg-white/[0.02] p-5 sm:grid-cols-4">
@@ -425,7 +446,7 @@ export default async function TeacherPage({ params }: Props) {
           {/* ── Sidebar ── */}
           <aside className="space-y-6 lg:sticky lg:top-28 lg:self-start">
             {/* Same placeholder schedule for every teacher */}
-            {SHOW_UNVERIFIED_TEACHER_FACTS && (
+            {SHOW_COMPUTED_TEACHER_FACTS && (
             <>
             {/* Availability */}
             <Panel className="p-5 sm:p-6">

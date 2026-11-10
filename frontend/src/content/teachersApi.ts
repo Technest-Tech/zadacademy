@@ -133,7 +133,7 @@ function journey(role: string, years: number, primary: string, locale: Locale): 
       {
         role,
         org: 'Zad Academy',
-        period: `${years} ans d’expérience · En ligne`,
+        period: years > 0 ? `${years} ans d’expérience · En ligne` : 'En ligne',
         location: 'En ligne',
         desc: `Cours particuliers en ligne (${primary}) pour des élèves francophones, avec des explications en français.`,
       },
@@ -143,7 +143,7 @@ function journey(role: string, years: number, primary: string, locale: Locale): 
     {
       role,
       org: 'Zad Academy',
-      period: `${years} years of experience · Online`,
+      period: years > 0 ? `${years} years of experience · Online` : 'Online',
       location: 'Online',
       desc: `Private online classes (${primary}) for French-speaking students, with explanations in French.`,
     },
