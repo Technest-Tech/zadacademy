@@ -12,6 +12,7 @@ import { LinkButton } from '@/components/ui/link-button'
 import { TableOfContents } from '@/components/blog/TableOfContents'
 import { SocialShare } from '@/components/blog/SocialShare'
 import { RelatedPosts } from '@/components/blog/RelatedPosts'
+import { BlogCover } from '@/components/blog/BlogCover'
 import { blogPosts } from '@/content/blog'
 import { publishedPostsFr, unlinkUnpublished } from '@/content/blogSchedule'
 import { localeTag, type Locale } from '@/i18n/config'
@@ -56,6 +57,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     path: `/blog/${slug}`,
     type: 'article',
     locale,
+    ...(post.cover_image?.startsWith('/') && {
+      image: `${siteConfig.url}${post.cover_image}`,
+      imageSize: { width: 1200, height: 675 },
+    }),
   })
 }
 
@@ -173,6 +178,11 @@ export default async function BlogPostPage({ params }: Props) {
           <div className="lg:grid lg:grid-cols-[1fr_280px] lg:gap-12 max-w-5xl mx-auto">
             {/* Article */}
             <article>
+              {post.cover_image?.startsWith('/') && (
+                <div className="relative aspect-video rounded-2xl overflow-hidden mb-10 bg-primary/10">
+                  <BlogCover src={post.cover_image} priority sizes="(min-width: 1024px) 760px, 100vw" />
+                </div>
+              )}
               <div
                 className="prose prose-lg max-w-none prose-headings:font-display prose-headings:text-primary prose-a:text-primary prose-a:no-underline hover:prose-a:underline prose-li:text-foreground prose-p:text-foreground prose-strong:text-primary"
                 dangerouslySetInnerHTML={{ __html: bodyWithIds }}

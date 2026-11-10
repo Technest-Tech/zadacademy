@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import { BlogCover } from './BlogCover'
 import type { BlogPost } from '@/content/blog'
 import type { Locale } from '@/i18n/config'
 import { localeTag } from '@/i18n/config'
@@ -27,14 +28,22 @@ export function BlogCard({ post, locale = 'en' }: Props) {
       href={localizedHref(`/blog/${post.slug}`, locale)}
       className="group flex flex-col rounded-2xl border border-border-soft bg-white overflow-hidden hover:shadow-md transition-shadow"
     >
-      {/* Cover placeholder */}
-      <div className="aspect-video bg-primary/10 flex items-center justify-center relative">
+      {/* Cover */}
+      <div className="aspect-video bg-primary/10 flex items-center justify-center relative overflow-hidden">
+        {post.cover_image ? (
+          <BlogCover
+            src={post.cover_image}
+            sizes="(min-width: 1024px) 380px, (min-width: 640px) 50vw, 100vw"
+            className="object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+          />
+        ) : (
+          <span className="text-4xl opacity-20 select-none">📖</span>
+        )}
         {primaryCategory && (
-          <span className="absolute top-3 left-3 bg-secondary/10 text-secondary text-xs font-medium rounded-full px-2.5 py-1">
+          <span className="absolute top-3 left-3 z-10 bg-white/90 text-secondary text-xs font-semibold rounded-full px-2.5 py-1 shadow-sm">
             {primaryCategory.title}
           </span>
         )}
-        <span className="text-4xl opacity-20 select-none">📖</span>
       </div>
 
       <div className="flex flex-col flex-1 p-5 gap-3">

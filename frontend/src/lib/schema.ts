@@ -121,7 +121,9 @@ export function blogPostingSchema(post: BlogPost) {
     url: `${siteConfig.url}/blog/${post.slug}`,
     datePublished: post.published_at,
     dateModified: post.published_at,
-    image: post.cover_image ?? `${siteConfig.url}/og-default.jpg`,
+    image: post.cover_image
+      ? post.cover_image.startsWith('/') ? `${siteConfig.url}${post.cover_image}` : post.cover_image
+      : `${siteConfig.url}/og-default.jpg`,
     author: {
       '@type': 'Person',
       name: post.author.name,

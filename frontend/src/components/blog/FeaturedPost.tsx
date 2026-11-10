@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import { BlogCover } from './BlogCover'
 import { LinkButton } from '@/components/ui/link-button'
 import type { BlogPost } from '@/content/blog'
 import type { Locale } from '@/i18n/config'
@@ -29,9 +30,16 @@ export function FeaturedPost({ post, locale = 'en' }: Props) {
       className="group relative flex items-end rounded-3xl overflow-hidden min-h-[420px] bg-primary"
       aria-label={t('blogUi.readAria', { title: post.title })}
     >
+      <BlogCover
+        src={post.cover_image}
+        priority
+        sizes="(min-width: 1280px) 1200px, 100vw"
+        className="object-cover transition-transform duration-700 group-hover:scale-[1.02]"
+      />
+
       {/* Background gradient overlay */}
       <div
-        className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-black/10"
+        className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/45 to-black/5"
         aria-hidden="true"
       />
 

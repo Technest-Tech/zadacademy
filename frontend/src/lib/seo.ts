@@ -7,6 +7,8 @@ type BuildMetadataArgs = {
   description: string
   path?: string
   image?: string
+  /** Pixel size of `image`; defaults to the 1200x630 site default. */
+  imageSize?: { width: number; height: number }
   type?: 'website' | 'article'
   noIndex?: boolean
   /** Active locale. Defaults to the site's default language. */
@@ -28,6 +30,7 @@ export function buildMetadata({
   description,
   path = '',
   image,
+  imageSize = { width: 1200, height: 630 },
   type = 'website',
   noIndex = false,
   locale = defaultLocale,
@@ -65,8 +68,8 @@ export function buildMetadata({
       images: [
         {
           url: ogImage,
-          width: 1200,
-          height: 630,
+          width: imageSize.width,
+          height: imageSize.height,
           alt: `${siteConfig.name} — ${title}`,
         },
       ],
