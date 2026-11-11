@@ -9,7 +9,7 @@ describe('publishedPostsFr', () => {
 
   it('leads with the article the schedule put first, newest first after it', () => {
     const posts = publishedPostsFr(new Date('2026-11-08T00:00:00Z'))
-    expect(posts[0].slug).toBe('mon-enfant-ne-veut-plus-faire-ses-cours-d-arabe')
+    expect(posts[0].slug).toBe('cours-de-coran-en-ligne-comment-choisir')
     const times = posts.map((p) => Date.parse(p.published_at))
     expect(times).toEqual([...times].sort((a, b) => b - a))
   })
