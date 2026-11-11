@@ -7,9 +7,26 @@ import type { Locale } from '@/i18n/config'
 import { getT } from '@/i18n/getDictionary'
 import { localizedHref } from '@/i18n/href'
 
+/**
+ * The home carousel's order, children's courses first. Only this carousel:
+ * the catalogue, nav and booking form keep the order of `courses.ts`.
+ */
+const HOME_ORDER = [
+  'islamic-studies',
+  'quran-classes-for-kids',
+  'arabic-for-kids',
+  'quran',
+  'arabic',
+  'arabic-and-quran',
+  'arabic-conversation-for-kids',
+  'prophets-stories-for-kids',
+]
+
 export function CoursesGrid({ courses, locale }: { courses: Course[]; locale: Locale }) {
   const t = getT(locale)
-  const featured = courses.slice(0, 8)
+  const featured = HOME_ORDER.map((slug) => courses.find((c) => c.slug === slug)).filter(
+    (c): c is Course => c !== undefined,
+  )
 
   return (
     <section
