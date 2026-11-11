@@ -23,7 +23,7 @@ export const faqs: FaqItem[] = [
     id: 'g1',
     category: 'General',
     q: 'What is Zad Academy?',
-    a: "Zad Academy is an online Quran and Arabic academy offering live 1-on-1 classes for children and adults, with Arabic-speaking male and female teachers. 1,600 students currently take classes with us.",
+    a: "Zad Academy is an online Quran and Arabic academy offering live 1-on-1 classes for children and adults, with Arabic-speaking male and female teachers. 180 students currently take classes with us.",
   },
   {
     id: 'g2',
@@ -216,7 +216,7 @@ export const faqsFr: { id: string; q: string; a: string; category: string }[] = 
     id: 'g1',
     category: 'Générale',
     q: "Qu'est-ce que Zad Academy ?",
-    a: "Zad Academy est une académie en ligne de Coran et d’arabe : des cours particuliers en direct, pour enfants et adultes, avec des enseignants et enseignantes arabophones. 1 600 élèves suivent actuellement nos cours.",
+    a: "Zad Academy est une académie en ligne de Coran et d’arabe : des cours particuliers en direct, pour enfants et adultes, avec des enseignants et enseignantes arabophones. 180 élèves suivent actuellement nos cours.",
   },
   {
     id: 'g2',
