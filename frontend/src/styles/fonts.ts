@@ -8,7 +8,9 @@ import {
 export const fontDisplay = Cormorant_Garamond({
   subsets: ['latin'],
   weight: ['400', '500', '600', '700'],
-  style: ['normal', 'italic'],
+  // No italic: nothing sets the display font in italics, and the italic file
+  // was preloaded on every page.
+  style: ['normal'],
   variable: '--font-cormorant',
   display: 'swap',
 })
@@ -29,7 +31,9 @@ export const fontBody = Inter({
 
 export const fontArabic = Amiri({
   subsets: ['arabic'],
-  weight: ['400', '700'],
+  // Regular only: no Arabic text on the site is bold, yet the ~100 KB bold
+  // file was preloaded on every page.
+  weight: ['400'],
   variable: '--font-amiri',
   display: 'swap',
 })

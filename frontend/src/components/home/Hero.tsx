@@ -174,7 +174,9 @@ export async function Hero() {
                   alt={t('home.heroImageAlt')}
                   width={900}
                   height={600}
-                  priority
+                  // Shown only from lg up (max-w-lg = 512px). No priority: its
+                  // preload made phones download it although it is hidden there.
+                  sizes="512px"
                   className="w-full h-auto"
                 />
                 {/* Gentle tint to seat the image in the dark scene */}
