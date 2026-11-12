@@ -52,7 +52,7 @@ export const homeContent = {
     hadithTranslation:
       '"The best of you are those who learn the Quran and teach it." — Prophet Muhammad ﷺ',
     heading: 'Begin Your Quran Journey Today',
-    subheading: 'Join our 180 students. Your first class is completely free.',
+    subheading: 'Join our 230 students. Your first class is completely free.',
     ctaPrimary: 'Book Free Trial Class',
     ctaSecondary: 'Chat on WhatsApp',
   },
@@ -111,7 +111,7 @@ export const homeContentFr: typeof homeContent = {
       '« Les meilleurs d’entre vous sont ceux qui apprennent le Coran et l’enseignent. » — le Prophète Muhammad ﷺ',
     heading: 'Commencez votre parcours coranique dès aujourd’hui',
     subheading:
-      'Rejoignez nos 180 élèves. Votre premier cours est entièrement gratuit.',
+      'Rejoignez nos 230 élèves. Votre premier cours est entièrement gratuit.',
     ctaPrimary: 'Réserver un cours d’essai gratuit',
     ctaSecondary: 'Discuter sur WhatsApp',
   },
